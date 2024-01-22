@@ -9,7 +9,7 @@
 | ログインバリデーション |   |   |   |   |   |
 | ログイン処理 | R |   |   |   |   |
 | 打刻ページ初期化処理 |   | RD | C | R |   |
-| 勤務開始処理 |   | CR |   |   |   |
+| 勤務開始処理 |   | CR | RD |   |   |
 | 勤務終了処理 |   | RD | C | R |   |
 | 休憩開始処理 |   | R |   | CR |   |
 | 休憩終了処理 |   |   |   | RD | C |
@@ -29,7 +29,7 @@
 | POST /login | R |   |   |   |   |
 | POST /logout |   |   |   |   |   |
 | GET / |   | RD | C | R |   |
-| POST /shift/begin |   | CR |   |   |   |
+| POST /shift/begin |   | CR | RD |   |   |
 | POST /shift/end |   | RD | C | R |   |
 | POST /break/begin |   | R |   | CR |   |
 | POST /break/end |   |   |   | RD | C |
