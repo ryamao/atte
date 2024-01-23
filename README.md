@@ -28,3 +28,5 @@
 - [ワークセット](doc/ワークセット.md)
 - [CRUD表](doc/CRUD表.md)
 - [シーケンス図](doc/シーケンス図.md)
+- [ブラウザテスト設計書](https://docs.google.com/spreadsheets/d/e/2PACX-1vTixRKMpxxeyUV5OY40ovLoEz3l2noCiVuny9d4Y4zay0Kq7il-nNiU9A-bpV3x4mgP1nSSJTZJTOZC/pubhtml) (Google スプレッドシート)
+- [機能テスト設計書](https://docs.google.com/spreadsheets/d/e/2PACX-1vQKNQA7mN3Yc2YL3RQYqoXgru-G919Zb2mwsKDbtWPsSJa4YKYr_PMtjUSEtFIMCvw3gJ1G8wIZL2pk/pubhtml) (Google スプレッドシート)
