@@ -170,6 +170,27 @@ class RegisterTest extends TestCase
     }
 
     /**
+     * @testdox [POST /register] メールアドレスが登録済みの場合、バリデーションエラーになる
+     * @group register
+     */
+    public function test_post_register_with_registered_email_causes_validation_error_for_email(): void
+    {
+        User::create([
+            'name' => 'a',
+            'email' => 'test@example.com',
+            'password' => Hash::make('password1'),
+        ]);
+
+        $response = $this->from('/register')->post('/register', [
+            'name' => 'b',
+            'email' => 'test@example.com',
+            'password' => 'password2',
+            'password_confirmation' => 'password2',
+        ]);
+        $response->assertInvalid(['email' => '同じメールアドレスが既に登録されています']);
+    }
+
+    /**
      * @testdox [POST /register] passwordとpassword_confirmationが一致しない場合、バリデーションエラーになる
      * @group register
      */
