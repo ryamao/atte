@@ -27,7 +27,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ github.sha }}
 
   tests:
     needs: build
@@ -50,8 +50,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          key: ${{ runner.os }}-composer-${{ github.sha }}
 
       - name: Copy .env
         run: cp .env.ci .env
@@ -94,8 +93,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          key: ${{ runner.os }}-composer-${{ github.sha }}
 
       - name: Copy .env
         run: cp .env.ci .env
