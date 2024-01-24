@@ -28,6 +28,7 @@ class CreateNewUser implements CreatesNewUsers
         ]);
     }
 
+    /** 会員登録ページのバリデーションルール */
     private function rules(): array
     {
         return [
@@ -43,6 +44,7 @@ class CreateNewUser implements CreatesNewUsers
         ];
     }
 
+    /** 会員登録ページのバリデーションエラーメッセージ */
     private function messages(): array
     {
         return [
@@ -53,6 +55,7 @@ class CreateNewUser implements CreatesNewUsers
             'email.string' => 'メールアドレスは文字列で入力してください',
             'email.email' => '有効なメールアドレスを入力してください',
             'email.max' => 'メールアドレスは191文字以内で入力してください',
+            'email.unique' => '同じメールアドレスが既に登録されています',
             'password.required' => 'パスワードを入力してください',
             'password.string' => 'パスワードは文字列で入力してください',
             'password.min' => 'パスワードは8文字以上で入力してください',
