@@ -30,6 +30,8 @@ jobs:
           key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
 
   tests:
+    needs: build
+
     runs-on: ubuntu-latest
 
     name: PHPUnit (PHP:8.3, Laravel:10)
@@ -71,6 +73,8 @@ jobs:
         run: php artisan test
 
   stub-tests:
+    needs: build
+
     runs-on: ubuntu-latest
 
     name: Stub Tests (PHP:8.3, Laravel:10)
