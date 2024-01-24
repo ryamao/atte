@@ -27,9 +27,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-vendor-
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
   tests:
     needs: build
@@ -52,9 +50,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-vendor-
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
       - name: Copy .env
         run: cp .env.ci .env
@@ -97,9 +93,7 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-vendor-
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
       - name: Copy .env
         run: cp .env.ci .env
