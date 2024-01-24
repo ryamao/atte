@@ -50,7 +50,8 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Copy .env
         run: cp .env.ci .env
@@ -93,7 +94,8 @@ jobs:
         with:
           enableCrossOsArchive: true
           path: ./vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Copy .env
         run: cp .env.ci .env
