@@ -7,6 +7,28 @@ on:
   pull_request:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Save Vendor Directory
+        uses: actions/cache/save@v4
+        with:
+          enableCrossOsArchive: true
+          path: ./vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+
   tests:
     runs-on: ubuntu-latest
 
@@ -21,8 +43,12 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Restore Vendor Diretory
+        uses: actions/cache/restore@v4
+        with:
+          enableCrossOsArchive: true
+          path: ./vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
 
       - name: Copy .env
         run: cp .env.ci .env
@@ -58,8 +84,12 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Restore Vendor Diretory
+        uses: actions/cache/restore@v4
+        with:
+          enableCrossOsArchive: true
+          path: ./vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
 
       - name: Copy .env
         run: cp .env.ci .env
@@ -89,5 +119,3 @@ jobs:
 
       - name: Run Dusk Tests
         run: php artisan dusk --without-tty --ansi
-        env:
-          APP_URL: http://127.0.0.1:8000
