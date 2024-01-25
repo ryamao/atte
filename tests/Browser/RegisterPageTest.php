@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Browser;
 
 use App\Models\User;
@@ -12,7 +14,7 @@ class RegisterPageTest extends DuskTestCase
 {
     use DatabaseTruncation;
 
-    protected $tablesToTruncate = ['users'];
+    protected $tablesToTruncate = ['users', 'sessions'];
 
     /**
      * @testdox [会員登録ページ] [テキスト] "$selector" - "$expected"
@@ -81,7 +83,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] バリデーションエラー時に会員登録ページに戻される
      * @group register
      */
-    public function test_register_page_redirects_to_register_page_if_submit_button_is_pressed_and_validation_fails(): void
+    public function test_register_page_can_redirect_to_register_page_if_submit_button_is_pressed_and_validation_fails(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register');
@@ -94,7 +96,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録後、打刻ページに遷移する
      * @group register
      */
-    public function test_register_page_redirects_to_stamping_page_if_submit_button_is_pressed_and_validation_succeeds(): void
+    public function test_register_page_can_redirect_to_stamping_page_if_submit_button_is_pressed_and_validation_succeeds(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register');
@@ -111,7 +113,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [ログイン] ログインリンクが表示されている
      * @group register
      */
-    public function test_register_page_displays_login_link(): void
+    public function test_register_page_has_link_to_login_page(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register');
@@ -169,20 +171,20 @@ class RegisterPageTest extends DuskTestCase
     public static function provideInputFieldTestData(): array
     {
         return [
-            '"name" - 1文字 - OK' => ['name', 'a', null],
-            '"name" - 191文字 - OK' => ['name', str_repeat('a', 191), null],
+            '"name" - 1文字 - ok' => ['name', 'a', null],
+            '"name" - 191文字 - ok' => ['name', str_repeat('a', 191), null],
             '"name" - 未入力 - エラー' => ['name', '', '名前を入力してください'],
             '"name" - 192文字 - エラー' => ['name', str_repeat('a', 192), '名前は191文字以内で入力してください'],
-            '"email" - メール形式 - OK' => ['email', 'test@example.com', null],
-            '"email" - ローカル64文字、ドメイン64文字 - エラー' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 63), null],
+            '"email" - メール形式 - ok' => ['email', 'test@example.com', null],
+            '"email" - ローカル64文字、ドメイン63文字 - ok' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 63), null],
             '"email" - 未入力 - エラー' => ['email', '', 'メールアドレスを入力してください'],
             '"email" - 非メール形式 - エラー' => ['email', 'example.com', '有効なメールアドレスを入力してください'],
             '"email" - ローカル64文字、ドメイン64文字 - エラー' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 64), '有効なメールアドレスを入力してください'],
-            '"password" - 8文字 - OK' => ['password', str_repeat('a', 8), null],
-            '"password" - 191文字 - OK' => ['password', str_repeat('a', 191), null],
-            '"password" - 未入力 - OK' => ['password', '', 'パスワードを入力してください'],
-            '"password" - 7文字 - OK' => ['password', str_repeat('a', 7), 'パスワードは8文字以上で入力してください'],
-            '"password" - 192文字 - OK' => ['password', str_repeat('a', 192), 'パスワードは191文字以内で入力してください'],
+            '"password" - 8文字 - ok' => ['password', str_repeat('a', 8), null],
+            '"password" - 191文字 - ok' => ['password', str_repeat('a', 191), null],
+            '"password" - 未入力 - エラー' => ['password', '', 'パスワードを入力してください'],
+            '"password" - 7文字 - エラー' => ['password', str_repeat('a', 7), 'パスワードは8文字以上で入力してください'],
+            '"password" - 192文字 - エラー' => ['password', str_repeat('a', 192), 'パスワードは191文字以内で入力してください'],
             '"password_confirmation" - 不一致 - エラー' => ['password_confirmation', 'password2', '確認用パスワードと一致しません'],
             '"password_confirmation" - 未入力 - エラー' => ['password_confirmation', '', '確認用パスワードと一致しません'],
         ];
@@ -192,7 +194,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [入力フィールド] [email] メールアドレスが登録済みの場合、エラーメッセージが表示される
      * @group register
      */
-    public function test_register_page_displays_error_message_for_email_if_same_email_is_registered(): void
+    public function test_register_page_will_display_error_message_for_email_if_same_email_is_registered(): void
     {
         User::create([
             'name' => 'a',
@@ -202,7 +204,6 @@ class RegisterPageTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) {
             $browser->visit('/register');
-            $browser->waitForInput('name');
             $browser->type('name', 'b');
             $browser->type('email', 'test@example.com');
             $browser->type('password', 'password2');
