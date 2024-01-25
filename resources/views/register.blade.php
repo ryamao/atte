@@ -17,6 +17,7 @@
         @enderror
         <input type="password" name="password_confirmation" placeholder="確認用パスワード" />
         <button type="submit">会員登録</button>
+        <p dusk="info-text">アカウントをお持ちの方はこちらから</p>
         <a href="/login">ログイン</a>
     </form>
 </x-app-layout>
