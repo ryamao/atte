@@ -12,6 +12,7 @@
         <div dusk="password-alert">{{ $message }}</div>
         @enderror
         <button type="submit">ログイン</button>
+        <p dusk="info-text">アカウントをお持ちでない方はこちらから</p>
         <a href="/register">会員登録</a>
     </form>
 </x-app-layout>
