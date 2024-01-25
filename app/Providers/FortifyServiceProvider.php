@@ -19,7 +19,12 @@ class FortifyServiceProvider extends ServiceProvider
     {
         $this->app->singleton(
             \Laravel\Fortify\Http\Requests\LoginRequest::class,
-            \App\Http\Requests\LoginRequest::class
+            \App\Http\Requests\LoginRequest::class,
+        );
+
+        $this->app->singleton(
+            \Laravel\Fortify\Contracts\LogoutResponse::class,
+            \App\Http\Responses\LogoutResponse::class,
         );
     }
 
