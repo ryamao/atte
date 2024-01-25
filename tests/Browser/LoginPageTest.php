@@ -45,6 +45,7 @@ class LoginPageTest extends DuskTestCase
      * @group login
      * @testWith ["header h1", "Atte"]
      *           ["main h2", "ログイン"]
+     *           ["@info-text", "アカウントをお持ちでない方はこちらから"]
      *           ["footer small", "Atte, inc."]
      */
     public function test_login_page_has_text(string $selector, string $expected): void
@@ -132,11 +133,11 @@ class LoginPageTest extends DuskTestCase
      * @testdox [ログインページ] [ボタン/リンク] [会員登録] 会員登録ページへのリンクが表示されている
      * @group login
      */
-    public function test_login_page_has_link_to_register_page(): void
+    public function test_login_page_has_link_named_register(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login');
-            $browser->assertSeeIn('a[href="/register"]', '会員登録');
+            $browser->assertSeeLink('会員登録');
         });
     }
 
