@@ -32,64 +32,64 @@ class LoginTest extends TestCase
     }
 
     /**
-     * @testdox [GET /login] ステータスコード200を返す
+     * @testdox [GET login] ステータスコード200を返す
      * @group login
      */
     public function test_get_login_returns_status_code_200(): void
     {
-        $response = $this->get('/login');
+        $response = $this->get(route('login'));
         $response->assertStatus(200);
     }
 
     /**
-     * @testdox [POST /login] [認証成功] 認証状態になる
+     * @testdox [POST login] [認証成功] 認証状態になる
      * @group login
      */
     public function test_post_login_with_valid_parameters_authenticates_current_user(): void
     {
         $user = User::where('email', $this->userData['email'])->first();
-        $this->from('/login')->post('/login', $this->userData->only(['email', 'password'])->all());
+        $this->fromRoute('login')->post(route('login'), $this->userData->only(['email', 'password'])->all());
         $this->assertAuthenticatedAs($user);
     }
 
     /**
-     * @testdox [POST /login] [認証成功] "/" へリダイレクトする
+     * @testdox [POST login] [認証成功] route('stamp') へリダイレクトする
      * @group login
      */
     public function test_post_login_with_valid_parameters_redirects_to_stamping_page(): void
     {
-        $response = $this->from('/login')->post('/login', $this->userData->only(['email', 'password'])->all());
-        $response->assertRedirect('/');
+        $response = $this->fromRoute('login')->post(route('login'), $this->userData->only(['email', 'password'])->all());
+        $response->assertRedirectToRoute('stamp');
     }
 
     /**
-     * @testdox [POST /login] [認証失敗] 非認証状態を維持する
+     * @testdox [POST login] [認証失敗] 非認証状態を維持する
      * @group login
      */
     public function test_post_login_with_no_parameters_doesnt_authenticates_current_user(): void
     {
-        $this->from('/login')->post('/login');
+        $this->fromRoute('login')->post(route('login'));
         $this->assertGuest();
     }
 
     /**
-     * @testdox [POST /login] [認証失敗] "/login" へリダイレクトする
+     * @testdox [POST login] [認証失敗] route('login') へリダイレクトする
      * @group login
      */
     public function test_post_login_with_no_parameters_redirects_to_login_page(): void
     {
-        $response = $this->from('/login')->post('/login');
-        $response->assertRedirect('/login');
+        $response = $this->fromRoute('login')->post(route('login'));
+        $response->assertRedirectToRoute('login');
     }
 
     /**
-     * @testdox [POST /login] [バリデーション]
+     * @testdox [POST login] [バリデーション]
      * @group login
      * @dataProvider provideLoginData
      */
     public function test_post_login_with_various_parameters_causes_validation_error_or_not(string $field, mixed $value, ?string $alert): void
     {
-        $response = $this->from('/login')->post('/login', [$field => $value]);
+        $response = $this->fromRoute('login')->post(route('login'), [$field => $value]);
         if (is_null($alert)) {
             $response->assertValid($field);
         } else {
@@ -116,13 +116,13 @@ class LoginTest extends TestCase
     }
 
     /**
-     * @testdox [POST /login] [バリデーション] "email" が未登録の場合、エラーメッセージが返る
+     * @testdox [POST login] [バリデーション] "email" が未登録の場合、エラーメッセージが返る
      * @group login
      */
     public function test_post_login_with_unregistered_email_causes_validation_error_for_email(): void
     {
         $data = $this->userData->only('password')->merge(['email' => 'test2@example.com'])->all();
-        $response = $this->from('/login')->post('/login', $data);
+        $response = $this->fromRoute('login')->post(route('login'), $data);
         $response->assertInvalid(['email' => '会員情報が登録されていません']);
     }
 }

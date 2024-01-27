@@ -14,37 +14,37 @@ class RegisterTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @testdox [GET /register] ステータスコード200を返す
+     * @testdox [GET register] ステータスコード200を返す
      * @group register
      */
     public function test_get_register_returns_status_code_200(): void
     {
-        $response = $this->get('/register');
+        $response = $this->get(route('register'));
         $response->assertStatus(200);
     }
 
     /**
-     * @testdox [POST /register] [登録成功] ルートパス '/' にリダイレクトする
+     * @testdox [POST register] [登録成功] route('stamp') にリダイレクトする
      * @group register
      */
     public function test_post_register_redirects_to_stamping_page_if_registration_succeeds(): void
     {
-        $response = $this->from('/register')->post('/register', [
+        $response = $this->fromRoute('register')->post(route('register'), [
             'name' => 'a',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
-        $response->assertRedirect('/');
+        $response->assertRedirectToRoute('stamp');
     }
 
     /**
-     * @testdox [POST /register] [登録成功] バリデーションに成功する
+     * @testdox [POST register] [登録成功] バリデーションに成功する
      * @group register
      */
     public function test_post_register_causes_no_validation_errors_if_registration_succeeds(): void
     {
-        $response = $this->from('/register')->post('/register', [
+        $response = $this->fromRoute('register')->post(route('register'), [
             'name' => 'a',
             'email' => 'test@example.com',
             'password' => 'password',
@@ -54,14 +54,14 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * @testdox [POST /register] [登録成功] usersテーブルにリクエストパラメータを保存する
+     * @testdox [POST register] [登録成功] usersテーブルにリクエストパラメータを保存する
      * @group register
      */
     public function test_post_register_stores_users_table_if_registration_succeeds(): void
     {
         $this->assertDatabaseEmpty('users');
 
-        $this->from('/register')->post('/register', [
+        $this->fromRoute('register')->post(route('register'), [
             'name' => 'a',
             'email' => 'test@example.com',
             'password' => 'password',
@@ -76,14 +76,14 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * @testdox [POST /register] [登録成功] 認証状態になる
+     * @testdox [POST register] [登録成功] 認証状態になる
      * @group register
      */
     public function test_post_register_authenticates_current_user_if_registration_succeeds(): void
     {
         $this->assertGuest();
 
-        $this->from('/register')->post('/register', [
+        $this->fromRoute('register')->post(route('register'), [
             'name' => 'a',
             'email' => 'test@example.com',
             'password' => 'password',
@@ -94,39 +94,39 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * @testdox [POST /register] [登録失敗] ルートパス '/register' にリダイレクトする
+     * @testdox [POST register] [登録失敗] route('register') へリダイレクトする
      * @group register
      */
     public function test_post_register_redirects_to_register_page_if_registration_fails(): void
     {
-        $response = $this->from('/register')->post('/register', []);
-        $response->assertRedirect('/register');
+        $response = $this->fromRoute('register')->post(route('register'), []);
+        $response->assertRedirect('register');
     }
 
     /**
-     * @testdox [POST /register] [登録失敗] usersテーブルに変化がない
+     * @testdox [POST register] [登録失敗] usersテーブルに変化がない
      * @group register
      */
     public function test_post_register_do_nothing_to_users_table_if_registration_fails(): void
     {
         $this->assertDatabaseEmpty('users');
-        $this->from('/register')->post('/register', []);
+        $this->fromRoute('register')->post(route('register'), []);
         $this->assertDatabaseEmpty('users');
     }
 
     /**
-     * @testdox [POST /register] [登録失敗] 非認証状態を維持する
+     * @testdox [POST register] [登録失敗] 非認証状態を維持する
      * @group register
      */
     public function test_post_register_doesnt_authenticates_current_user_if_registration_fails(): void
     {
         $this->assertGuest();
-        $this->from('/register')->post('/register', []);
+        $this->fromRoute('register')->post(route('register'), []);
         $this->assertGuest();
     }
 
     /**
-     * @testdox [POST /register] バリデーション
+     * @testdox [POST register] バリデーション
      * @group register
      * @dataProvider provideValidationTestParams
      */
@@ -134,7 +134,7 @@ class RegisterTest extends TestCase
     {
         $passwordConfirmation = $field === 'password' ? $value : null;
 
-        $response = $this->from('/register')->post('/register', [
+        $response = $this->fromRoute('register')->post(route('register'), [
             $field => $value,
             'password_confirmation' => $passwordConfirmation,
         ]);
@@ -170,7 +170,7 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * @testdox [POST /register] メールアドレスが登録済みの場合、バリデーションエラーになる
+     * @testdox [POST register] メールアドレスが登録済みの場合、バリデーションエラーになる
      * @group register
      */
     public function test_post_register_with_registered_email_causes_validation_error_for_email(): void
@@ -181,7 +181,7 @@ class RegisterTest extends TestCase
             'password' => Hash::make('password1'),
         ]);
 
-        $response = $this->from('/register')->post('/register', [
+        $response = $this->fromRoute('register')->post(route('register'), [
             'name' => 'b',
             'email' => 'test@example.com',
             'password' => 'password2',
@@ -191,12 +191,12 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * @testdox [POST /register] passwordとpassword_confirmationが一致しない場合、バリデーションエラーになる
+     * @testdox [POST register] passwordとpassword_confirmationが一致しない場合、バリデーションエラーになる
      * @group register
      */
     public function test_post_register_with_unmatched_password_confirmation_causes_validation_error_for_password(): void
     {
-        $response = $this->from('/register')->post('/register', [
+        $response = $this->fromRoute('register')->post(route('register'), [
             'password' => 'password1',
             'password_confirmation' => 'password2',
         ]);

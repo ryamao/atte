@@ -16,6 +16,6 @@ class LogoutResponse implements ContractsLogoutResponse
      */
     public function toResponse($request)
     {
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

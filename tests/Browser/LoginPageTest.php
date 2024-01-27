@@ -51,7 +51,7 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_has_text(string $selector, string $expected): void
     {
         $this->browse(function (Browser $browser) use ($selector, $expected) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $text = $browser->text($selector);
             $this->assertEquals($expected, $text);
         });
@@ -67,7 +67,7 @@ class LoginPageTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) use ($field) {
             $value = $field . '_test';
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->assertInputValue($field, '');
             $browser->type($field, $value);
             $browser->assertInputValue($field, $value);
@@ -83,7 +83,7 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_has_placeholder_in_input_field(string $field, string $placeholder): void
     {
         $this->browse(function (Browser $browser) use ($field, $placeholder) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->assertAttribute("input[name=\"{$field}\"", 'placeholder', $placeholder);
         });
     }
@@ -95,7 +95,7 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_displays_submit_button(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->assertSeeIn('button[type="submit"]', 'ログイン');
         });
     }
@@ -107,9 +107,9 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_can_redirect_to_login_page_if_submit_button_is_pressed_and_validation_fails(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->press('ログイン');
-            $browser->assertPathIs('/login');
+            $browser->assertRouteIs('login');
         });
     }
 
@@ -120,12 +120,12 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_can_redirect_to_stamping_page_if_submit_button_is_pressed_and_validation_succeeds(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             foreach (['email', 'password'] as $field) {
                 $browser->type($field, $this->userData[$field]);
             }
             $browser->press('ログイン');
-            $browser->assertPathIs('/');
+            $browser->assertRouteIs('stamp');
         });
     }
 
@@ -136,7 +136,7 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_has_link_named_register(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->assertSeeLink('会員登録');
         });
     }
@@ -148,9 +148,9 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_links_to_register_page(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->clickLink('会員登録');
-            $browser->assertPathIs('/register');
+            $browser->assertRouteIs('register');
         });
     }
 
@@ -162,7 +162,7 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_displays_error_message_or_not(string $field, string $value, ?string $alert): void
     {
         $callback = function (Browser $browser) use ($field, $value, $alert) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->type($field, $value);
             $browser->press('ログイン');
 
@@ -207,7 +207,7 @@ class LoginPageTest extends DuskTestCase
     public function test_login_page_can_display_error_message_for_email_if_email_or_password_is_unregistered(string $email, string $password): void
     {
         $callback = function (Browser $browser) use ($email, $password) {
-            $browser->visit('/login');
+            $browser->visitRoute('login');
             $browser->type('email', $email);
             $browser->type('password', $password);
             $browser->press('ログイン');
