@@ -13,15 +13,16 @@ class ShiftBegin extends Model
 {
     use HasFactory;
 
+    /** 一括割り当て可能な属性。 */
     protected $fillable = ['user_id', 'begun_at'];
 
-    /** created_atとupdated_atの自動更新をオミットする。 */
+    /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;
 
-    /** 勤務開始前に限り勤務開始処理を行う。 */
+    /** 勤務開始を記録する。同一ユーザが勤務中の場合は何もしない。 */
     public static function beginShift(User $user, DateTimeInterface $now): void
     {
-        ShiftBegin::firstOrCreate(
+        static::firstOrCreate(
             ['user_id' => $user->id],
             ['begun_at' => $now],
         );

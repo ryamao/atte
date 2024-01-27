@@ -13,15 +13,16 @@ class ShiftTiming extends Model
 {
     use HasFactory;
 
+    /** 一括割り当て可能な属性。 */
     protected $fillable = ['user_id', 'begun_at', 'ended_at'];
 
-    /** created_atとupdated_atの自動更新をオミットする。 */
+    /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;
 
-    /** 勤務終了処理を行う。 */
+    /** 勤務終了を記録する。 */
     public static function endShift(ShiftBegin $shiftBegin, ?DateTimeInterface $now): void
     {
-        ShiftTiming::create([
+        static::create([
             'user_id' => $shiftBegin->user_id,
             'begun_at' => $shiftBegin->begun_at,
             'ended_at' => $now,
@@ -34,7 +35,7 @@ class ShiftTiming extends Model
      */
     public static function cancelShift(User $user, DateTimeInterface $today): ?DateTimeInterface
     {
-        $shiftTiming = ShiftTiming
+        $shiftTiming = static
             ::where('user_id', $user->id)
             ->whereDate('begun_at', $today)->first();
 

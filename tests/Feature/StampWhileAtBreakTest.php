@@ -47,18 +47,18 @@ class StampWhileAtBreakTest extends StampTestCase
         $this->assertBreakTimings([]);
     }
 
-    // /**
-    //  * @testdox [POST shift-end] [認証状態] [休憩中]
-    //  * @group stamp
-    //  */
-    // public function test_post_shift_end_from_auth_user_while_at_break(): void
-    // {
-    //     $this->loginAndPost('shift-end', when: $this->breakBegin->begun_at->addHour());
-    //     $this->assertShiftBegins([$this->shiftBegin]);
-    //     $this->assertShiftTimings([]);
-    //     $this->assertBreakBegins([$this->breakBegin]);
-    //     $this->assertBreakTimings([]);
-    // }
+    /**
+     * @testdox [POST shift-end] [認証状態] [休憩中]
+     * @group stamp
+     */
+    public function test_post_shift_end_from_auth_user_while_at_break(): void
+    {
+        $this->loginAndPost('shift-end', when: $this->breakBegin->begun_at->addHour());
+        $this->assertShiftBegins([$this->shiftBegin]);
+        $this->assertShiftTimings([]);
+        $this->assertBreakBegins([$this->breakBegin]);
+        $this->assertBreakTimings([]);
+    }
 
     /**
      * @testdox [POST break-begin] [認証状態] [休憩中]

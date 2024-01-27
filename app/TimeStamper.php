@@ -22,6 +22,7 @@ class TimeStamper
     public function beginShift(): void
     {
         $this->handlePreviousShift();
+        $this->handlePreviousBreak();
 
         $now = ShiftTiming::cancelShift($this->user, $this->now) ?? $this->now;
         ShiftBegin::beginShift($this->user, $now);
@@ -31,6 +32,10 @@ class TimeStamper
     public function endShift(): void
     {
         $this->handlePreviousShift();
+        $this->handlePreviousBreak();
+
+        $breakBegin = BreakBegin::currentBreak($this->user, $this->now)->first();
+        if ($breakBegin) return;
 
         $shiftBegin = ShiftBegin::currentShift($this->user, $this->now)->first();
         if ($shiftBegin) {

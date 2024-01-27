@@ -28,7 +28,7 @@ class StampController extends Controller
     }
 
     /** 勤務終了処理を行う。 */
-    public function storeShiftEnd(DateTimeZone $timezone): RedirectResponse
+    public function storeShiftTiming(DateTimeZone $timezone): RedirectResponse
     {
         $stamper = new TimeStamper(Auth::user(), CarbonImmutable::now($timezone));
         $stamper->endShift();

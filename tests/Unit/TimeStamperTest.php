@@ -47,16 +47,14 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 複数回連続で TimeStamper::beginShift を実行しても最初の日時を保持する
+     * @testdox 勤務開始後に TimeStamper::beginShift を実行しても最初の日時を保持する
      * @group stamp
      */
-    public function test_beginShift(): void
+    public function test_beginShift_twice(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
         $this->stamper(elapsedHours: 1)->beginShift();
-        $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
-        $this->stamper(elapsedHours: 2)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
     }
 
@@ -64,13 +62,31 @@ class TimeStamperTest extends TestCase
      * @testdox 日付を跨いで2回 TimeStamper::beginShift を実行すると、前日の記録を勤務終了して当日の記録を開始する
      * @group stamp
      */
-    public function test_beginShift_2(): void
+    public function test_beginShift_with_previous_data(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
-        $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
+        $this->stamper(elapsedHours: 4)->beginBreak();
         $this->stamper(elapsedHours: 24)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt->addHours(24)]]);
         $this->assertShiftTimings([[$this->users[0]->id, $this->testBegunAt, null]]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([[$this->users[0]->id, $this->testBegunAt->addHours(4), null]]);
+    }
+
+    /**
+     * @testdox 休憩後の TimeStamper::beginShift
+     * @group stamp
+     */
+    public function test_beginShift_before_breaking(): void
+    {
+        $this->stamper(elapsedHours: 0)->beginShift();
+        $this->stamper(elapsedHours: 4)->beginBreak();
+        $this->stamper(elapsedHours: 5)->endBreak();
+        $this->stamper(elapsedHours: 6)->beginShift();
+        $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt->addHours(0)]]);
+        $this->assertShiftTimings([]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([[$this->users[0]->id, $this->testBegunAt->addHours(4), $this->testBegunAt->addHours(5)]]);
     }
 
     /**
@@ -93,17 +109,49 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 20時に勤務開始、翌5時に勤務終了
+     * @testdox 前日に勤務終了と休憩終了していない状態で TimeStamper::endShift
      * @group stamp
      */
-    public function test_endShift_2(): void
+    public function test_endShift_with_previous_data(): void
     {
-        $this->testBegunAt = CarbonImmutable::create(2024, 1, 24, 20, 0, 0, new DateTimeZone('Asia/Tokyo'));
         $this->stamper(elapsedHours: 0)->beginShift();
-        $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
-        $this->stamper(elapsedHours: 8)->endShift();
+        $this->stamper(elapsedHours: 4)->beginBreak();
+        $this->stamper(elapsedHours: 24)->endShift();
         $this->assertShiftBegins([]);
         $this->assertShiftTimings([[$this->users[0]->id, $this->testBegunAt, null]]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([[$this->users[0]->id, $this->testBegunAt->addHours(4), null]]);
+    }
+
+    /**
+     * @testdox 休憩中の TimeStamper::endShift
+     * @group stamp
+     */
+    public function test_endShift_while_at_break(): void
+    {
+        $this->stamper(elapsedHours: 0)->beginShift();
+        $this->stamper(elapsedHours: 4)->beginBreak();
+        $this->stamper(elapsedHours: 8)->endShift();
+        $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
+        $this->assertShiftTimings([]);
+        $this->assertBreakBegins([[$this->users[0]->id, $this->testBegunAt->addHours(4)]]);
+        $this->assertBreakTimings([]);
+    }
+
+    /**
+     * @testdox 休憩後の TimeStamper::endShift
+     * @group stamp
+     */
+    public function test_endShift_before_breaking(): void
+    {
+        $this->stamper(elapsedHours: 0)->beginShift();
+        $this->stamper(elapsedHours: 4)->beginBreak();
+        $this->stamper(elapsedHours: 5)->endBreak();
+        $this->stamper(elapsedHours: 8)->endShift();
+        $this->assertShiftBegins([]);
+        $this->assertShiftTimings([[$this->users[0]->id, $this->testBegunAt->addHours(0), $this->testBegunAt->addHours(8)]]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([[$this->users[0]->id, $this->testBegunAt->addHours(4), $this->testBegunAt->addHours(5)]]);
     }
 
     /**
@@ -129,7 +177,7 @@ class TimeStamperTest extends TestCase
      * @testdox 休憩開始後に TimeStamper::beginBreak を実行しても最初の日時を保持する
      * @group stamp
      */
-    public function test_beginBreak_repeatedly(): void
+    public function test_beginBreak_twice(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
