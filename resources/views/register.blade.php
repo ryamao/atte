@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="subtitle">会員登録</x-slot>
+    <h2>会員登録</h2>
 
     <form action="{{ route('register') }}" method="post" novalidate>
         @csrf

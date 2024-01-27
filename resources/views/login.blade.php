@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="subtitle">ログイン</x-slot>
+    <h2>ログイン</h2>
 
     <form action="{{ route('login') }}" method="post" novalidate>
         @csrf
