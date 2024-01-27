@@ -16,9 +16,14 @@
         @if (Auth::check())
         <nav>
             <ul>
-                <li><a href="/">ホーム</a></li>
-                <li><a href="/attendance">日付一覧</a></li>
-                <li><button dusk="logout">ログアウト</button></li>
+                <li><a href="{{ route('stamp') }}">ホーム</a></li>
+                <li><a href="{{ route('attendance') }}">日付一覧</a></li>
+                <li>
+                    <form action="{{ route('logout') }}" method="post">
+                        @csrf
+                        <button dusk="logout">ログアウト</button>
+                    </form>
+                </li>
             </ul>
         </nav>
         @endif

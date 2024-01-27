@@ -20,4 +20,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/shift/end', [StampController::class, 'storeShiftTiming'])->name('shift-end');
     Route::post('/break/begin', [StampController::class, 'storeBreakBegin'])->name('break-begin');
     Route::post('/break/end', [StampController::class, 'storeBreakTiming'])->name('break-end');
+    Route::get('/attendance', null)->name('attendance');
 });

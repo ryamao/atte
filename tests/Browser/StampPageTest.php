@@ -2,12 +2,7 @@
 
 namespace Tests\Browser;
 
-use App\Models\BreakBegin;
-use App\Models\ShiftBegin;
-use App\Models\ShiftTiming;
 use App\Models\User;
-use Carbon\CarbonImmutable;
-use DateTimeZone;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Dusk\Browser;
@@ -54,7 +49,7 @@ class StampPageTest extends DuskTestCase
     public function test_stamp_page_has_text(string $selector, string $text): void
     {
         $this->browseAfterLogin(function (Browser $browser) use ($selector, $text) {
-            $browser->visit('/');
+            $browser->visitRoute('stamp');
             $browser->assertSeeIn($selector, $text);
         });
     }
@@ -66,22 +61,37 @@ class StampPageTest extends DuskTestCase
     public function test_stamp_page_has_gratitude_text_for_current_user(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
-            $browser->visit('/');
+            $browser->visitRoute('stamp');
             $browser->assertSeeIn('@gratitude', "{$this->user->name}さんお疲れ様です！");
         });
     }
 
     /**
-     * @testdox [打刻ページ] [リンク] "$text" が表示されている
+     * @testdox [打刻ページ] [リンク] "$link" が表示されている
      * @group stamp
      * @testWith ["ホーム"]
      *           ["日付一覧"]
      */
-    public function test_stamp_page_has_link(string $text): void
+    public function test_stamp_page_has_link(string $link): void
     {
-        $this->browseAfterLogin(function (Browser $browser) use ($text) {
-            $browser->visit('/');
-            $browser->assertSeeLink($text);
+        $this->browseAfterLogin(function (Browser $browser) use ($link) {
+            $browser->visitRoute('stamp');
+            $browser->assertSeeLink($link);
+        });
+    }
+
+    /**
+     * @testdox [打刻ページ] [リンク] "$link" クリック時の遷移先が "$routeName"
+     * @group stamp
+     * @testWith ["ホーム", "stamp"]
+     *           ["日付一覧", "attendance"]
+     */
+    public function test_stamp_page_links(string $link, string $routeName): void
+    {
+        $this->browseAfterLogin(function (Browser $browser) use ($link, $routeName) {
+            $browser->visitRoute('stamp');
+            $browser->clickLink($link);
+            $browser->assertRouteIs($routeName);
         });
     }
 
@@ -97,8 +107,22 @@ class StampPageTest extends DuskTestCase
     public function test_stamp_page_has_button(string $selector, string $text): void
     {
         $this->browseAfterLogin(function (Browser $browser) use ($selector, $text) {
-            $browser->visit('/');
+            $browser->visitRoute('stamp');
             $browser->assertSeeIn($selector, $text);
+        });
+    }
+
+    /**
+     * @testdox [打刻ページ] [ボタン] ログアウト
+     * @group stamp
+     */
+    public function test_stamp_page_logout_button(): void
+    {
+        $this->browseAfterLogin(function (Browser $browser) {
+            $browser->visitRoute('stamp');
+            $browser->press('ログアウト');
+            $browser->assertRouteIs('login');
+            $this->assertGuest();
         });
     }
 
@@ -109,7 +133,7 @@ class StampPageTest extends DuskTestCase
     public function test_stamp_page_buttons_before_work(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
-            $browser->visit('/');
+            $browser->visitRoute('stamp');
             $browser->assertButtonEnabled('勤務開始');
             $browser->assertButtonDisabled('勤務終了');
             $browser->assertButtonDisabled('休憩開始');
@@ -118,61 +142,93 @@ class StampPageTest extends DuskTestCase
     }
 
     /**
-     * @testdox [打刻ページ] [勤務中] ボタンの有効化・無効化
+     * @testdox [打刻ページ] [勤務中] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
     public function test_stamp_page_buttons_during_work(): void
     {
-        $begunAt = CarbonImmutable::now(new DateTimeZone('Asia/Tokyo'));
-        ShiftBegin::create(['user_id' => $this->user->id, 'begun_at' => $begunAt]);
-        $this->travelTo($begunAt->addHour(), function () {
-            $this->browseAfterLogin(function (Browser $browser) {
-                $browser->visit('/');
-                $browser->assertButtonDisabled('勤務開始');
-                $browser->assertButtonEnabled('勤務終了');
-                $browser->assertButtonEnabled('休憩開始');
-                $browser->assertButtonDisabled('休憩終了');
-            });
+        $this->browseAfterLogin(function (Browser $browser) {
+            $browser->visitRoute('stamp');
+            $browser->press('勤務開始');
+            $browser->assertRouteIs('stamp');
+            $browser->assertButtonDisabled('勤務開始');
+            $browser->assertButtonEnabled('勤務終了');
+            $browser->assertButtonEnabled('休憩開始');
+            $browser->assertButtonDisabled('休憩終了');
         });
     }
 
     /**
-     * @testdox [打刻ページ] [勤務後] ボタンの有効化・無効化
+     * @testdox [打刻ページ] [勤務後] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
     public function test_stamp_page_buttons_after_work(): void
     {
-        $begunAt = CarbonImmutable::now(new DateTimeZone('Asia/Tokyo'));
-        $endedAt = $begunAt->addHours(8);
-        ShiftTiming::create(['user_id' => $this->user->id, 'begun_at' => $begunAt, 'ended_at' => $endedAt]);
-        $this->travelTo($endedAt->addHour(), function () {
-            $this->browseAfterLogin(function (Browser $browser) {
-                $browser->visit('/');
-                $browser->assertButtonEnabled('勤務開始');
-                $browser->assertButtonDisabled('勤務終了');
-                $browser->assertButtonDisabled('休憩開始');
-                $browser->assertButtonDisabled('休憩終了');
-            });
+        $this->browseAfterLogin(function (Browser $browser) {
+            $browser->visitRoute('stamp');
+            $browser->press('勤務開始');
+            $browser->press('勤務終了');
+            $browser->assertRouteIs('stamp');
+            $browser->assertButtonEnabled('勤務開始');
+            $browser->assertButtonDisabled('勤務終了');
+            $browser->assertButtonDisabled('休憩開始');
+            $browser->assertButtonDisabled('休憩終了');
         });
     }
 
     /**
-     * @testdox [打刻ページ] [休憩中] ボタンの有効化・無効化
+     * @testdox [打刻ページ] [勤務再開後] ボタン押下時の遷移と有効化・無効化
+     * @group stamp
+     */
+    public function test_stamp_page_buttons_during_work_again(): void
+    {
+        $this->browseAfterLogin(function (Browser $browser) {
+            $browser->visitRoute('stamp');
+            $browser->press('勤務開始');
+            $browser->press('勤務終了');
+            $browser->press('勤務開始');
+            $browser->assertRouteIs('stamp');
+            $browser->assertButtonDisabled('勤務開始');
+            $browser->assertButtonEnabled('勤務終了');
+            $browser->assertButtonEnabled('休憩開始');
+            $browser->assertButtonDisabled('休憩終了');
+        });
+    }
+
+    /**
+     * @testdox [打刻ページ] [休憩中] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
     public function test_stamp_page_buttons_during_break(): void
     {
-        $begunAt = CarbonImmutable::now(new DateTimeZone('Asia/Tokyo'));
-        ShiftBegin::create(['user_id' => $this->user->id, 'begun_at' => $begunAt]);
-        BreakBegin::create(['user_id' => $this->user->id, 'begun_at' => $begunAt->addHours(3)]);
-        $this->travelTo($begunAt->addHours(4), function () {
-            $this->browseAfterLogin(function (Browser $browser) {
-                $browser->visit('/');
-                $browser->assertButtonDisabled('勤務開始');
-                $browser->assertButtonDisabled('勤務終了');
-                $browser->assertButtonDisabled('休憩開始');
-                $browser->assertButtonEnabled('休憩終了');
-            });
+        $this->browseAfterLogin(function (Browser $browser) {
+            $browser->visitRoute('stamp');
+            $browser->press('勤務開始');
+            $browser->press('休憩開始');
+            $browser->assertRouteIs('stamp');
+            $browser->assertButtonDisabled('勤務開始');
+            $browser->assertButtonDisabled('勤務終了');
+            $browser->assertButtonDisabled('休憩開始');
+            $browser->assertButtonEnabled('休憩終了');
+        });
+    }
+
+    /**
+     * @testdox [打刻ページ] [休憩後] ボタン押下時の遷移と有効化・無効化
+     * @group stamp
+     */
+    public function test_stamp_page_buttons_after_break(): void
+    {
+        $this->browseAfterLogin(function (Browser $browser) {
+            $browser->visitRoute('stamp');
+            $browser->press('勤務開始');
+            $browser->press('休憩開始');
+            $browser->press('休憩終了');
+            $browser->assertRouteIs('stamp');
+            $browser->assertButtonDisabled('勤務開始');
+            $browser->assertButtonEnabled('勤務終了');
+            $browser->assertButtonEnabled('休憩開始');
+            $browser->assertButtonDisabled('休憩終了');
         });
     }
 }
