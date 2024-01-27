@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  phpunit:
+  tests:
     runs-on: ubuntu-latest
 
     name: PHPUnit (PHP:8.3, Laravel:10)
@@ -52,10 +52,10 @@ jobs:
       - name: Execute tests
         run: php artisan test
 
-  dusk:
+  stub-tests:
     runs-on: ubuntu-latest
 
-    name: Dusk (PHP:8.3, Laravel:10)
+    name: Stub Tests (PHP:8.3, Laravel:10)
 
     services:
       mysql:
