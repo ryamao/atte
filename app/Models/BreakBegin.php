@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/** 休憩開始イベントを表すモデル */
 class BreakBegin extends Model
 {
     use HasFactory;

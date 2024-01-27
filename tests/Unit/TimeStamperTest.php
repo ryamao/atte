@@ -59,7 +59,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 日付を跨いで2回 TimeStamper::beginShift を実行すると、前日の記録を勤務終了して当日の記録を開始する
+     * @testdox 日付を跨いで TimeStamper::beginShift を実行すると、前日の記録を勤務終了して当日の記録を開始する
      * @group stamp
      */
     public function test_beginShift_with_previous_data(): void

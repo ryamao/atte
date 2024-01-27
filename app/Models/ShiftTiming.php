@@ -9,6 +9,7 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/** 確定済みの勤務時間を表すモデル */
 class ShiftTiming extends Model
 {
     use HasFactory;

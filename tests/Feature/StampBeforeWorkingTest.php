@@ -14,6 +14,19 @@ use Illuminate\Support\Facades\Hash;
 class StampBeforeWorkingTest extends StampTestCase
 {
     /**
+     * @testdox [GET stamp] [認証状態] [勤務前]
+     * @group stamp
+     */
+    public function test_get_stamp_from_auth_user_before_working(): void
+    {
+        $this->actingAs($this->loginUser)->get(route('stamp'));
+        $this->assertShiftBegins([]);
+        $this->assertShiftTimings([]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([]);
+    }
+
+    /**
      * @testdox [POST shift-begin] [認証状態] [勤務前]
      * @group stamp
      */

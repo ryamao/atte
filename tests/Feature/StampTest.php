@@ -10,7 +10,7 @@ class StampTest extends StampTestCase
      * @testdox [GET stamp] [未認証状態] route(stamp) へリダイレクトする
      * @group stamp
      */
-    public function test_get_index_from_guest_redirects_to_login_page(): void
+    public function test_get_stamp_from_guest_redirects_to_login_page(): void
     {
         $this->assertGuest();
         $response = $this->get(route('stamp'));
@@ -21,7 +21,7 @@ class StampTest extends StampTestCase
      * @testdox [GET stamp] [認証状態] ステータスコード200を返す
      * @group stamp
      */
-    public function test_get_index_from_auth_user_returns_status_code_200(): void
+    public function test_get_stamp_from_auth_user_returns_status_code_200(): void
     {
         $response = $this->actingAs($this->loginUser)->get(route('stamp'));
         $response->assertStatus(200);

@@ -27,6 +27,19 @@ class StampAfterWorkingTest extends StampTestCase
     }
 
     /**
+     * @testdox [GET stamp] [認証状態] [勤務後]
+     * @group stamp
+     */
+    public function test_get_stamp_from_auth_user_after_working(): void
+    {
+        $this->travelTo($this->testBegunAt->addHours(24), fn () => $this->actingAs($this->loginUser)->get(route('stamp')));
+        $this->assertShiftBegins([]);
+        $this->assertShiftTimings([$this->shiftTiming]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([]);
+    }
+
+    /**
      * @testdox [POST shift-begin] [認証状態] [勤務後]
      * @group stamp
      */

@@ -6,6 +6,7 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/** 確定済みの休憩時間を表すモデル */
 class BreakTiming extends Model
 {
     use HasFactory;

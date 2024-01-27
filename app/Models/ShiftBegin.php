@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/** 勤務開始イベントを表すモデル */
 class ShiftBegin extends Model
 {
     use HasFactory;

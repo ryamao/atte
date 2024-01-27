@@ -26,6 +26,32 @@ class StampWhileAtWorkTest extends StampTestCase
     }
 
     /**
+     * @testdox [GET stamp] [認証状態] [勤務中]
+     * @group stamp
+     */
+    public function test_get_stamp_from_auth_user_while_at_work(): void
+    {
+        $this->travelTo($this->testBegunAt->addHours(6), fn () => $this->actingAs($this->loginUser)->get(route('stamp')));
+        $this->assertShiftBegins([$this->shiftBegin]);
+        $this->assertShiftTimings([]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([]);
+    }
+
+    /**
+     * @testdox [GET stamp] [認証状態] [勤務中] 日付を跨いだ場合
+     * @group stamp
+     */
+    public function test_get_stamp_from_auth_user_while_at_work_with_previous_data(): void
+    {
+        $this->travelTo($this->testBegunAt->addHours(24), fn () => $this->actingAs($this->loginUser)->get(route('stamp')));
+        $this->assertShiftBegins([]);
+        $this->assertShiftTimings([[$this->shiftBegin->user_id, $this->shiftBegin->begun_at, null]]);
+        $this->assertBreakBegins([]);
+        $this->assertBreakTimings([]);
+    }
+
+    /**
      * @testdox [POST shift-begin] [認証状態] [勤務中]
      * @group stamp
      */
