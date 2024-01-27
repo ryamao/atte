@@ -27,7 +27,7 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_has_text(string $selector, string $expected): void
     {
         $this->browse(function (Browser $browser) use ($selector, $expected) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $text = $browser->text($selector);
             $this->assertEquals($expected, $text);
         });
@@ -45,7 +45,7 @@ class RegisterPageTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) use ($field) {
             $value = $field . '_test';
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->assertInputValue($field, '');
             $browser->type($field, $value);
             $browser->assertInputValue($field, $value);
@@ -63,7 +63,7 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_has_placeholder_in_input_field(string $field, string $placeholder): void
     {
         $this->browse(function (Browser $browser) use ($field, $placeholder) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->assertAttribute("input[name=\"{$field}\"", 'placeholder', $placeholder);
         });
     }
@@ -75,7 +75,7 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_displays_submit_button(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->assertSeeIn('button[type="submit"]', '会員登録');
         });
     }
@@ -87,9 +87,9 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_can_redirect_to_register_page_if_submit_button_is_pressed_and_validation_fails(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->press('会員登録');
-            $browser->assertPathIs('/register');
+            $browser->assertRouteIs('register');
         });
     }
 
@@ -100,13 +100,13 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_can_redirect_to_stamping_page_if_submit_button_is_pressed_and_validation_succeeds(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->type('name', 'a');
             $browser->type('email', 'test@example.com');
             $browser->type('password', 'password');
             $browser->type('password_confirmation', 'password');
             $browser->press('会員登録');
-            $browser->assertPathIs('/');
+            $browser->assertRouteIs('stamp');
         });
     }
 
@@ -117,7 +117,7 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_has_link_named_login(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->assertSeeLink('ログイン');
         });
     }
@@ -129,9 +129,9 @@ class RegisterPageTest extends DuskTestCase
     public function test_register_page_links_to_login_page(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->clickLink('ログイン');
-            $browser->assertPathIs('/login');
+            $browser->assertRouteIs('login');
         });
     }
 
@@ -145,7 +145,7 @@ class RegisterPageTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($field, $value, $alert) {
             $selector = "@{$field}-alert";
 
-            $browser->visit('/register');
+            $browser->visitRoute('register');
 
             $browser->type($field, $value);
             if ($field === 'password') {
@@ -204,7 +204,7 @@ class RegisterPageTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register');
+            $browser->visitRoute('register');
             $browser->type('name', 'b');
             $browser->type('email', 'test@example.com');
             $browser->type('password', 'password2');

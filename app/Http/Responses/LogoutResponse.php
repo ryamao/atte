@@ -6,6 +6,7 @@ namespace App\Http\Responses;
 
 use Laravel\Fortify\Contracts\LogoutResponse as ContractsLogoutResponse;
 
+/** 認証解除後のレスポンス。リダイレクト先を /login にするために実装。 */
 class LogoutResponse implements ContractsLogoutResponse
 {
     /**
@@ -16,6 +17,6 @@ class LogoutResponse implements ContractsLogoutResponse
      */
     public function toResponse($request)
     {
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

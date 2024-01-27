@@ -1,5 +1,3 @@
-@props(['subtitle'])
-
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -29,10 +27,6 @@
         @endif
     </header>
     <main>
-        @isset($subtitle)
-        <h2>{{ $subtitle }}</h2>
-        @endisset
-
         {{ $slot }}
     </main>
     <footer>

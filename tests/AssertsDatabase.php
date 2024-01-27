@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
 use Illuminate\Database\Eloquent\Model;
 
+/** データベースの内容のテストを簡単にするためのトレイト */
 trait AssertsDatabase
 {
     /** データベースの内容をアサーションする */

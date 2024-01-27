@@ -1,7 +1,7 @@
 <x-app-layout>
-    <x-slot name="subtitle">ログイン</x-slot>
+    <h2>ログイン</h2>
 
-    <form action="/login" method="post" novalidate>
+    <form action="{{ route('login') }}" method="post" novalidate>
         @csrf
         <input type="email" name="email" placeholder="メールアドレス" />
         @error('email')
@@ -13,6 +13,6 @@
         @enderror
         <button type="submit">ログイン</button>
         <p dusk="info-text">アカウントをお持ちでない方はこちらから</p>
-        <a href="/register">会員登録</a>
+        <a href="{{ route('register') }}">会員登録</a>
     </form>
 </x-app-layout>
