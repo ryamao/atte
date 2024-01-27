@@ -12,9 +12,27 @@
 <body>
     <header>
         <h1>Atte</h1>
+
+        @if (Auth::check())
+        <nav>
+            <ul>
+                <li><a href="{{ route('stamp') }}">ホーム</a></li>
+                <li><a href="{{ route('attendance') }}">日付一覧</a></li>
+                <li>
+                    <form action="{{ route('logout') }}" method="post">
+                        @csrf
+                        <button dusk="logout">ログアウト</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+        @endif
     </header>
     <main>
+        @isset($subtitle)
         <h2>{{ $subtitle }}</h2>
+        @endisset
+
         {{ $slot }}
     </main>
     <footer>

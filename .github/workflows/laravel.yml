@@ -85,7 +85,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    name: Stub Tests (PHP:8.3, Laravel:10)
+    name: Dusk (PHP:8.3, Laravel:10)
 
     services:
       mysql:
@@ -127,9 +127,6 @@ jobs:
 
       - name: Migration
         run: php artisan migrate
-
-      - name: Install Dusk
-        run: php artisan dusk:install
 
       - name: Update Chrome Driver
         run: php artisan dusk:chrome-driver --detect
