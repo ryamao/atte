@@ -7,31 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-
-      - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-
-      - name: Save Vendor Directory
-        uses: actions/cache/save@v4
-        with:
-          enableCrossOsArchive: true
-          path: ./vendor
-          key: ${{ runner.os }}-composer-${{ github.sha }}
-
   tests:
-    needs: build
-
     runs-on: ubuntu-latest
 
     name: PHPUnit (PHP:8.3, Laravel:10)
@@ -61,15 +37,11 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Restore Vendor Diretory
-        uses: actions/cache/restore@v4
-        with:
-          enableCrossOsArchive: true
-          path: ./vendor
-          key: ${{ runner.os }}-composer-${{ github.sha }}
-
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Generate Key
         run: php artisan key:generate
@@ -81,8 +53,6 @@ jobs:
         run: php artisan test
 
   stub-tests:
-    needs: build
-
     runs-on: ubuntu-latest
 
     name: Stub Tests (PHP:8.3, Laravel:10)
@@ -112,15 +82,11 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Restore Vendor Diretory
-        uses: actions/cache/restore@v4
-        with:
-          enableCrossOsArchive: true
-          path: ./vendor
-          key: ${{ runner.os }}-composer-${{ github.sha }}
-
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Generate Key
         run: php artisan key:generate
