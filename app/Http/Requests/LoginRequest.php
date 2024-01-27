@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 
 use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 
+/** ログインページのフォームリクエスト。エラーメッセージを変更するために実装。 */
 class LoginRequest extends FortifyLoginRequest
 {
     /**
@@ -16,6 +17,7 @@ class LoginRequest extends FortifyLoginRequest
         return true;
     }
 
+    /** ログインページのバリデーションエラーメッセージ */
     public function messages(): array
     {
         return [
