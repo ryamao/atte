@@ -18,13 +18,13 @@ class TimeStamperTest extends TestCase
     use RefreshDatabase;
     use AssertsDatabase;
 
-    /** テスト中の認証に使用するユーザ。 */
+    /** 打刻を行うユーザ。 */
     protected array $users;
 
     /** この日時を基準にして相対時刻でテストする。 */
     protected CarbonImmutable $testBegunAt;
 
-    /** 認証ユーザと基準時刻を用意する。 */
+    /** ユーザと基準時刻を用意する。 */
     protected function setUp(): void
     {
         parent::setUp();

@@ -11,15 +11,22 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use App\WorkStatus;
 
 /** 打刻ページと打刻機能のコントローラ */
 class StampController extends Controller
 {
     /** 打刻ページを表示する。 */
-    public function index(): View
+    public function index(DateTimeZone $timezone): View
     {
         $this->stamper()->handlePreviousEvents();
-        return view('stamp', ['userName' => Auth::user()->name]);
+
+        $user = Auth::user();
+        $now = CarbonImmutable::now($timezone);
+        return view('stamp', [
+            'userName' => $user->name,
+            'workStatus' => WorkStatus::ask($user, $now),
+        ]);
     }
 
     /** 勤務開始処理を行う。 */
