@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use Carbon\CarbonImmutable;
+use Carbon\CarbonImmutable as DT;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,12 +18,14 @@ class ShiftTimingFactory extends Factory
      */
     public function definition(): array
     {
-        $now = CarbonImmutable::now();
-        $shiftSeconds = 9 * 60 * 60 + $this->faker->numberBetween(0, 1 * 60 * 60);
+        $today = DT::today('Asia/Tokyo');
+        $begin = DT::make($this->faker->dateTimeInInterval($today->hour(9), '+2 hours'));
         return [
             'user_id' => User::factory(),
-            'begun_at' => $now,
-            'ended_at' => $now->addSeconds($shiftSeconds),
+            'begun_at' => $begin,
+            'ended_at' => $this->faker->boolean(90)
+                ? DT::make($this->faker->dateTimeInInterval($begin->addHours(9), '+2 hours'))
+                : null,
         ];
     }
 }

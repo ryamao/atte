@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use Carbon\CarbonImmutable;
+use Carbon\CarbonImmutable as DT;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,10 +18,10 @@ class BreakBeginFactory extends Factory
      */
     public function definition(): array
     {
-        $now = CarbonImmutable::now();
+        $today = DT::today('Asia/Tokyo');
         return [
             'user_id' => User::factory(),
-            'begun_at' => $now->subSeconds($this->faker->numberBetween(0, 10 * 60)),
+            'begun_at' => DT::make($this->faker->dateTimeInInterval($today->hour(10), '+6 hours')),
         ];
     }
 }

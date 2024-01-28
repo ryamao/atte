@@ -38,12 +38,15 @@ class AttendanceService
             $shiftEndedAt = CarbonImmutable::parse($record['ended_at'], $timezone);
         }
 
+        $breakSeconds = $record['break_seconds'] ? (int) $record['break_seconds'] : null;
+        $workSeconds = $record['work_seconds'] ? (int) $record['work_seconds'] : null;
+
         return [
             'userName' => $record->user->name,
             'shiftBegunAt' => $shiftBegunAt,
             'shiftEndedAt' => $shiftEndedAt,
-            'breakSeconds' => (int) $record['break_seconds'],
-            'workSeconds' => (int) $record['work_seconds'],
+            'breakSeconds' => $breakSeconds,
+            'workSeconds' => $workSeconds,
         ];
     }
 
@@ -89,7 +92,14 @@ class AttendanceService
     private function getBreakSeconds(): Builder
     {
         return BreakTiming
-            ::selectRaw('user_id, SUM(TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at)) AS break_seconds')
+            ::selectRaw(<<<SQL
+                    user_id,
+                    CASE
+                        WHEN COUNT(*) = COUNT(ended_at)
+                        THEN SUM(TIMESTAMPDIFF(SECOND, begun_at, ended_at))
+                        ELSE NULL
+                    END AS break_seconds
+                SQL)
             ->whereDate('begun_at', $this->serviceDate)
             ->groupBy('user_id');
     }
@@ -105,7 +115,7 @@ class AttendanceService
                 'shift_timings.user_id',
                 'shift_timings.begun_at',
                 'shift_timings.ended_at',
-                DB::raw('TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at) - break_timings.break_seconds AS work_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, begun_at, ended_at) - break_timings.break_seconds AS work_seconds'),
                 'break_timings.break_seconds',
             ])
             ->whereDate('begun_at', $this->serviceDate)
@@ -127,7 +137,7 @@ class AttendanceService
                 'shift_timings.user_id',
                 'shift_timings.begun_at',
                 'shift_timings.ended_at',
-                DB::raw('TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at) AS work_seconds'),
+                DB::raw('TIMESTAMPDIFF(SECOND, begun_at, ended_at) AS work_seconds'),
                 DB::raw('0 AS break_seconds'),
             ])
             ->whereNotIn('shift_timings.user_id', $havingBreaks->pluck('user_id'))

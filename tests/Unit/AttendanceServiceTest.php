@@ -18,7 +18,7 @@ class AttendanceServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** テスト開始時の日付 */
+    /** テスト実行時に固定する日付 */
     private CarbonImmutable $testDate;
 
     protected function setUp(): void
@@ -26,6 +26,7 @@ class AttendanceServiceTest extends TestCase
         parent::setUp();
 
         $this->testDate = CarbonImmutable::create(2024, 1, 23, 9, 0, 0, 'Asia/Tokyo');
+        CarbonImmutable::setTestNow($this->testDate);
     }
 
     /** 勤務情報をアサーションする */
@@ -42,23 +43,19 @@ class AttendanceServiceTest extends TestCase
      */
     public function test_getAttendance(): void
     {
-        $expectedData = User::factory(6)->create()->map(function (User $user) {
-            $shiftTiming = $this->travelTo($this->testDate, fn () => ShiftTiming::factory()->recycle($user)->create());
-
-            $breakSeconds = 0;
-            foreach (range(1, 3) as $i) {
-                $breakBegunAt = $shiftTiming->begun_at->addHours(2 * $i)->addSeconds(fake()->numberBetween(0, 30 * 60));
-                $breakTiming = $this->travelTo($breakBegunAt, fn () => BreakTiming::factory()->recycle($user)->create());
-                $breakSeconds += $breakTiming->ended_at->diffInSeconds($breakTiming->begun_at);
-            }
-
-            $workSeconds = $shiftTiming->ended_at->diffInSeconds($shiftTiming->begun_at) - $breakSeconds;
+        $expectedData = User::factory(100)->create()->map(function (User $user) {
+            $shiftTiming = ShiftTiming::factory()->recycle($user)->create();
+            $breakTimings = BreakTiming::factory()->count(3)->recycle($user)->create();
+            $breakSeconds = $breakTimings->every(fn ($bt) => $bt->ended_at !== null)
+                ? $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->ended_at->diffInSeconds($breakTiming->begun_at))
+                : null;
+            $shiftSeconds = $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at);
 
             return [
                 'userName' => $user->name,
                 'shiftBegunAt' => $shiftTiming->begun_at,
                 'shiftEndedAt' => $shiftTiming->ended_at,
-                'workSeconds' => $workSeconds,
+                'workSeconds' => $shiftSeconds && $breakSeconds ? $shiftSeconds - $breakSeconds : null,
                 'breakSeconds' => $breakSeconds,
             ];
         });
@@ -79,7 +76,7 @@ class AttendanceServiceTest extends TestCase
      */
     public function test_getAttendance_with_no_break(): void
     {
-        $shiftTiming = $this->travelTo($this->testDate, fn () => ShiftTiming::factory()->create());
+        $shiftTiming = ShiftTiming::factory()->create();
 
         $service = new AttendanceService($this->testDate);
         $attendances = $service->getAttendances();
@@ -90,7 +87,7 @@ class AttendanceServiceTest extends TestCase
                 'userName' => $shiftTiming->user->name,
                 'shiftBegunAt' => $shiftTiming->begun_at,
                 'shiftEndedAt' => $shiftTiming->ended_at,
-                'workSeconds' => $shiftTiming->ended_at->diffInSeconds($shiftTiming->begun_at),
+                'workSeconds' => $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at),
                 'breakSeconds' => 0,
             ],
             $attendances->first(),
@@ -103,7 +100,7 @@ class AttendanceServiceTest extends TestCase
      */
     public function test_getAttendance_with_unended_shift(): void
     {
-        $shiftTiming = $this->travelTo($this->testDate->addHours(10), fn () => ShiftTiming::factory()->create(['ended_at' => null]));
+        $shiftTiming = ShiftTiming::factory()->create(['ended_at' => null]);
 
         $service = new AttendanceService($this->testDate);
         $attendances = $service->getAttendances();
@@ -128,8 +125,8 @@ class AttendanceServiceTest extends TestCase
     public function test_getAttendance_with_unended_break(): void
     {
         $user = User::factory()->create();
-        $shiftTiming = $this->travelTo($this->testDate, fn () => ShiftTiming::factory()->recycle($user)->create(['ended_at' => null]));
-        $this->travelTo($shiftTiming->begun_at->addHours(4), fn () => BreakTiming::factory()->recycle($user)->create(['ended_at' => null]));
+        $shiftTiming = ShiftTiming::factory()->recycle($user)->create(['ended_at' => null]);
+        BreakTiming::factory()->recycle($user)->create(['ended_at' => null]);
 
         $service = new AttendanceService($this->testDate);
         $attendances = $service->getAttendances();
@@ -153,7 +150,7 @@ class AttendanceServiceTest extends TestCase
      */
     public function test_getAttendance_with_working_user(): void
     {
-        $shiftBegin = $this->travelTo($this->testDate, fn () => ShiftBegin::factory()->create());
+        $shiftBegin = ShiftBegin::factory()->create();
 
         $service = new AttendanceService($this->testDate);
         $attendances = $service->getAttendances();
@@ -178,8 +175,8 @@ class AttendanceServiceTest extends TestCase
     public function test_getAttendance_with_breaking_user(): void
     {
         $user = User::factory()->create();
-        $shiftBegin = $this->travelTo($this->testDate, fn () => ShiftBegin::factory()->recycle($user)->create());
-        $this->travelTo($this->testDate->addHours(4), fn () => BreakBegin::factory()->create());
+        $shiftBegin = ShiftBegin::factory()->recycle($user)->create();
+        BreakBegin::factory()->create();
 
         $service = new AttendanceService($this->testDate);
         $attendances = $service->getAttendances();
