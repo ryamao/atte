@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** 確定済みの勤務時間を表すモデル */
 class ShiftTiming extends Model
@@ -45,5 +46,11 @@ class ShiftTiming extends Model
         $begunAt = $shiftTiming->begun_at;
         $shiftTiming->delete();
         return CarbonImmutable::parse($begunAt, $today->getTimezone());
+    }
+
+    /** 打刻を行った会員を取得する。 */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
