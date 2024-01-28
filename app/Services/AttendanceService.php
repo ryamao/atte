@@ -8,6 +8,7 @@ use App\Models\BreakTiming;
 use App\Models\ShiftBegin;
 use App\Models\ShiftTiming;
 use Carbon\CarbonImmutable;
+use DateTimeZone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,43 @@ use Illuminate\Support\Facades\DB;
 /** 日付別の勤怠情報を取得するサービス */
 class AttendanceService
 {
-    public function __construct(private readonly \DateTimeInterface $today)
+    /**
+     * データベースから取得した勤怠情報を表示しやすい処理に変換する
+     *
+     * @param ShiftTiming $record  データベースから取得した勤怠情報
+     * @param DateTimeZone $timezone  データベースへの保存時と同じタイムゾーン
+     * @return array{
+     *      userName: string,
+     *      shiftBegunAt: CarbonImmutable,
+     *      shiftEndedAt: CarbonImmutable|null,
+     *      breakSeconds: int|null,
+     *      workSeconds: int|null
+     *  }
+     */
+    public static function mapAttendance(ShiftTiming $record, DateTimeZone $timezone): array
+    {
+        $shiftBegunAt = CarbonImmutable::parse($record['begun_at'], $timezone);
+
+        $shiftEndedAt = null;
+        if ($record['ended_at'] !== null) {
+            $shiftEndedAt = CarbonImmutable::parse($record['ended_at'], $timezone);
+        }
+
+        return [
+            'userName' => $record->user->name,
+            'shiftBegunAt' => $shiftBegunAt,
+            'shiftEndedAt' => $shiftEndedAt,
+            'breakSeconds' => (int) $record['break_seconds'],
+            'workSeconds' => (int) $record['work_seconds'],
+        ];
+    }
+
+    /**
+     * サービスを初期化する。
+     * 
+     * @param \DateTimeInterface $serviceDate  勤怠情報を取得する日付
+     */
+    public function __construct(private readonly \DateTimeInterface $serviceDate)
     {
         //
     }
@@ -27,60 +64,33 @@ class AttendanceService
      *      userName: string,
      *      shiftBegunAt: CarbonImmutable,
      *      shiftEndedAt: CarbonImmutable|null,
-     *      breakingSeconds: int|null,
-     *      workingSeconds: int|null
+     *      breakSeconds: int|null,
+     *      workSeconds: int|null
      *  }>
      */
     public function getAttendances(): Collection
     {
-        return $this->getBuilder()->get()->map(fn (ShiftTiming $record) => $this->mapAttendance($record));
+        return $this->getBuilder()->get()->map(
+            fn (ShiftTiming $record) => static::mapAttendance($record, $this->serviceDate->getTimezone())
+        );
     }
 
     /** 会員ごとの勤怠情報を取得する。 */
     public function getBuilder(): Builder
     {
-        $breakingSeconds = $this->getBreakingSeconds();
-        $havingBreaks = $this->getShiftTimingsHavingBreaks($breakingSeconds);
+        $breakSeconds = $this->getBreakSeconds();
+        $havingBreaks = $this->getShiftTimingsHavingBreaks($breakSeconds);
         $notHavingBreaks = $this->getShiftTimingsNotHavingBreaks($havingBreaks);
         $atWork = $this->getShiftTimingsAtWork();
         return $havingBreaks->union($notHavingBreaks)->union($atWork)->with('user');
     }
 
-    /**
-     * データベースから取得した勤怠情報を表示しやすい処理に変換する
-     *
-     * @return array{
-     *      userName: string,
-     *      shiftBegunAt: CarbonImmutable,
-     *      shiftEndedAt: CarbonImmutable|null,
-     *      breakingSeconds: int|null,
-     *      workingSeconds: int|null
-     *  }
-     */
-    public function mapAttendance(ShiftTiming $record): array
-    {
-        $shiftBegunAt = CarbonImmutable::parse($record['begun_at'], $this->today->getTimezone());
-
-        $shiftEndedAt = null;
-        if ($record['ended_at'] !== null) {
-            $shiftEndedAt = CarbonImmutable::parse($record['ended_at'], $this->today->getTimezone());
-        }
-
-        return [
-            'userName' => $record->user->name,
-            'shiftBegunAt' => $shiftBegunAt,
-            'shiftEndedAt' => $shiftEndedAt,
-            'breakingSeconds' => $record['breaking_seconds'],
-            'workingSeconds' => $record['working_seconds'],
-        ];
-    }
-
     /** 会員ごとの休憩時間の秒数を取得する */
-    private function getBreakingSeconds(): Builder
+    private function getBreakSeconds(): Builder
     {
         return BreakTiming
-            ::selectRaw('user_id, SUM(TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at)) AS breaking_seconds')
-            ->whereDate('begun_at', $this->today)
+            ::selectRaw('user_id, SUM(TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at)) AS break_seconds')
+            ->whereDate('begun_at', $this->serviceDate)
             ->groupBy('user_id');
     }
 
@@ -88,19 +98,19 @@ class AttendanceService
      * 会員ごとの勤怠情報を取得する。
      * その日に休憩を取ったことの会員のみを対象とする。
      */
-    private function getShiftTimingsHavingBreaks(Builder $breakingSeconds): Builder
+    private function getShiftTimingsHavingBreaks(Builder $breakSeconds): Builder
     {
         return ShiftTiming
             ::select([
                 'shift_timings.user_id',
                 'shift_timings.begun_at',
                 'shift_timings.ended_at',
-                DB::raw('TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at) - break_timings.breaking_seconds AS working_seconds'),
-                'break_timings.breaking_seconds',
+                DB::raw('TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at) - break_timings.break_seconds AS work_seconds'),
+                'break_timings.break_seconds',
             ])
-            ->whereDate('begun_at', $this->today)
+            ->whereDate('begun_at', $this->serviceDate)
             ->joinSub(
-                $breakingSeconds,
+                $breakSeconds,
                 'break_timings',
                 fn ($join) => $join->on('shift_timings.user_id', '=', 'break_timings.user_id')
             );
@@ -117,17 +127,17 @@ class AttendanceService
                 'shift_timings.user_id',
                 'shift_timings.begun_at',
                 'shift_timings.ended_at',
-                DB::raw('TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at) AS working_seconds'),
-                DB::raw('0 AS breaking_seconds'),
+                DB::raw('TIME_TO_SEC(ended_at) - TIME_TO_SEC(begun_at) AS work_seconds'),
+                DB::raw('0 AS break_seconds'),
             ])
             ->whereNotIn('shift_timings.user_id', $havingBreaks->pluck('user_id'))
-            ->whereDate('begun_at', $this->today);
+            ->whereDate('begun_at', $this->serviceDate);
     }
 
     /**
      * 勤務中の会員の勤怠情報を取得する。
-     * 休憩中の場合は breaking_seconds に null を設定する。
-     * 休憩中でなければ breaking_seconds に 0 を設定する。
+     * 休憩中の場合は break_seconds に null を設定する。
+     * 休憩中でなければ break_seconds に 0 を設定する。
      */
     private function getShiftTimingsAtWork(): Builder
     {
@@ -136,10 +146,10 @@ class AttendanceService
                 'shift_begins.user_id',
                 'shift_begins.begun_at',
                 DB::raw('NULL AS ended_at'),
-                DB::raw('NULL AS working_seconds'),
-                DB::raw('IF(break_begins.id IS NOT NULL, NULL, 0) AS breaking_seconds'),
+                DB::raw('NULL AS work_seconds'),
+                DB::raw('IF(break_begins.id IS NOT NULL, NULL, 0) AS break_seconds'),
             ])
-            ->whereDate('shift_begins.begun_at', $this->today)
+            ->whereDate('shift_begins.begun_at', $this->serviceDate)
             ->leftJoin('break_begins', 'shift_begins.user_id', '=', 'break_begins.user_id');
     }
 }
