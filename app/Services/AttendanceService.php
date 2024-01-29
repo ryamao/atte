@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\BreakTiming;
 use App\Models\ShiftBegin;
 use App\Models\ShiftTiming;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +31,21 @@ class AttendanceService
         $havingBreaks = $this->getShiftTimingsHavingBreaks($breakSeconds);
         $notHavingBreaks = $this->getShiftTimingsNotHavingBreaks($havingBreaks);
         $atWork = $this->getShiftTimingsAtWork();
-        return $havingBreaks->union($notHavingBreaks)->union($atWork)->with('user');
+        $attendances = $havingBreaks->union($notHavingBreaks)->union($atWork);
+        return User
+            ::select([
+                'users.name as user_name',
+                'shift_timings.shift_begun_at',
+                'shift_timings.shift_ended_at',
+                'shift_timings.work_seconds',
+                'shift_timings.break_seconds',
+            ])
+            ->joinSub(
+                $attendances,
+                'shift_timings',
+                fn ($join) => $join->on('users.id', '=', 'shift_timings.user_id')
+            )
+            ->orderBy('users.name');
     }
 
     /** 会員ごとの休憩時間の秒数を取得する */

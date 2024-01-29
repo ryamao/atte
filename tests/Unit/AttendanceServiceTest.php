@@ -65,12 +65,12 @@ class AttendanceServiceTest extends TestCase
     public function testAttendances(Factory $userFactory): void
     {
         $users = Collection::wrap($userFactory->create());
-        $expectedData = $users->map(function (User $user) {
+        $expectedData = $users->sortBy('name')->map(function (User $user) {
             $shiftBegin = $user->shiftBegin ?? $user->shiftTimings->first();
             $breakSeconds = $this->sumBreakSeconds($user);
             $workSeconds = $this->computeWorkSeconds($user, $breakSeconds);
             return [
-                'user_id' => $user->id,
+                'user_name' => $user->name,
                 'shift_begun_at' => $shiftBegin->begun_at,
                 'shift_ended_at' => $user->shiftTimings->first()?->ended_at,
                 'work_seconds' => is_null($workSeconds) ? null : strval($workSeconds),
