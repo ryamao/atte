@@ -53,7 +53,7 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<ShiftBegin>
+     * @return HasMany<ShiftTiming>
      */
     public function shiftTimings(): HasMany
     {

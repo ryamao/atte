@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\BreakTiming;
-use App\Models\ShiftBegin;
-use App\Models\ShiftTiming;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 /** 日付別の勤怠情報を取得するサービス */
 class AttendanceService
@@ -24,108 +21,100 @@ class AttendanceService
         //
     }
 
-    /** 会員ごとの勤怠情報を取得する。 */
-    public function attendances(): Builder
+    /**
+     * 会員ごとに指定の日付の勤務時間を秒数で計算する。
+     * 休憩終了を打刻していない会員には休憩時間を null で設定する。
+     * 休憩中の会員には休憩時間を null で設定する。
+     * 休憩を取っていない会員には休憩時間を 0 で設定する。
+     */
+    public function breakSeconds(): Builder
     {
-        $breakSeconds = $this->getBreakSeconds();
-        $havingBreaks = $this->getShiftTimingsHavingBreaks($breakSeconds);
-        $notHavingBreaks = $this->getShiftTimingsNotHavingBreaks($havingBreaks);
-        $atWork = $this->getShiftTimingsAtWork();
-        $attendances = $havingBreaks->union($notHavingBreaks)->union($atWork);
-        return User
-            ::select([
-                'users.name as user_name',
-                'shift_timings.shift_begun_at',
-                'shift_timings.shift_ended_at',
-                'shift_timings.work_seconds',
-                'shift_timings.break_seconds',
-            ])
-            ->joinSub(
-                $attendances,
-                'shift_timings',
-                fn ($join) => $join->on('users.id', '=', 'shift_timings.user_id')
-            )
-            ->orderBy('users.name');
-    }
-
-    /** 会員ごとの休憩時間の秒数を取得する */
-    private function getBreakSeconds(): Builder
-    {
-        return BreakTiming
+        $breakTimings = BreakTiming
             ::selectRaw(<<<SQL
                     user_id,
                     CASE
-                        WHEN COUNT(*) = COUNT(ended_at) THEN SUM(TIMESTAMPDIFF(SECOND, begun_at, ended_at))
-                        ELSE NULL
+                        WHEN COUNT(*) = COUNT(ended_at) THEN
+                            SUM(TIMESTAMPDIFF(SECOND, begun_at, ended_at))
+                        ELSE
+                            NULL
                     END AS break_seconds
                 SQL)
             ->whereDate('begun_at', $this->serviceDate)
             ->groupBy('user_id');
-    }
 
-    /**
-     * 会員ごとの勤怠情報を取得する。
-     * その日に休憩を取ったことの会員のみを対象とする。
-     */
-    private function getShiftTimingsHavingBreaks(Builder $breakSeconds): Builder
-    {
-        return ShiftTiming
-            ::select([
-                'shift_timings.user_id',
-                'shift_timings.begun_at as shift_begun_at',
-                'shift_timings.ended_at as shift_ended_at',
-                DB::raw('TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at) - break_timings.break_seconds AS work_seconds'),
-                'break_timings.break_seconds',
-            ])
-            ->whereDate('shift_timings.begun_at', $this->serviceDate)
-            ->joinSub(
-                $breakSeconds,
+        return User
+            ::selectRaw(<<<SQL
+                    users.id as user_id,
+                    CASE
+                        WHEN break_begins.user_id IS NOT NULL THEN
+                            NULL
+                        WHEN break_timings.user_id IS NULL THEN
+                            0
+                        ELSE
+                            break_timings.break_seconds
+                    END AS break_seconds
+                SQL)
+            ->leftJoin('break_begins', 'users.id', '=', 'break_begins.user_id')
+            ->leftJoinSub(
+                $breakTimings,
                 'break_timings',
-                fn ($join) => $join->on('shift_timings.user_id', '=', 'break_timings.user_id')
+                fn ($join) => $join->on('users.id', '=', 'break_timings.user_id')
             );
     }
 
     /**
-     * 会員ごとの勤怠情報を取得する。
-     * その日に休憩を取っていない会員のみを対象とする。
+     * 会員ごとの勤務時間の秒数を取得する。
+     * 勤務中の会員には休憩時間を null で設定する。
+     * 指定の日付に勤務開始していない会員は結果に含めない。
      */
-    private function getShiftTimingsNotHavingBreaks(Builder $havingBreaks): Builder
+    public function shiftSeconds(): Builder
     {
-        return ShiftTiming
-            ::select([
-                'shift_timings.user_id',
-                'shift_timings.begun_at as shift_begun_at',
-                'shift_timings.ended_at as shift_ended_at',
-                DB::raw('TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at) AS work_seconds'),
-                DB::raw('0 AS break_seconds'),
-            ])
-            ->whereNotIn('shift_timings.user_id', $havingBreaks->pluck('user_id'))
-            ->whereDate('shift_timings.begun_at', $this->serviceDate);
+        return User
+            ::selectRaw(<<<SQL
+                    users.id as user_id,
+                    IFNULL(shift_begins.begun_at, shift_timings.begun_at) as begun_at,
+                    shift_timings.ended_at as ended_at,
+                    CASE
+                        WHEN shift_begins.id IS NOT NULL THEN
+                            NULL
+                        ELSE
+                            TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at)
+                    END AS shift_seconds
+                SQL)
+            ->leftJoin('shift_begins', 'users.id', '=', 'shift_begins.user_id')
+            ->leftJoin('shift_timings', 'users.id', '=', 'shift_timings.user_id')
+            ->whereDate('shift_timings.begun_at', $this->serviceDate)
+            ->orWhereDate('shift_begins.begun_at', $this->serviceDate);
     }
 
     /**
-     * 勤務中の会員の勤怠情報を取得する。
-     * 休憩中の場合は break_seconds に null を設定する。
-     * 休憩中でなければ break_seconds に 0 を設定する。
+     * 会員ごとの勤怠情報を取得する。
+     * 指定の日付に勤務開始していない会員は結果に含めない。
      */
-    private function getShiftTimingsAtWork(): Builder
+    public function attendances(): Builder
     {
-        return ShiftBegin
-            ::select([
-                'shift_begins.user_id',
-                'shift_begins.begun_at as shift_begun_at',
-                DB::raw('NULL AS shift_ended_at'),
-                DB::raw('NULL AS work_seconds'),
-                DB::raw(<<<SQL
+        return User
+            ::selectRaw(<<<SQL
+                    users.name as user_name,
+                    IFNULL(shift_begins.begun_at, shift_timings.begun_at) as shift_begun_at,
+                    shift_timings.ended_at as shift_ended_at,
                     CASE
-                        WHEN break_begins.id IS NOT NULL THEN NULL
-                        WHEN break_timings.id IS NOT NULL THEN TIMESTAMPDIFF(SECOND, break_timings.begun_at, break_timings.ended_at)
-                        ELSE 0
-                    END AS break_seconds
-                SQL),
-            ])
-            ->whereDate('shift_begins.begun_at', $this->serviceDate)
-            ->leftJoin('break_begins', 'shift_begins.user_id', '=', 'break_begins.user_id')
-            ->leftJoin('break_timings', 'shift_begins.user_id', '=', 'break_timings.user_id');
+                        WHEN shift_begins.id IS NOT NULL THEN
+                            NULL
+                        ELSE
+                            TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at) - break_seconds.break_seconds
+                    END AS work_seconds,
+                    break_seconds.break_seconds
+                SQL)
+            ->leftJoin('shift_begins', 'users.id', '=', 'shift_begins.user_id')
+            ->leftJoin('shift_timings', 'users.id', '=', 'shift_timings.user_id')
+            ->joinSub(
+                $this->breakSeconds(),
+                'break_seconds',
+                fn ($join) => $join->on('users.id', '=', 'break_seconds.user_id')
+            )
+            ->whereDate('shift_timings.begun_at', $this->serviceDate)
+            ->orWhereDate('shift_begins.begun_at', $this->serviceDate)
+            ->orderBy('users.name');
     }
 }
