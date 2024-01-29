@@ -30,10 +30,11 @@ class AttendanceServiceTest extends TestCase
     }
 
     /** 勤務情報をアサーションする */
-    private function assertAttendance(array $expected, array $actual): void
+    private function assertAttendance(array $expected, mixed $actual): void
     {
         foreach ($expected as $key => $value) {
-            $this->assertEquals($value, $actual[$key]);
+            $valueString = var_export($value, true);
+            $this->assertSame($value, $actual[$key], "Failed asserting that '$key' is $valueString.");
         }
     }
 
@@ -41,7 +42,7 @@ class AttendanceServiceTest extends TestCase
      * @testdox 勤怠情報の取得
      * @group attendance
      */
-    public function test_getAttendance(): void
+    public function test_getAttendance_normal(): void
     {
         $expectedData = User::factory(100)->create()->map(function (User $user) {
             $shiftTiming = ShiftTiming::factory()->recycle($user)->create();
@@ -52,16 +53,16 @@ class AttendanceServiceTest extends TestCase
             $shiftSeconds = $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at);
 
             return [
-                'userName' => $user->name,
-                'shiftBegunAt' => $shiftTiming->begun_at,
-                'shiftEndedAt' => $shiftTiming->ended_at,
-                'workSeconds' => $shiftSeconds && $breakSeconds ? $shiftSeconds - $breakSeconds : null,
-                'breakSeconds' => $breakSeconds,
+                'user_id' => $user->id,
+                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
+                'shift_ended_at' => $shiftTiming->ended_at?->toDateTimeString(),
+                'work_seconds' => $shiftSeconds && $breakSeconds ? strval($shiftSeconds - $breakSeconds) : null,
+                'break_seconds' => strval($breakSeconds),
             ];
         });
 
         $service = new AttendanceService($this->testDate);
-        $attendances = $service->getAttendances();
+        $attendances = $service->attendances()->get();
 
         $this->assertCount($expectedData->count(), $attendances);
 
@@ -79,16 +80,16 @@ class AttendanceServiceTest extends TestCase
         $shiftTiming = ShiftTiming::factory()->create();
 
         $service = new AttendanceService($this->testDate);
-        $attendances = $service->getAttendances();
+        $attendances = $service->attendances()->get();
 
         $this->assertCount(1, $attendances);
         $this->assertAttendance(
             [
-                'userName' => $shiftTiming->user->name,
-                'shiftBegunAt' => $shiftTiming->begun_at,
-                'shiftEndedAt' => $shiftTiming->ended_at,
-                'workSeconds' => $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at),
-                'breakSeconds' => 0,
+                'user_id' => $shiftTiming->user->id,
+                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
+                'shift_ended_at' => $shiftTiming->ended_at->toDateTimeString(),
+                'work_seconds' => (string) $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at),
+                'break_seconds' => '0',
             ],
             $attendances->first(),
         );
@@ -103,16 +104,16 @@ class AttendanceServiceTest extends TestCase
         $shiftTiming = ShiftTiming::factory()->create(['ended_at' => null]);
 
         $service = new AttendanceService($this->testDate);
-        $attendances = $service->getAttendances();
+        $attendances = $service->attendances()->get();
 
         $this->assertCount(1, $attendances);
         $this->assertAttendance(
             [
-                'userName' => $shiftTiming->user->name,
-                'shiftBegunAt' => $shiftTiming->begun_at,
-                'shiftEndedAt' => null,
-                'workSeconds' => null,
-                'breakSeconds' => 0,
+                'user_id' => $shiftTiming->user->id,
+                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
+                'shift_ended_at' => null,
+                'work_seconds' => null,
+                'break_seconds' => '0',
             ],
             $attendances->first(),
         );
@@ -129,16 +130,16 @@ class AttendanceServiceTest extends TestCase
         BreakTiming::factory()->recycle($user)->create(['ended_at' => null]);
 
         $service = new AttendanceService($this->testDate);
-        $attendances = $service->getAttendances();
+        $attendances = $service->attendances()->get();
 
         $this->assertCount(1, $attendances);
         $this->assertAttendance(
             [
-                'userName' => $user->name,
-                'shiftBegunAt' => $shiftTiming->begun_at,
-                'shiftEndedAt' => null,
-                'workSeconds' => null,
-                'breakSeconds' => null,
+                'user_id' => $user->id,
+                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
+                'shift_ended_at' => null,
+                'work_seconds' => null,
+                'break_seconds' => null,
             ],
             $attendances->first(),
         );
@@ -153,16 +154,16 @@ class AttendanceServiceTest extends TestCase
         $shiftBegin = ShiftBegin::factory()->create();
 
         $service = new AttendanceService($this->testDate);
-        $attendances = $service->getAttendances();
+        $attendances = $service->attendances()->get();
 
         $this->assertCount(1, $attendances);
         $this->assertAttendance(
             [
-                'userName' => $shiftBegin->user->name,
-                'shiftBegunAt' => $shiftBegin->begun_at,
-                'shiftEndedAt' => null,
-                'workSeconds' => null,
-                'breakSeconds' => 0,
+                'user_id' => $shiftBegin->user->id,
+                'shift_begun_at' => $shiftBegin->begun_at->toDateTimeString(),
+                'shift_ended_at' => null,
+                'work_seconds' => null,
+                'break_seconds' => '0',
             ],
             $attendances->first(),
         );
@@ -176,19 +177,19 @@ class AttendanceServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $shiftBegin = ShiftBegin::factory()->recycle($user)->create();
-        BreakBegin::factory()->create();
+        BreakBegin::factory()->recycle($user)->create();
 
         $service = new AttendanceService($this->testDate);
-        $attendances = $service->getAttendances();
+        $attendances = $service->attendances()->get();
 
         $this->assertCount(1, $attendances);
         $this->assertAttendance(
             [
-                'userName' => $user->name,
-                'shiftBegunAt' => $shiftBegin->begun_at,
-                'shiftEndedAt' => null,
-                'workSeconds' => null,
-                'breakSeconds' => null,
+                'user_id' => $user->id,
+                'shift_begun_at' => $shiftBegin->begun_at->toDateTimeString(),
+                'shift_ended_at' => null,
+                'work_seconds' => null,
+                'break_seconds' => null,
             ],
             $attendances->first(),
         );

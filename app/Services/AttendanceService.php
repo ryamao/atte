@@ -7,49 +7,12 @@ namespace App\Services;
 use App\Models\BreakTiming;
 use App\Models\ShiftBegin;
 use App\Models\ShiftTiming;
-use Carbon\CarbonImmutable;
-use DateTimeZone;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /** 日付別の勤怠情報を取得するサービス */
 class AttendanceService
 {
-    /**
-     * データベースから取得した勤怠情報を表示しやすい処理に変換する
-     *
-     * @param ShiftTiming $record  データベースから取得した勤怠情報
-     * @param DateTimeZone $timezone  データベースへの保存時と同じタイムゾーン
-     * @return array{
-     *      userName: string,
-     *      shiftBegunAt: CarbonImmutable,
-     *      shiftEndedAt: CarbonImmutable|null,
-     *      breakSeconds: int|null,
-     *      workSeconds: int|null
-     *  }
-     */
-    public static function mapAttendance(ShiftTiming $record, DateTimeZone $timezone): array
-    {
-        $shiftBegunAt = CarbonImmutable::parse($record['begun_at'], $timezone);
-
-        $shiftEndedAt = null;
-        if ($record['ended_at'] !== null) {
-            $shiftEndedAt = CarbonImmutable::parse($record['ended_at'], $timezone);
-        }
-
-        $breakSeconds = $record['break_seconds'] ? (int) $record['break_seconds'] : null;
-        $workSeconds = $record['work_seconds'] ? (int) $record['work_seconds'] : null;
-
-        return [
-            'userName' => $record->user->name,
-            'shiftBegunAt' => $shiftBegunAt,
-            'shiftEndedAt' => $shiftEndedAt,
-            'breakSeconds' => $breakSeconds,
-            'workSeconds' => $workSeconds,
-        ];
-    }
-
     /**
      * サービスを初期化する。
      * 
@@ -60,26 +23,8 @@ class AttendanceService
         //
     }
 
-    /**
-     * 会員ごとの勤怠情報を取得する。
-     *
-     * @return Collection<array{
-     *      userName: string,
-     *      shiftBegunAt: CarbonImmutable,
-     *      shiftEndedAt: CarbonImmutable|null,
-     *      breakSeconds: int|null,
-     *      workSeconds: int|null
-     *  }>
-     */
-    public function getAttendances(): Collection
-    {
-        return $this->getBuilder()->get()->map(
-            fn (ShiftTiming $record) => static::mapAttendance($record, $this->serviceDate->getTimezone())
-        );
-    }
-
     /** 会員ごとの勤怠情報を取得する。 */
-    public function getBuilder(): Builder
+    public function attendances(): Builder
     {
         $breakSeconds = $this->getBreakSeconds();
         $havingBreaks = $this->getShiftTimingsHavingBreaks($breakSeconds);
@@ -113,12 +58,12 @@ class AttendanceService
         return ShiftTiming
             ::select([
                 'shift_timings.user_id',
-                'shift_timings.begun_at',
-                'shift_timings.ended_at',
-                DB::raw('TIMESTAMPDIFF(SECOND, begun_at, ended_at) - break_timings.break_seconds AS work_seconds'),
+                'shift_timings.begun_at as shift_begun_at',
+                'shift_timings.ended_at as shift_ended_at',
+                DB::raw('TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at) - break_timings.break_seconds AS work_seconds'),
                 'break_timings.break_seconds',
             ])
-            ->whereDate('begun_at', $this->serviceDate)
+            ->whereDate('shift_timings.begun_at', $this->serviceDate)
             ->joinSub(
                 $breakSeconds,
                 'break_timings',
@@ -135,13 +80,13 @@ class AttendanceService
         return ShiftTiming
             ::select([
                 'shift_timings.user_id',
-                'shift_timings.begun_at',
-                'shift_timings.ended_at',
-                DB::raw('TIMESTAMPDIFF(SECOND, begun_at, ended_at) AS work_seconds'),
+                'shift_timings.begun_at as shift_begun_at',
+                'shift_timings.ended_at as shift_ended_at',
+                DB::raw('TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at) AS work_seconds'),
                 DB::raw('0 AS break_seconds'),
             ])
             ->whereNotIn('shift_timings.user_id', $havingBreaks->pluck('user_id'))
-            ->whereDate('begun_at', $this->serviceDate);
+            ->whereDate('shift_timings.begun_at', $this->serviceDate);
     }
 
     /**
@@ -154,8 +99,8 @@ class AttendanceService
         return ShiftBegin
             ::select([
                 'shift_begins.user_id',
-                'shift_begins.begun_at',
-                DB::raw('NULL AS ended_at'),
+                'shift_begins.begun_at as shift_begun_at',
+                DB::raw('NULL AS shift_ended_at'),
                 DB::raw('NULL AS work_seconds'),
                 DB::raw('IF(break_begins.id IS NOT NULL, NULL, 0) AS break_seconds'),
             ])
