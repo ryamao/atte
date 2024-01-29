@@ -11,7 +11,9 @@ use App\Models\ShiftTiming;
 use App\Models\User;
 use App\Services\AttendanceService;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class AttendanceServiceTest extends TestCase
@@ -38,26 +40,41 @@ class AttendanceServiceTest extends TestCase
         }
     }
 
-    /**
-     * @testdox 勤怠情報の取得
-     * @group attendance
-     */
-    public function test_getAttendance_normal(): void
+    /** 休憩時間の合計を計算する。休憩中の場合は null を返す。 */
+    private function sumBreakSeconds(User $user): ?int
     {
-        $expectedData = User::factory(100)->create()->map(function (User $user) {
-            $shiftTiming = ShiftTiming::factory()->recycle($user)->create();
-            $breakTimings = BreakTiming::factory()->count(3)->recycle($user)->create();
-            $breakSeconds = $breakTimings->every(fn ($bt) => $bt->ended_at !== null)
-                ? $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->ended_at->diffInSeconds($breakTiming->begun_at))
-                : null;
-            $shiftSeconds = $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at);
+        if (isset($user->breakBegin)) return null;
+        if ($user->breakTimings->first(fn ($bt) => is_null($bt->ended_at))) return null;
+        return $user->breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
+    }
 
+    /** 労働時間を計算する。基本的には『勤務時間 - 休憩時間』だが、勤務中や休憩中、未終了の場合は null を返す。 */
+    private function computeWorkSeconds(User $user, ?int $breakSeconds): ?int
+    {
+        if (isset($user->shiftBegin)) return null;
+        if (is_null($breakSeconds)) return null;
+        $shiftSeconds = $user->shiftTimings->first()->timeInSeconds();
+        return is_null($shiftSeconds) ? null : $shiftSeconds - $breakSeconds;
+    }
+
+    /**
+     * @testdox 勤務情報の取得
+     * @group attendance
+     * @dataProvider provideAttendances
+     */
+    public function testAttendances(Factory $userFactory): void
+    {
+        $users = Collection::wrap($userFactory->create());
+        $expectedData = $users->map(function (User $user) {
+            $shiftBegin = $user->shiftBegin ?? $user->shiftTimings->first();
+            $breakSeconds = $this->sumBreakSeconds($user);
+            $workSeconds = $this->computeWorkSeconds($user, $breakSeconds);
             return [
                 'user_id' => $user->id,
-                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
-                'shift_ended_at' => $shiftTiming->ended_at?->toDateTimeString(),
-                'work_seconds' => $shiftSeconds && $breakSeconds ? strval($shiftSeconds - $breakSeconds) : null,
-                'break_seconds' => strval($breakSeconds),
+                'shift_begun_at' => $shiftBegin->begun_at,
+                'shift_ended_at' => $user->shiftTimings->first()?->ended_at,
+                'work_seconds' => is_null($workSeconds) ? null : strval($workSeconds),
+                'break_seconds' => is_null($breakSeconds) ? null : strval($breakSeconds),
             ];
         });
 
@@ -71,127 +88,58 @@ class AttendanceServiceTest extends TestCase
         }
     }
 
-    /**
-     * @testdox 休憩がない場合
-     * @group attendance
-     */
-    public function test_getAttendance_with_no_break(): void
+    /** @return array<string, array<Factory<User>>> */
+    public static function provideAttendances(): array
     {
-        $shiftTiming = ShiftTiming::factory()->create();
-
-        $service = new AttendanceService($this->testDate);
-        $attendances = $service->attendances()->get();
-
-        $this->assertCount(1, $attendances);
-        $this->assertAttendance(
-            [
-                'user_id' => $shiftTiming->user->id,
-                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
-                'shift_ended_at' => $shiftTiming->ended_at->toDateTimeString(),
-                'work_seconds' => (string) $shiftTiming->ended_at?->diffInSeconds($shiftTiming->begun_at),
-                'break_seconds' => '0',
+        return [
+            '会員1名 / 勤務後 / 休憩0回' => [
+                User::factory()
+                    ->has(ShiftTiming::factory()->count(1))
             ],
-            $attendances->first(),
-        );
-    }
-
-    /**
-     * @testdox 勤務終了していないユーザの場合
-     * @group attendance
-     */
-    public function test_getAttendance_with_unended_shift(): void
-    {
-        $shiftTiming = ShiftTiming::factory()->create(['ended_at' => null]);
-
-        $service = new AttendanceService($this->testDate);
-        $attendances = $service->attendances()->get();
-
-        $this->assertCount(1, $attendances);
-        $this->assertAttendance(
-            [
-                'user_id' => $shiftTiming->user->id,
-                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
-                'shift_ended_at' => null,
-                'work_seconds' => null,
-                'break_seconds' => '0',
+            '会員1名 / 勤務後 / 休憩1回' => [
+                User::factory()
+                    ->has(ShiftTiming::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(1))
             ],
-            $attendances->first(),
-        );
-    }
-
-    /**
-     * @testdox 休憩終了していないユーザの場合
-     * @group attendance
-     */
-    public function test_getAttendance_with_unended_break(): void
-    {
-        $user = User::factory()->create();
-        $shiftTiming = ShiftTiming::factory()->recycle($user)->create(['ended_at' => null]);
-        BreakTiming::factory()->recycle($user)->create(['ended_at' => null]);
-
-        $service = new AttendanceService($this->testDate);
-        $attendances = $service->attendances()->get();
-
-        $this->assertCount(1, $attendances);
-        $this->assertAttendance(
-            [
-                'user_id' => $user->id,
-                'shift_begun_at' => $shiftTiming->begun_at->toDateTimeString(),
-                'shift_ended_at' => null,
-                'work_seconds' => null,
-                'break_seconds' => null,
+            '会員1名 / 勤務後 / 休憩2回' => [
+                User::factory()
+                    ->has(ShiftTiming::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(2))
             ],
-            $attendances->first(),
-        );
-    }
-
-    /**
-     * @testdox 勤務中のユーザの場合
-     * @group attendance
-     */
-    public function test_getAttendance_with_working_user(): void
-    {
-        $shiftBegin = ShiftBegin::factory()->create();
-
-        $service = new AttendanceService($this->testDate);
-        $attendances = $service->attendances()->get();
-
-        $this->assertCount(1, $attendances);
-        $this->assertAttendance(
-            [
-                'user_id' => $shiftBegin->user->id,
-                'shift_begun_at' => $shiftBegin->begun_at->toDateTimeString(),
-                'shift_ended_at' => null,
-                'work_seconds' => null,
-                'break_seconds' => '0',
+            '会員1名 / 勤務後、未終了 / 休憩2回' => [
+                User::factory()
+                    ->has(ShiftTiming::factory()->count(1)->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->count(2))
             ],
-            $attendances->first(),
-        );
-    }
-
-    /**
-     * @testdox 休憩中のユーザの場合
-     * @group attendance
-     */
-    public function test_getAttendance_with_breaking_user(): void
-    {
-        $user = User::factory()->create();
-        $shiftBegin = ShiftBegin::factory()->recycle($user)->create();
-        BreakBegin::factory()->recycle($user)->create();
-
-        $service = new AttendanceService($this->testDate);
-        $attendances = $service->attendances()->get();
-
-        $this->assertCount(1, $attendances);
-        $this->assertAttendance(
-            [
-                'user_id' => $user->id,
-                'shift_begun_at' => $shiftBegin->begun_at->toDateTimeString(),
-                'shift_ended_at' => null,
-                'work_seconds' => null,
-                'break_seconds' => null,
+            '会員1名 / 勤務後、未終了 / 休憩2回、2回目未終了' => [
+                User::factory()
+                    ->has(ShiftTiming::factory()->count(1)->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(1)->state(['ended_at' => null]))
             ],
-            $attendances->first(),
-        );
+            '会員1名 / 勤務後 / 休憩2回、2回目未終了（異常系）' => [
+                User::factory()
+                    ->has(ShiftTiming::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(1)->state(['ended_at' => null]))
+            ],
+            '会員1名 / 勤務中 / 休憩1回' => [
+                User::factory()
+                    ->has(ShiftBegin::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(1))
+            ],
+            '会員1名 / 勤務中 / 休憩2回、2回目休憩中' => [
+                User::factory()
+                    ->has(ShiftBegin::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(1))
+                    ->has(BreakBegin::factory()->count(1))
+            ],
+            '会員2名 / 勤務後 / 休憩2回' => [
+                User::factory()
+                    ->count(2)
+                    ->has(ShiftTiming::factory()->count(1))
+                    ->has(BreakTiming::factory()->count(2))
+            ],
+        ];
     }
 }

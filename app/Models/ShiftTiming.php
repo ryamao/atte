@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\HasTimeInSeconds;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ShiftTiming extends Model
 {
     use HasFactory;
+    use HasTimeInSeconds;
 
     /** 一括割り当て可能な属性。 */
     protected $fillable = ['user_id', 'begun_at', 'ended_at'];

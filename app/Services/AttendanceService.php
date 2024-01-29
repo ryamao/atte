@@ -40,8 +40,7 @@ class AttendanceService
             ::selectRaw(<<<SQL
                     user_id,
                     CASE
-                        WHEN COUNT(*) = COUNT(ended_at)
-                        THEN SUM(TIMESTAMPDIFF(SECOND, begun_at, ended_at))
+                        WHEN COUNT(*) = COUNT(ended_at) THEN SUM(TIMESTAMPDIFF(SECOND, begun_at, ended_at))
                         ELSE NULL
                     END AS break_seconds
                 SQL)
@@ -102,9 +101,16 @@ class AttendanceService
                 'shift_begins.begun_at as shift_begun_at',
                 DB::raw('NULL AS shift_ended_at'),
                 DB::raw('NULL AS work_seconds'),
-                DB::raw('IF(break_begins.id IS NOT NULL, NULL, 0) AS break_seconds'),
+                DB::raw(<<<SQL
+                    CASE
+                        WHEN break_begins.id IS NOT NULL THEN NULL
+                        WHEN break_timings.id IS NOT NULL THEN TIMESTAMPDIFF(SECOND, break_timings.begun_at, break_timings.ended_at)
+                        ELSE 0
+                    END AS break_seconds
+                SQL),
             ])
             ->whereDate('shift_begins.begun_at', $this->serviceDate)
-            ->leftJoin('break_begins', 'shift_begins.user_id', '=', 'break_begins.user_id');
+            ->leftJoin('break_begins', 'shift_begins.user_id', '=', 'break_begins.user_id')
+            ->leftJoin('break_timings', 'shift_begins.user_id', '=', 'break_timings.user_id');
     }
 }

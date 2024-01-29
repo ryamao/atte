@@ -23,9 +23,7 @@ class BreakTimingFactory extends Factory
         return [
             'user_id' => User::factory(),
             'begun_at' => $begin,
-            'ended_at' => $this->faker->boolean(90)
-                ? DT::make($this->faker->dateTimeInInterval($begin, '+1 hour'))
-                : null,
+            'ended_at' => DT::make($this->faker->dateTimeInInterval($begin, '+1 hour')),
         ];
     }
 }
