@@ -26,4 +26,12 @@ class ShiftTimingFactory extends Factory
             'ended_at' => DT::make($this->faker->dateTimeInInterval($begin->addHours(9), '+2 hours')),
         ];
     }
+
+    /** 定義する勤務時間データを勤務終了の打刻がない設定にする */
+    public function unended(): ShiftTimingFactory
+    {
+        return $this->state(fn (array $attributes) => [
+            'ended_at' => null,
+        ]);
+    }
 }

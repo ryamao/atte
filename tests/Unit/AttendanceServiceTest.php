@@ -13,22 +13,23 @@ use App\Services\AttendanceService;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class AttendanceServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     /** テスト実行時に固定する日付 */
     private CarbonImmutable $today;
 
+    /** テスト前に日付を固定する */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->today = CarbonImmutable::create(2024, 1, 23, 9, 0, 0, 'Asia/Tokyo');
-        CarbonImmutable::setTestNow($this->today);
+        $this->today = CarbonImmutable::create(2024, 1, 24, 9, 0, 0, 'Asia/Tokyo');
     }
 
     /**
@@ -38,10 +39,10 @@ class AttendanceServiceTest extends TestCase
      */
     public function testBreakSeconds(Factory $userFactory): void
     {
-        $user = $userFactory->create();
+        $user = $this->travelTo($this->today, fn () => $userFactory->create());
         $service = new AttendanceService($this->today);
         $breakSeconds = $service->breakSeconds()->get();
-        $this->assertBreakSeconds(collect([$user]), $breakSeconds);
+        $this->assertBreakSeconds(collect([$user]), $breakSeconds, $this->today);
     }
 
     /**
@@ -51,11 +52,130 @@ class AttendanceServiceTest extends TestCase
     public function testBreakSecondsWithMixedShifts(): void
     {
         $users = collect(static::provideBreakSecondsTestData())->map(
-            fn (array $data) => $data[0]->create()
+            fn (array $data) => $this->travelTo($this->today, fn () => $data[0]->create())
         );
         $service = new AttendanceService($this->today);
         $breakSeconds = $service->breakSeconds()->get();
-        $this->assertBreakSeconds($users, $breakSeconds);
+        $this->assertBreakSeconds($users, $breakSeconds, $this->today);
+    }
+
+    /**
+     * @testdox 勤務時間の取得
+     * @group attendance
+     * @dataProvider provideShiftSecondsTestData
+     */
+    public function testShiftSeconds(Factory $userFactory): void
+    {
+        $user = $this->travelTo($this->today, fn () => $userFactory->create());
+        $service = new AttendanceService($this->today);
+        $shiftSeconds = $service->shiftSeconds()->get();
+        $this->assertShiftSeconds(collect([$user]), $shiftSeconds, $this->today);
+    }
+
+    /**
+     * @testdox 勤務時間の取得 (複数ユーザ)
+     * @group attendance
+     */
+    public function testShiftSecondsWithMixedShifts(): void
+    {
+        $users = collect(static::provideShiftSecondsTestData())->map(
+            fn (array $data) => $this->travelTo($this->today, fn () => $data[0]->create())
+        );
+        $service = new AttendanceService($this->today);
+        $shiftSeconds = $service->shiftSeconds()->get();
+        $this->assertShiftSeconds($users, $shiftSeconds, $this->today);
+    }
+
+    /**
+     * @testdox 勤務時間の取得 (複数日)
+     * @group attendance
+     */
+    public function testShiftSecondsWithMultipleDays(): void
+    {
+        $users = User::factory(100)->create();
+        $dates = collect([$this->today, $this->today->subDay()]);
+
+        foreach ($dates as $date) {
+            $testData[$date->toDateString()] = $this->travelTo($date, fn () => $users->map(
+                fn (User $user) => $this->addRandomAttendance($user, allowBegin: $date->isSameDay($this->today))
+            ));
+        }
+
+        foreach ($dates as $date) {
+            $expectedResult = $testData[$date->toDateString()]->sortBy('user_id');
+
+            $service = new AttendanceService($date);
+            $shiftSeconds = $service->shiftSeconds()->orderBy('user_id')->get();
+
+            $this->assertSameSize($expectedResult, $shiftSeconds);
+            foreach ($expectedResult->zip($shiftSeconds) as [$expected, $actual]) {
+                $dump = "\nexpected: " . var_export($expected, true) . "\nactual: " . var_export($actual->toArray(), true);
+                $this->assertSame($expected['user_id'], $actual['user_id'], "{$date->toDateString()} {$dump}");
+                $this->assertSame($expected['shift_begun_at'], $actual['shift_begun_at'], "{$date->toDateString()} {$dump}");
+                $this->assertSame($expected['shift_ended_at'], $actual['shift_ended_at'], "{$date->toDateString()} {$dump}");
+                $this->assertSameSeconds($expected['shift_seconds'], $actual['shift_seconds'], "{$date->toDateString()} {$dump}");
+            }
+        }
+    }
+
+    /**
+     * @testdox 勤務情報の取得
+     * @group attendance
+     * @dataProvider provideAttendanceTestData
+     */
+    public function testAttendances(Factory $userFactory): void
+    {
+        $user = $this->travelTo($this->today, fn () => $userFactory->create());
+        $service = new AttendanceService($this->today);
+        $attendances = $service->attendances()->get();
+        $this->assertAttendances(collect([$user]), $attendances, $this->today);
+    }
+
+    /**
+     * @testdox 勤務情報の取得 (複数ユーザ)
+     * @group attendance
+     */
+    public function testAttendancesWithMixedShifts(): void
+    {
+        $users = collect(static::provideAttendanceTestData())->map(
+            fn (array $data) => $this->travelTo($this->today, fn () => $data[0]->create())
+        );
+        $service = new AttendanceService($this->today);
+        $attendances = $service->attendances()->get();
+        $this->assertAttendances($users, $attendances, $this->today);
+    }
+
+    /**
+     * @testdox 勤務情報の取得 (複数日)
+     * @group attendance
+     */
+    public function testAttendancesWithMultipleDays(): void
+    {
+        $users = User::factory(100)->create();
+        $dates = collect([$this->today, $this->today->subDay()]);
+
+        foreach ($dates as $date) {
+            $testData[$date->toDateString()] = $this->travelTo($date, fn () => $users->map(
+                fn (User $user) => $this->addRandomAttendance($user, allowBegin: $date->isSameDay($this->today))
+            ));
+        }
+
+        foreach ($dates as $date) {
+            $expected = $testData[$date->toDateString()]->sortBy('user_id');
+
+            $service = new AttendanceService($date);
+            $attendances = $service->attendances()->orderBy('user_id')->get();
+
+            $this->assertSameSize($expected, $attendances);
+            foreach ($expected->zip($attendances) as [$expected, $attendance]) {
+                $dump = "\nexpected: " . var_export($expected, true) . "\nactual: " . var_export($attendance->toArray(), true);
+                $this->assertSame($expected['user_id'], $attendance['user_id'], "{$date->toDateString()} {$dump}");
+                $this->assertSame($expected['shift_begun_at'], $attendance['shift_begun_at'], "{$date->toDateString()} {$dump}");
+                $this->assertSame($expected['shift_ended_at'], $attendance['shift_ended_at'], "{$date->toDateString()} {$dump}");
+                $this->assertSameSeconds($expected['work_seconds'], $attendance['work_seconds'], "{$date->toDateString()} {$dump}");
+                $this->assertSameSeconds($expected['break_seconds'], $attendance['break_seconds'], "{$date->toDateString()} {$dump}");
+            }
+        }
     }
 
     /** @return array<string, array<Factory<User>>> */
@@ -77,7 +197,7 @@ class AttendanceServiceTest extends TestCase
             '休憩1回(未終了)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakTiming::factory()->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->unended())
             ],
             '休憩1回' => [
                 User::factory()
@@ -94,7 +214,7 @@ class AttendanceServiceTest extends TestCase
                 User::factory()
                     ->has(ShiftBegin::factory())
                     ->has(BreakTiming::factory())
-                    ->has(BreakTiming::factory()->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->unended())
             ],
             '休憩2回' => [
                 User::factory()
@@ -102,33 +222,6 @@ class AttendanceServiceTest extends TestCase
                     ->has(BreakTiming::factory(2))
             ],
         ];
-    }
-
-    /**
-     * @testdox 勤務時間の取得
-     * @group attendance
-     * @dataProvider provideShiftSecondsTestData
-     */
-    public function testShiftSeconds(Factory $userFactory): void
-    {
-        $user = $userFactory->create();
-        $service = new AttendanceService($this->today);
-        $shiftSeconds = $service->shiftSeconds()->get();
-        $this->assertShiftSeconds(collect([$user]), $shiftSeconds);
-    }
-
-    /**
-     * @testdox 勤務時間の取得 (複数ユーザ)
-     * @group attendance
-     */
-    public function testShiftSecondsWithMixedShifts(): void
-    {
-        $users = collect(static::provideShiftSecondsTestData())->map(
-            fn (array $data) => $data[0]->create()
-        );
-        $service = new AttendanceService($this->today);
-        $shiftSeconds = $service->shiftSeconds()->get();
-        $this->assertShiftSeconds($users, $shiftSeconds);
     }
 
     /** @return array<string, array<Factory<User>>> */
@@ -148,36 +241,9 @@ class AttendanceServiceTest extends TestCase
             ],
             '勤務後(未終了)' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->state(['ended_at' => null]))
+                    ->has(ShiftTiming::factory()->unended())
             ],
         ];
-    }
-
-    /**
-     * @testdox 勤務情報の取得
-     * @group attendance
-     * @dataProvider provideAttendanceTestData
-     */
-    public function testAttendances(Factory $userFactory): void
-    {
-        $users = collect([$userFactory->create()]);
-        $service = new AttendanceService($this->today);
-        $attendances = $service->attendances()->get();
-        $this->assertAttendances($users, $attendances);
-    }
-
-    /**
-     * @testdox 勤務情報の取得 (複数ユーザ)
-     * @group attendance
-     */
-    public function testAttendancesWithMixedShifts(): void
-    {
-        $users = collect(static::provideAttendanceTestData())->map(
-            fn (array $data) => $data[0]->create()
-        );
-        $service = new AttendanceService($this->today);
-        $attendances = $service->attendances()->get();
-        $this->assertAttendances($users, $attendances);
     }
 
     /** @return array<string, array<Factory<User>>> */
@@ -230,23 +296,23 @@ class AttendanceServiceTest extends TestCase
 
             '勤務後(未終了) / 休憩0回' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->state(['ended_at' => null]))
+                    ->has(ShiftTiming::factory()->unended())
             ],
             '勤務後(未終了) / 休憩1回(未終了)' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->state(['ended_at' => null]))
-                    ->has(BreakTiming::factory()->state(['ended_at' => null]))
+                    ->has(ShiftTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended())
             ],
             '勤務後(未終了) / 休憩2回' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->state(['ended_at' => null]))
+                    ->has(ShiftTiming::factory()->unended())
                     ->has(BreakTiming::factory(2))
             ],
             '勤務後(未終了) / 休憩2回(未終了)' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->state(['ended_at' => null]))
+                    ->has(ShiftTiming::factory()->unended())
                     ->has(BreakTiming::factory())
-                    ->has(BreakTiming::factory()->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->unended())
             ],
 
             '異常系 / 勤務前 / 休憩中' => [
@@ -255,7 +321,7 @@ class AttendanceServiceTest extends TestCase
             ],
             '異常系 / 勤務前 / 休憩1回(未終了)' => [
                 User::factory()
-                    ->has(BreakTiming::factory()->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->unended())
             ],
             '異常系 / 勤務後 / 休憩中' => [
                 User::factory()
@@ -265,11 +331,11 @@ class AttendanceServiceTest extends TestCase
             '異常系 / 勤務後 / 休憩1回(未終了)' => [
                 User::factory()
                     ->has(ShiftTiming::factory())
-                    ->has(BreakTiming::factory()->state(['ended_at' => null]))
+                    ->has(BreakTiming::factory()->unended())
             ],
             '異常系 / 勤務後(未終了) / 休憩中' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->state(['ended_at' => null]))
+                    ->has(ShiftTiming::factory()->unended())
                     ->has(BreakBegin::factory())
             ],
         ];
@@ -281,32 +347,18 @@ class AttendanceServiceTest extends TestCase
      * @param Collection<User> $testData
      * @param Collection<array{id: int, break_seconds: string|null}> $actualData
      */
-    private function assertBreakSeconds(Collection $testData, Collection $actualData): void
+    private function assertBreakSeconds(Collection $testData, Collection $actualData, CarbonImmutable $date): void
     {
         $this->assertSameSize($testData, $actualData);
 
         $testData = $testData->sortBy('id');
         $actualData = $actualData->sortBy('user_id');
 
-        foreach ($testData->zip($actualData) as [$user, $breakSeconds]) {
-            $this->assertSame($user->id, $breakSeconds['user_id']);
-
-            $expected = $this->sumBreakSeconds($user);
-            $actual = $breakSeconds['break_seconds'];
-            if (is_null($expected)) {
-                $this->assertNull($actual);
-            } else {
-                $this->assertSame(strval($expected), strval($actual));
-            }
+        foreach ($testData->zip($actualData) as [$user, $actual]) {
+            $this->assertSame($user->id, $actual['user_id']);
+            $expected = $this->sumBreakSeconds($user, $date);
+            $this->assertSameSeconds($expected, $actual['break_seconds']);
         }
-    }
-
-    /** 休憩時間の合計を計算する。休憩中の場合は null を返す。 */
-    private function sumBreakSeconds(User $user): ?int
-    {
-        if (isset($user->breakBegin)) return null;
-        if ($user->breakTimings->first(fn ($bt) => is_null($bt->ended_at))) return null;
-        return $user->breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
     }
 
     /**
@@ -317,8 +369,6 @@ class AttendanceServiceTest extends TestCase
      */
     private function assertShiftSeconds(Collection $testData, Collection $actualData): void
     {
-        $testData = $testData->filter(fn (User $user) => $user->shiftBegin || $user->shiftTimings->count() === 1);
-
         $this->assertSameSize($testData, $actualData);
 
         $testData = $testData->sortBy('id');
@@ -327,15 +377,18 @@ class AttendanceServiceTest extends TestCase
         foreach ($testData->zip($actualData) as [$user, $shiftSeconds]) {
             $this->assertSame($user->id, $shiftSeconds['user_id']);
 
-            $shift = $user->shiftBegin ?? $user->shiftTimings->first();
-            $this->assertSame($shift->begun_at, $shiftSeconds['begun_at']);
-
-            if (is_null($shift->ended_at)) {
-                $this->assertNull($shiftSeconds['ended_at']);
+            if ($user->shiftBegin) {
+                $this->assertSame($user->shiftBegin->begun_at, $shiftSeconds['shift_begun_at']);
+                $this->assertNull($shiftSeconds['shift_ended_at']);
                 $this->assertNull($shiftSeconds['shift_seconds']);
+            } else if ($user->shiftTimings->count() === 1) {
+                $this->assertSame($user->shiftTimings->first()->begun_at, $shiftSeconds['shift_begun_at']);
+                $this->assertSame($user->shiftTimings->first()->ended_at, $shiftSeconds['shift_ended_at']);
+                $this->assertSame($user->shiftTimings->first()->timeInSeconds(), $shiftSeconds['shift_seconds']);
             } else {
-                $this->assertSame($shift->ended_at, $shiftSeconds['ended_at']);
-                $this->assertSame(strval($shift->timeInSeconds()), strval($shiftSeconds['shift_seconds']));
+                $this->assertNull($shiftSeconds['shift_begun_at']);
+                $this->assertNull($shiftSeconds['shift_ended_at']);
+                $this->assertSame(0, $shiftSeconds['shift_seconds']);
             }
         }
     }
@@ -346,42 +399,126 @@ class AttendanceServiceTest extends TestCase
      * @param Collection<User> $users
      * @param Collection<array{user_name: string, shift_begun_at: string, shift_ended_at: string|null, work_seconds: string|null, break_seconds: string|null}> $attendances
      */
-    private function assertAttendances(Collection $testData, Collection $attendances): void
+    private function assertAttendances(Collection $testData, Collection $attendances, CarbonImmutable $date): void
     {
-        $testData = $testData->filter(fn (User $user) => $user->shiftBegin || $user->shiftTimings->count() === 1);
-
         $this->assertSameSize($testData, $attendances);
 
-        foreach ($testData->sortBy('name')->zip($attendances) as [$user, $attendance]) {
+        $testData = $testData->sortBy('id');
+        $attendances = $attendances->sortBy('user_id');
+
+        foreach ($testData->zip($attendances) as [$user, $attendance]) {
+            $message = 'actual: ' . var_export($attendance->toArray(), true);
+
             $shiftBegin = $user->shiftBegin ?? $user->shiftTimings->first();
-            $breakSeconds = $this->sumBreakSeconds($user);
-            $workSeconds = $this->computeWorkSeconds($user, $breakSeconds);
+            $breakSeconds = $this->sumBreakSeconds($user, $date);
+            $workSeconds = $this->computeWorkSeconds($user, $breakSeconds, $date);
 
-            $this->assertSame($user->name, $attendance['user_name']);
+            $this->assertSame($user->id, $attendance['user_id'], $message);
+            $this->assertSame($user->name, $attendance['user_name'], $message);
 
-            $this->assertSame($shiftBegin->begun_at, $attendance['shift_begun_at']);
-            $this->assertSame($user->shiftTimings->first()?->ended_at, $attendance['shift_ended_at']);
+            $this->assertSame($shiftBegin?->begun_at, $attendance['shift_begun_at'], $message);
+            $this->assertSame($user->shiftTimings->first()?->ended_at, $attendance['shift_ended_at'], $message);
 
-            if (is_null($workSeconds)) {
-                $this->assertNull($attendance['work_seconds']);
-            } else {
-                $this->assertSame(strval($workSeconds), strval($attendance['work_seconds']));
-            }
-
-            if (is_null($breakSeconds)) {
-                $this->assertNull($attendance['break_seconds']);
-            } else {
-                $this->assertSame(strval($breakSeconds), strval($attendance['break_seconds']));
-            }
+            $this->assertSameSeconds($breakSeconds, $attendance['break_seconds'], $message);
+            $this->assertSameSeconds($workSeconds, $attendance['work_seconds'], $message);
         }
     }
 
-    /** 労働時間を計算する。基本的には『勤務時間 - 休憩時間』だが、勤務中や休憩中、未終了の場合は null を返す。 */
-    private function computeWorkSeconds(User $user, ?int $breakSeconds): ?int
+    /** データベースから返ってきた秒数をアサーションする */
+    private function assertSameSeconds(?int $expected, int|string|null $actual, string $message = ''): void
     {
-        if (isset($user->shiftBegin)) return null;
+        if (is_null($expected)) {
+            $this->assertNull($actual, $message);
+        } else if (is_integer($actual)) {
+            $this->assertSame($expected, $actual, $message);
+        } else {
+            $this->assertSame((string) $expected, $actual, $message);
+        }
+    }
+
+    /** 休憩時間の合計を計算する。休憩中の場合は null を返す。 */
+    private function sumBreakSeconds(User $user, CarbonImmutable $date): ?int
+    {
+        if ($this->isSameDay($user->breakBegin?->begun_at, $date)) return null;
+        $breakTimings = $user->breakTimings->filter(fn ($bt) => $this->isSameDay($bt->begun_at, $date));
+        if ($breakTimings->count() === 0) return 0;
+        if ($breakTimings->first(fn ($bt) => is_null($bt->ended_at))) return null;
+        return $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
+    }
+
+    /** 労働時間を計算する。基本的には『勤務時間 - 休憩時間』だが、勤務中や休憩中、未終了の場合は null を返す。 */
+    private function computeWorkSeconds(User $user, ?int $breakSeconds, CarbonImmutable $date): ?int
+    {
+        if ($this->isSameDay($user->shiftBegin?->begun_at, $date)) return null;
         if (is_null($breakSeconds)) return null;
-        $shiftSeconds = $user->shiftTimings->first()?->timeInSeconds();
-        return is_null($shiftSeconds) ? null : $shiftSeconds - $breakSeconds;
+        $shiftTimings = $user->shiftTimings->filter(fn ($st) => $this->isSameDay($st->begun_at, $date));
+        if ($shiftTimings->count() === 0) return 0;
+        if ($shiftTimings->first(fn ($st) => is_null($st->ended_at))) return null;
+        $shiftSeconds = $shiftTimings->first()->timeInSeconds();
+        return $shiftSeconds - $breakSeconds;
+    }
+
+    /** 2つの日付が同じ日かどうかを判定する。 */
+    private function isSameDay(mixed $date1, mixed $date2): bool
+    {
+        if (is_null($date1) || is_null($date2)) return false;
+        return CarbonImmutable::make($date1)->isSameDay(CarbonImmutable::make($date2));
+    }
+
+    /** ユーザにランダムな勤怠情報を付与する。 */
+    private function addRandomAttendance(User $user, bool $allowBegin = false): array
+    {
+        $data['user_id'] = $user->id;
+
+        if ($this->faker->boolean(5)) {
+            $data['shift_begun_at'] = null;
+            $data['shift_ended_at'] = null;
+            $data['shift_seconds'] = 0;
+            $data['work_seconds'] = 0;
+            $data['break_seconds'] = 0;
+        } else {
+            $countBreaks = $this->faker->numberBetween(0, 3);
+            if ($countBreaks >= 1) {
+                if ($this->faker->boolean(90)) {
+                    $breakTimings = BreakTiming::factory($countBreaks)->recycle($user)->create();
+                    $data['break_seconds'] = $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
+                } else {
+                    if ($countBreaks >= 2) BreakTiming::factory($countBreaks - 1)->recycle($user)->create();
+                    BreakTiming::factory()->recycle($user)->unended()->create();
+                    $data['break_seconds'] = null;
+                }
+            } else {
+                $data['break_seconds'] = 0;
+            }
+
+            if ($allowBegin && $this->faker->boolean(10)) {
+                $shiftBegin = ShiftBegin::factory()->recycle($user)->create();
+
+                if ($this->faker->boolean()) {
+                    BreakBegin::factory()->recycle($user)->create();
+                    $data['break_seconds'] = null;
+                }
+
+                $data['shift_begun_at'] = $shiftBegin->begun_at->toDateTimeString();
+                $data['shift_ended_at'] = null;
+                $data['shift_seconds'] = null;
+                $data['work_seconds'] = null;
+            } else {
+                if ($this->faker->boolean(90)) {
+                    $shiftTiming = ShiftTiming::factory()->recycle($user)->create();
+                    $data['shift_seconds'] = $shiftTiming->timeInSeconds();
+                    $data['work_seconds'] = is_null($data['break_seconds']) ? null : $data['shift_seconds'] - $data['break_seconds'];
+                } else {
+                    $shiftTiming = ShiftTiming::factory()->recycle($user)->unended()->create();
+                    $data['shift_seconds'] = null;
+                    $data['work_seconds'] = null;
+                }
+
+                $data['shift_begun_at'] = $shiftTiming->begun_at->toDateTimeString();
+                $data['shift_ended_at'] = $shiftTiming->ended_at?->toDateTimeString();
+            }
+        }
+
+        return $data;
     }
 }

@@ -26,4 +26,12 @@ class BreakTimingFactory extends Factory
             'ended_at' => DT::make($this->faker->dateTimeInInterval($begin, '+1 hour')),
         ];
     }
+
+    /** 定義する休憩時間データを勤務終了の打刻がない設定にする */
+    public function unended(): BreakTimingFactory
+    {
+        return $this->state(fn (array $attributes) => [
+            'ended_at' => null,
+        ]);
+    }
 }
