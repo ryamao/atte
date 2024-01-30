@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -74,5 +76,69 @@ class User extends Authenticatable
     public function breakTimings(): HasMany
     {
         return $this->hasMany(BreakTiming::class);
+    }
+
+    /** ある日に勤務しているかどうか判定する */
+    public function isWorkingOn(DateTimeInterface $date): bool
+    {
+        return $this->shiftBegin()->whereDate('begun_at', $date)->exists()
+            || $this->shiftTimings()->whereDate('begun_at', $date)->exists();
+    }
+
+    /** ある日の勤務開始日時を取得する */
+    public function shiftBegunAt(DateTimeInterface $date): ?DateTimeInterface
+    {
+        $shiftBegin = $this->shiftBegin()->whereDate('begun_at', $date)->first();
+        if ($shiftBegin) {
+            return CarbonImmutable::make($shiftBegin->begun_at);
+        }
+
+        $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
+        return CarbonImmutable::make($shiftTiming?->begun_at);
+    }
+
+    /** ある日の勤務終了日時を取得する */
+    public function shiftEndedAt(DateTimeInterface $date): ?DateTimeInterface
+    {
+        $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
+        return CarbonImmutable::make($shiftTiming?->ended_at);
+    }
+
+    /** ある日の休憩時間を秒数で取得する */
+    public function breakTimeInSeconds(DateTimeInterface $date): ?int
+    {
+        $breakBegin = $this->breakBegin()->whereDate('begun_at', $date)->first();
+        if ($breakBegin) return null;
+
+        if ($this->breakTimings()->whereNull('ended_at')->exists()) return null;
+
+        $breakTimings = $this->breakTimings()->whereDate('begun_at', $date)->get();
+        return $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
+    }
+
+    /** ある日の勤務時間を秒数で取得する */
+    public function shiftTimeInSeconds(DateTimeInterface $date): ?int
+    {
+        $shiftBegin = $this->shiftBegin()->whereDate('begun_at', $date)->first();
+        if ($shiftBegin) return null;
+
+        $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
+        if (is_null($shiftTiming)) return 0;
+
+        if (is_null($shiftTiming->ended_at)) return null;
+
+        return $shiftTiming->timeInSeconds();
+    }
+
+    /** ある日の労働時間を秒数で取得する */
+    public function workTimeInSeconds(DateTimeInterface $date): ?int
+    {
+        $shiftTime = $this->shiftTimeInSeconds($date);
+        if (is_null($shiftTime)) return null;
+
+        $breakTime = $this->breakTimeInSeconds($date);
+        if (is_null($breakTime)) return null;
+
+        return $shiftTime - $breakTime;
     }
 }

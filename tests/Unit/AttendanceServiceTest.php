@@ -24,7 +24,7 @@ class AttendanceServiceTest extends TestCase
     /** テスト実行時に固定する日付 */
     private CarbonImmutable $today;
 
-    /** テスト前に日付を固定する */
+    /** すべてのテストで共通の日付を使用する */
     protected function setUp(): void
     {
         parent::setUp();
@@ -356,8 +356,7 @@ class AttendanceServiceTest extends TestCase
 
         foreach ($testData->zip($actualData) as [$user, $actual]) {
             $this->assertSame($user->id, $actual['user_id']);
-            $expected = $this->sumBreakSeconds($user, $date);
-            $this->assertSameSeconds($expected, $actual['break_seconds']);
+            $this->assertSameSeconds($user->breakTimeInSeconds($date), $actual['break_seconds']);
         }
     }
 
@@ -376,20 +375,9 @@ class AttendanceServiceTest extends TestCase
 
         foreach ($testData->zip($actualData) as [$user, $shiftSeconds]) {
             $this->assertSame($user->id, $shiftSeconds['user_id']);
-
-            if ($user->shiftBegin) {
-                $this->assertSame($user->shiftBegin->begun_at, $shiftSeconds['shift_begun_at']);
-                $this->assertNull($shiftSeconds['shift_ended_at']);
-                $this->assertNull($shiftSeconds['shift_seconds']);
-            } else if ($user->shiftTimings->count() === 1) {
-                $this->assertSame($user->shiftTimings->first()->begun_at, $shiftSeconds['shift_begun_at']);
-                $this->assertSame($user->shiftTimings->first()->ended_at, $shiftSeconds['shift_ended_at']);
-                $this->assertSame($user->shiftTimings->first()->timeInSeconds(), $shiftSeconds['shift_seconds']);
-            } else {
-                $this->assertNull($shiftSeconds['shift_begun_at']);
-                $this->assertNull($shiftSeconds['shift_ended_at']);
-                $this->assertSame(0, $shiftSeconds['shift_seconds']);
-            }
+            $this->assertSame($user->shiftBegunAt($this->today)?->toDateTimeString(), $shiftSeconds['shift_begun_at']);
+            $this->assertSame($user->shiftEndedAt($this->today)?->toDateTimeString(), $shiftSeconds['shift_ended_at']);
+            $this->assertSame($user->shiftTimeInSeconds($this->today), $shiftSeconds['shift_seconds']);
         }
     }
 
@@ -409,18 +397,14 @@ class AttendanceServiceTest extends TestCase
         foreach ($testData->zip($attendances) as [$user, $attendance]) {
             $message = 'actual: ' . var_export($attendance->toArray(), true);
 
-            $shiftBegin = $user->shiftBegin ?? $user->shiftTimings->first();
-            $breakSeconds = $this->sumBreakSeconds($user, $date);
-            $workSeconds = $this->computeWorkSeconds($user, $breakSeconds, $date);
-
             $this->assertSame($user->id, $attendance['user_id'], $message);
             $this->assertSame($user->name, $attendance['user_name'], $message);
 
-            $this->assertSame($shiftBegin?->begun_at, $attendance['shift_begun_at'], $message);
-            $this->assertSame($user->shiftTimings->first()?->ended_at, $attendance['shift_ended_at'], $message);
+            $this->assertSame($user->shiftBegunAt($date)?->toDateTimeString(), $attendance['shift_begun_at'], $message);
+            $this->assertSame($user->shiftEndedAt($date)?->toDateTimeString(), $attendance['shift_ended_at'], $message);
 
-            $this->assertSameSeconds($breakSeconds, $attendance['break_seconds'], $message);
-            $this->assertSameSeconds($workSeconds, $attendance['work_seconds'], $message);
+            $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
+            $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
         }
     }
 
@@ -434,28 +418,6 @@ class AttendanceServiceTest extends TestCase
         } else {
             $this->assertSame((string) $expected, $actual, $message);
         }
-    }
-
-    /** 休憩時間の合計を計算する。休憩中の場合は null を返す。 */
-    private function sumBreakSeconds(User $user, CarbonImmutable $date): ?int
-    {
-        if ($this->isSameDay($user->breakBegin?->begun_at, $date)) return null;
-        $breakTimings = $user->breakTimings->filter(fn ($bt) => $this->isSameDay($bt->begun_at, $date));
-        if ($breakTimings->count() === 0) return 0;
-        if ($breakTimings->first(fn ($bt) => is_null($bt->ended_at))) return null;
-        return $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
-    }
-
-    /** 労働時間を計算する。基本的には『勤務時間 - 休憩時間』だが、勤務中や休憩中、未終了の場合は null を返す。 */
-    private function computeWorkSeconds(User $user, ?int $breakSeconds, CarbonImmutable $date): ?int
-    {
-        if ($this->isSameDay($user->shiftBegin?->begun_at, $date)) return null;
-        if (is_null($breakSeconds)) return null;
-        $shiftTimings = $user->shiftTimings->filter(fn ($st) => $this->isSameDay($st->begun_at, $date));
-        if ($shiftTimings->count() === 0) return 0;
-        if ($shiftTimings->first(fn ($st) => is_null($st->ended_at))) return null;
-        $shiftSeconds = $shiftTimings->first()->timeInSeconds();
-        return $shiftSeconds - $breakSeconds;
     }
 
     /** 2つの日付が同じ日かどうかを判定する。 */
