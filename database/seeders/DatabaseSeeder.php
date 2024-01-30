@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::factory(100)->create();
+        $users = User::factory(103)->create();
 
         $dates = [CarbonImmutable::today(), CarbonImmutable::yesterday()];
         foreach ($dates as $i => $date) {
