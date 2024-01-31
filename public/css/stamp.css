@@ -1,3 +1,7 @@
+:root {
+    --text-size: 1.4rem;
+}
+
 .stamp {
     max-width: 1000px;
     width: 90%;
@@ -6,6 +10,7 @@
 }
 
 .stamp__title {
+    font-size: var(--text-size);
     text-align: center;
     margin: 3rem 0;
 }
@@ -22,8 +27,8 @@
     height: 100%;
     background-color: #fff;
     border: none;
-    border-radius: 0.5rem;
-    font-size: 1.5rem;
+    border-radius: 0.25rem;
+    font-size: var(--text-size);
     font-weight: bold;
 }
 
