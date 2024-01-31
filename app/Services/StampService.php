@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App;
+namespace App\Services;
 
 use App\Models\BreakBegin;
 use App\Models\BreakTiming;
@@ -12,7 +12,7 @@ use App\Models\User;
 use DateTimeInterface;
 
 /** 複数のモデルを操作して打刻処理を実行するクラス */
-class TimeStamper
+class StampService
 {
     /**
      * @param User  $user  打刻を行う会員

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\TimeStamper;
+use App\Services\StampService;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Illuminate\Contracts\View\View;
@@ -57,11 +57,11 @@ class StampController extends Controller
         return redirect()->route('stamp');
     }
 
-    /** 認証ユーザと現在日時で TimeStamper を作成する。 */
-    private function stamper(): TimeStamper
+    /** 認証ユーザと現在日時で StampService を作成する。 */
+    private function stamper(): StampService
     {
         return App::call(function (DateTimeZone $timezone) {
-            return new TimeStamper(Auth::user(), CarbonImmutable::now($timezone));
+            return new StampService(Auth::user(), CarbonImmutable::now($timezone));
         });
     }
 }

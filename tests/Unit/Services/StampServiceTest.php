@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Models\User;
-use App\TimeStamper;
+use App\Services\StampService;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Tests\AssertsDatabase;
 use Tests\TestCase;
 
-class TimeStamperTest extends TestCase
+class StampServiceTest extends TestCase
 {
     use RefreshDatabase;
     use AssertsDatabase;
@@ -40,14 +40,14 @@ class TimeStamperTest extends TestCase
         $this->testBegunAt = CarbonImmutable::create(2024, 1, 24, 9, 0, 0, new DateTimeZone('Asia/Tokyo'));
     }
 
-    /** ユーザIDと基準時刻からの経過時間(hours)を指定して TimeStamper を作成する。 */
-    private function stamper(int $id = 0, int $elapsedHours = 0): TimeStamper
+    /** ユーザIDと基準時刻からの経過時間(hours)を指定して StampService を作成する。 */
+    private function stamper(int $id = 0, int $elapsedHours = 0): StampService
     {
-        return new TimeStamper($this->users[$id], $this->testBegunAt->addHours($elapsedHours));
+        return new StampService($this->users[$id], $this->testBegunAt->addHours($elapsedHours));
     }
 
     /**
-     * @testdox 勤務開始後に TimeStamper::beginShift を実行しても最初の日時を保持する
+     * @testdox 勤務開始後に StampService::beginShift を実行しても最初の日時を保持する
      * @group stamp
      */
     public function test_beginShift_twice(): void
@@ -59,7 +59,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 日付を跨いで TimeStamper::beginShift を実行すると、前日の記録を勤務終了して当日の記録を開始する
+     * @testdox 日付を跨いで StampService::beginShift を実行すると、前日の記録を勤務終了して当日の記録を開始する
      * @group stamp
      */
     public function test_beginShift_with_previous_data(): void
@@ -74,7 +74,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 休憩後の TimeStamper::beginShift
+     * @testdox 休憩後の StampService::beginShift
      * @group stamp
      */
     public function test_beginShift_before_breaking(): void
@@ -109,7 +109,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 前日に勤務終了と休憩終了していない状態で TimeStamper::endShift
+     * @testdox 前日に勤務終了と休憩終了していない状態で StampService::endShift
      * @group stamp
      */
     public function test_endShift_with_previous_data(): void
@@ -124,7 +124,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 休憩中の TimeStamper::endShift
+     * @testdox 休憩中の StampService::endShift
      * @group stamp
      */
     public function test_endShift_while_at_break(): void
@@ -139,7 +139,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 休憩後の TimeStamper::endShift
+     * @testdox 休憩後の StampService::endShift
      * @group stamp
      */
     public function test_endShift_before_breaking(): void
@@ -155,7 +155,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 勤務開始前と勤務終了後では TimeStamper::beginBreak は何もしない
+     * @testdox 勤務開始前と勤務終了後では StampService::beginBreak は何もしない
      * @group stamp
      */
     public function test_beginBreak_do_nothing(): void
@@ -174,7 +174,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 休憩開始後に TimeStamper::beginBreak を実行しても最初の日時を保持する
+     * @testdox 休憩開始後に StampService::beginBreak を実行しても最初の日時を保持する
      * @group stamp
      */
     public function test_beginBreak_twice(): void
@@ -187,7 +187,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 前日に勤務終了と休憩終了していない状態で TimeStamper::beginBreak
+     * @testdox 前日に勤務終了と休憩終了していない状態で StampService::beginBreak
      * @group stamp
      */
     public function test_beginBreak_with_previous_data(): void
@@ -202,7 +202,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox TimeStamper::endBreak のよくある使用例
+     * @testdox StampService::endBreak のよくある使用例
      * @group stamp
      */
     public function test_endBreak(): void
@@ -222,7 +222,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 勤務開始前と勤務終了後では TimeStamper::endBreak は何もしない
+     * @testdox 勤務開始前と勤務終了後では StampService::endBreak は何もしない
      * @group stamp
      */
     public function test_endBreak_do_nothing(): void
@@ -241,7 +241,7 @@ class TimeStamperTest extends TestCase
     }
 
     /**
-     * @testdox 前日に勤務終了と休憩終了していない状態で TimeStamper::endBreak
+     * @testdox 前日に勤務終了と休憩終了していない状態で StampService::endBreak
      * @group stamp
      */
     public function test_endBreak_with_previous_data(): void
