@@ -16,7 +16,7 @@ class AttendanceController extends Controller
     {
         $date = $this->getDateFromQueryString($timezone);
         $service = new AttendanceService($date);
-        $query = $service->attendances()->whereNotNull('shift_begun_at')->orderBy('user_name');
+        $query = $service->attendances()->whereNotNull('shift_begun_at')->orderBy('user_name')->orderBy('user_id');
 
         return view('attendance', [
             'currentDate' => $date,

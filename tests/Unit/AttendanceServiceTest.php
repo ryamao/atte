@@ -375,8 +375,8 @@ class AttendanceServiceTest extends TestCase
 
         foreach ($testData->zip($actualData) as [$user, $shiftSeconds]) {
             $this->assertSame($user->id, $shiftSeconds['user_id']);
-            $this->assertSame($user->shiftBegunAt($this->today)?->toDateTimeString(), $shiftSeconds['shift_begun_at']);
-            $this->assertSame($user->shiftEndedAt($this->today)?->toDateTimeString(), $shiftSeconds['shift_ended_at']);
+            $this->assertSameDateTime($user->shiftBegunAt($this->today), $shiftSeconds['shift_begun_at']);
+            $this->assertSameDateTime($user->shiftEndedAt($this->today), $shiftSeconds['shift_ended_at']);
             $this->assertSame($user->shiftTimeInSeconds($this->today), $shiftSeconds['shift_seconds']);
         }
     }
@@ -400,23 +400,11 @@ class AttendanceServiceTest extends TestCase
             $this->assertSame($user->id, $attendance['user_id'], $message);
             $this->assertSame($user->name, $attendance['user_name'], $message);
 
-            $this->assertSame($user->shiftBegunAt($date)?->toDateTimeString(), $attendance['shift_begun_at'], $message);
-            $this->assertSame($user->shiftEndedAt($date)?->toDateTimeString(), $attendance['shift_ended_at'], $message);
+            $this->assertSameDateTime($user->shiftBegunAt($date), $attendance['shift_begun_at'], $message);
+            $this->assertSameDateTime($user->shiftEndedAt($date), $attendance['shift_ended_at'], $message);
 
             $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
             $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
-        }
-    }
-
-    /** データベースから返ってきた秒数をアサーションする */
-    private function assertSameSeconds(?int $expected, int|string|null $actual, string $message = ''): void
-    {
-        if (is_null($expected)) {
-            $this->assertNull($actual, $message);
-        } else if (is_integer($actual)) {
-            $this->assertSame($expected, $actual, $message);
-        } else {
-            $this->assertSame((string) $expected, $actual, $message);
         }
     }
 

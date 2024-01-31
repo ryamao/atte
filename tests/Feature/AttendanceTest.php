@@ -102,7 +102,7 @@ class AttendanceTest extends TestCase
 
         $users = User::all()
             ->filter(fn (User $user) => $user->isWorkingOn($date))
-            ->sortBy('name')
+            ->sortBy(['name', 'id'])
             ->skip(5 * ($page - 1))
             ->take(5);
 
@@ -113,11 +113,13 @@ class AttendanceTest extends TestCase
         $attendances = $response['attendances'];
         $this->assertSameSize($users, $attendances);
         foreach ($attendances->zip($users) as [$attendance, $user]) {
-            $this->assertSame($user->name, $attendance['user_name']);
-            $this->assertEquals($user->shiftBegunAt($date), $attendance['shift_begun_at']);
-            $this->assertEquals($user->shiftEndedAt($date), $attendance['shift_ended_at']);
-            $this->assertEquals($user->breakTimeInSeconds($date), $attendance['break_seconds']);
-            $this->assertEquals($user->workTimeInSeconds($date), $attendance['work_seconds']);
+            $expected = ['user' => $user->toArray(), 'shift_begins' => $user->shiftBegin()->get()->toArray(), 'shift_timings' => $user->shiftTimings()->get()->toArray()];
+            $message = 'expected: ' . var_export($expected, true) . PHP_EOL . 'actual: ' . var_export($attendance->toArray(), true);
+            $this->assertSame($user->name, $attendance['user_name'], $message);
+            $this->assertSameDateTime($user->shiftBegunAt($date), $attendance['shift_begun_at'], $message);
+            $this->assertSameDateTime($user->shiftEndedAt($date), $attendance['shift_ended_at'], $message);
+            $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
+            $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
         }
     }
 }
