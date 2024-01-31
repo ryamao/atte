@@ -3,12 +3,48 @@ body {
 }
 
 .header {
+    display: flex;
+    justify-content: space-between;
     background-color: #fff;
+    padding: 1.5rem 4rem;
 }
 
 .header__title {
     margin: 0;
-    padding: 1.5rem 4rem;
+}
+
+.header__nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.header__nav-list {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header__nav-list > * + * {
+    margin-left: 4rem;
+}
+
+.header__nav-item a {
+    text-decoration: none;
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.header__nav-item button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .content {

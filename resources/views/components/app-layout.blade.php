@@ -19,11 +19,11 @@
         <h1 class="header__title">Atte</h1>
 
         @if (Auth::check())
-        <nav>
-            <ul>
-                <li><a href="{{ route('stamp') }}">ホーム</a></li>
-                <li><a href="{{ route('attendance') }}">日付一覧</a></li>
-                <li>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="{{ route('stamp') }}">ホーム</a></li>
+                <li class="header__nav-item"><a href="{{ route('attendance') }}">日付一覧</a></li>
+                <li class="header__nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
                         <button type="submit" dusk="logout">ログアウト</button>
