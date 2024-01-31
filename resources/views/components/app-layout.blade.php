@@ -1,15 +1,22 @@
+@props(['css'])
+
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Atte</title>
+    <link rel="stylesheet" href="{{ asset('css/sanitize.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/app-layout.css') }}" />
+    @isset($css)
+    <link rel="stylesheet" href="{{ asset('css/' . $css) }}" />
+    @endisset
 </head>
 
 <body>
-    <header>
-        <h1>Atte</h1>
+    <header class="header">
+        <h1 class="header__title">Atte</h1>
 
         @if (Auth::check())
         <nav>
@@ -26,11 +33,11 @@
         </nav>
         @endif
     </header>
-    <main>
+    <main class="content">
         {{ $slot }}
     </main>
-    <footer>
-        <small>Atte, inc.</small>
+    <footer class="footer">
+        <small class="footer__text">Atte, inc.</small>
     </footer>
 </body>
 

@@ -1,0 +1,25 @@
+body {
+    background-color: #f2f2f2;
+}
+
+.header {
+    background-color: #fff;
+}
+
+.header__title {
+    margin: 0;
+    padding: 1.5rem 3rem;
+}
+
+.footer {
+    background-color: #fff;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 0.5rem 0;
+}
+
+.footer__text {
+    font-weight: bold;
+}
