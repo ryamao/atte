@@ -8,16 +8,22 @@ body {
 
 .header__title {
     margin: 0;
-    padding: 1.5rem 3rem;
+    padding: 1.5rem 4rem;
+}
+
+.content {
+    margin-bottom: 3rem;
 }
 
 .footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #fff;
-    text-align: center;
     position: fixed;
     bottom: 0;
     width: 100%;
-    padding: 0.5rem 0;
+    height: 3rem;
 }
 
 .footer__text {

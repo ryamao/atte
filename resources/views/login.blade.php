@@ -1,29 +1,29 @@
 <x-app-layout>
-    <x-slot name="css">login.css</x-slot>
+    <x-slot name="css">auth.css</x-slot>
 
-    <div class="login">
-        <h2 class="login__title">ログイン</h2>
+    <div class="auth">
+        <h2 class="auth__title">ログイン</h2>
 
-        <form class="login__form" action="{{ route('login') }}" method="post" novalidate>
+        <form class="auth__form" action="{{ route('login') }}" method="post" novalidate>
             @csrf
-            <div class="login__form-field">
+            <div class="auth__form-field">
                 <input type="email" name="email" placeholder="メールアドレス" />
                 @error('email')
-                <div class="login__form-alert" dusk="email-alert">{{ $message }}</div>
+                <div class="auth__form-alert" dusk="email-alert">{{ $message }}</div>
                 @enderror
             </div>
 
-            <div class="login__form-field">
+            <div class="auth__form-field">
                 <input type="password" name="password" placeholder="パスワード" />
                 @error('password')
-                <div class="login__form-alert" dusk="password-alert">{{ $message }}</div>
+                <div class="auth__form-alert" dusk="password-alert">{{ $message }}</div>
                 @enderror
             </div>
 
             <button type="submit">ログイン</button>
         </form>
 
-        <p class="login__info" dusk="info-text">アカウントをお持ちでない方はこちらから</p>
-        <a class="login__register-link" href="{{ route('register') }}">会員登録</a>
+        <p class="auth__info" dusk="info-text">アカウントをお持ちでない方はこちらから</p>
+        <a class="auth__link" href="{{ route('register') }}">会員登録</a>
     </div>
 </x-app-layout>
