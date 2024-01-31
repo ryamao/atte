@@ -29,7 +29,7 @@ class TimeStamper
         $this->handlePreviousEvents();
 
         $now = ShiftTiming::cancelShift($this->user, $this->now) ?? $this->now;
-        ShiftBegin::beginShift($this->user, $now);
+        ShiftBegin::beginPeriod($this->user, $now);
     }
 
     /** 勤務終了処理を行う。 */
@@ -42,7 +42,7 @@ class TimeStamper
 
         $shiftBegin = ShiftBegin::currentShift($this->user, $this->now)->first();
         if ($shiftBegin) {
-            ShiftTiming::endShift($shiftBegin, $this->now);
+            ShiftTiming::endPeriod($shiftBegin, $this->now);
             $shiftBegin->delete();
         }
     }
@@ -54,7 +54,7 @@ class TimeStamper
 
         $shiftBegin = ShiftBegin::currentShift($this->user, $this->now)->first();
         if ($shiftBegin) {
-            BreakBegin::beginBreak($this->user, $this->now);
+            BreakBegin::beginPeriod($this->user, $this->now);
         }
     }
 
@@ -65,7 +65,7 @@ class TimeStamper
 
         $breakBegin = BreakBegin::currentBreak($this->user, $this->now)->first();
         if ($breakBegin) {
-            BreakTiming::endBreak($breakBegin, $this->now);
+            BreakTiming::endPeriod($breakBegin, $this->now);
             $breakBegin->delete();
         }
     }
@@ -82,7 +82,7 @@ class TimeStamper
     {
         $previousBegins = ShiftBegin::previousShift($this->user, $this->now)->get();
         foreach ($previousBegins as $shiftBegin) {
-            ShiftTiming::endShift($shiftBegin, null);
+            ShiftTiming::endPeriod($shiftBegin, null);
             $shiftBegin->delete();
         }
     }
@@ -92,11 +92,7 @@ class TimeStamper
     {
         $previousBegins = BreakBegin::previousBreak($this->user, $this->now)->get();
         foreach ($previousBegins as $breakBegin) {
-            BreakTiming::create([
-                'user_id' => $breakBegin->user_id,
-                'begun_at' => $breakBegin->begun_at,
-                'ended_at' => null,
-            ]);
+            BreakTiming::endPeriod($breakBegin, null);
             $breakBegin->delete();
         }
     }

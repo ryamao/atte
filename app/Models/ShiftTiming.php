@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\EndsTimePeriod;
 use App\Traits\HasTimeInSeconds;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ShiftTiming extends Model
 {
     use HasFactory;
+    use EndsTimePeriod;
     use HasTimeInSeconds;
 
     /** 一括割り当て可能な属性。 */
@@ -22,16 +24,6 @@ class ShiftTiming extends Model
 
     /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;
-
-    /** 勤務終了を記録する。 */
-    public static function endShift(ShiftBegin $shiftBegin, ?DateTimeInterface $now): void
-    {
-        static::create([
-            'user_id' => $shiftBegin->user_id,
-            'begun_at' => $shiftBegin->begun_at,
-            'ended_at' => $now,
-        ]);
-    }
 
     /**
      * 勤務再開処理のために ShiftTiming を削除して勤務開始日時を返す。
