@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\BreakTiming;
 use App\Models\ShiftTiming;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
@@ -27,32 +28,80 @@ class AttendancePageTest extends DuskTestCase
     }
 
     /**
-     * @testdox [日付別勤怠ページ] 必要な項目が存在する
+     * @testdox [日付別勤怠ページ] セレクタ "$selector" にテキスト "$text" が表示されている
+     * @group attendance
+     * @testWith ["header h1", "Atte"]
+     *           ["@logout", "ログアウト"]
+     *           ["footer small", "Atte, inc."]
+     */
+    public function testAttendancePageHasText(string $selector, string $text): void
+    {
+        $this->browse(function (Browser $browser) use ($selector, $text) {
+            $browser->loginAs(User::factory()->create());
+            $browser->visitRoute('attendance');
+            $browser->assertSeeIn($selector, $text);
+        });
+    }
+
+    /**
+     * @testdox [日付別勤怠ページ] 勤怠情報テーブルの左から $n 番目のヘッダにテキスト "$text" が表示されている
+     * @group attendance
+     * @testWith [1, "名前"]
+     *           [2, "勤務開始"]
+     *           [3, "勤務終了"]
+     *           [4, "休憩時間"]
+     *           [5, "勤務時間"]
+     */
+    public function testAttendancePageHasTableHeader(int $n, string $text): void
+    {
+        $this->browse(function (Browser $browser) use ($n, $text) {
+            $browser->loginAs(User::factory()->create());
+            $browser->visitRoute('attendance');
+            $browser->assertSeeIn("main table thead th:nth-child($n)", $text);
+        });
+    }
+
+    /**
+     * @testdox [日付別勤怠ページ] リンク "$link" をクリック時に route('$routeName') に遷移する
+     * @group attendance
+     * @testWith ["ホーム", "stamp"]
+     *           ["日付一覧", "attendance"]
+     */
+    public function testAttendancePageHasLink(string $link, string $routeName): void
+    {
+        $this->browse(function (Browser $browser) use ($link, $routeName) {
+            $browser->loginAs(User::factory()->create());
+            $browser->visitRoute('attendance');
+            $browser->assertSeeLink($link);
+            $browser->clickLink($link);
+            $browser->assertRouteIs($routeName);
+        });
+    }
+
+    /**
+     * @testdox [日付別勤怠ページ] ログアウトリンクを押すとログアウトする
      * @group attendance
      */
-    public function testAttendancePageHasText(): void
+    public function testAttendancePageHasLogoutLink(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::factory()->create());
             $browser->visitRoute('attendance');
+            $browser->press('ログアウト');
+            $browser->assertRouteIs('login');
+        });
+    }
 
-            $browser->assertSeeIn('header h1', 'Atte');
-
-            $browser->assertSeeLink('ホーム');
-            $browser->assertSeeLink('日付一覧');
-            $browser->assertSeeIn('@logout', 'ログアウト');
-
+    /**
+     * @testdox [日付別勤怠ページ] 当日の日付が表示されている
+     * @group attendance
+     */
+    public function testAttendancePageHasCurrentDate(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->loginAs(User::factory()->create());
+            $browser->visitRoute('attendance');
             $browser->assertSeeIn('@current-date', today()->format('Y-m-d'));
-            $browser->assertPresent('@previous-date');
-            $browser->assertPresent('@next-date');
-
-            $browser->assertSeeIn('main table thead th:nth-child(1)', '名前');
-            $browser->assertSeeIn('main table thead th:nth-child(2)', '勤務開始');
-            $browser->assertSeeIn('main table thead th:nth-child(3)', '勤務終了');
-            $browser->assertSeeIn('main table thead th:nth-child(4)', '休憩時間');
-            $browser->assertSeeIn('main table thead th:nth-child(5)', '勤務時間');
-
-            $browser->assertSeeIn('footer small', 'Atte, inc.');
         });
     }
 
@@ -65,6 +114,7 @@ class AttendancePageTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::factory()->create());
             $browser->visitRoute('attendance');
+            $browser->assertPresent('@previous-date');
             $browser->click('@previous-date');
             $browser->assertSeeIn('@current-date', today()->subDay()->format('Y-m-d'));
         });
@@ -79,6 +129,7 @@ class AttendancePageTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::factory()->create());
             $browser->visitRoute('attendance');
+            $browser->assertPresent('@next-date');
             $browser->click('@next-date');
             $browser->assertSeeIn('@current-date', today()->addDay()->format('Y-m-d'));
         });
@@ -103,8 +154,9 @@ class AttendancePageTest extends DuskTestCase
             $browser->loginAs($users[0]);
             $browser->visitRoute('attendance');
             foreach ($users as $i => $user) {
-                $n = $i + 1;
-                $browser->assertSeeIn("main table tbody tr:nth-child($n) td:nth-child(1)", $user->name);
+                $row = $i + 1;
+                $actual = $browser->text("main table tbody tr:nth-child($row) td:nth-child(1)");
+                $this->assertSame($user->name, $actual);
             }
             $this->assertThrows(
                 fn () => $browser->text("main table tbody tr:nth-child(6) td:nth-child(1)"),
@@ -132,13 +184,49 @@ class AttendancePageTest extends DuskTestCase
             $browser->loginAs($users[0]);
             $browser->visitRoute('attendance', ['page' => 2]);
             foreach ($users as $i => $user) {
-                $n = $i + 1;
-                $browser->assertSeeIn("main table tbody tr:nth-child($n) td:nth-child(1)", $user->name);
+                $row = $i + 1;
+                $browser->assertSeeIn("main table tbody tr:nth-child($row) td:nth-child(1)", $user->name);
             }
             $this->assertThrows(
                 fn () => $browser->text('main table tbody tr:nth-child(4) td:nth-child(1)'),
                 \Facebook\WebDriver\Exception\NoSuchElementException::class,
             );
+        });
+    }
+
+    /**
+     * @testdox [日付別勤怠ページ] 時刻と時間の表示形式が正しい
+     * @group attendance
+     */
+    public function testAttendancePageHasCorrectShiftTimingFormat(): void
+    {
+        $user = User::factory()->has(ShiftTiming::factory())->has(BreakTiming::factory())->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user);
+            $browser->visitRoute('attendance');
+            foreach (range(2, 5) as $column) {
+                $this->assertMatchesRegularExpression(
+                    '/^\d{2}:\d{2}:\d{2}$/',
+                    $browser->text("main table tbody tr:nth-child(1) td:nth-child($column)"),
+                );
+            }
+        });
+    }
+
+    /**
+     * @testdox [日付別勤怠ページ] 勤務終了していないユーザの終了時刻と勤務時間が "--:--:--" である
+     * @group attendance
+     */
+    public function testAttendancePageHasCorrectWorkTimeForUserWhoHasNotEndedShift(): void
+    {
+        $user = User::factory()->has(ShiftTiming::factory()->unended())->has(BreakTiming::factory())->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user);
+            $browser->visitRoute('attendance');
+            $browser->assertSeeIn('main table tbody tr:nth-child(1) td:nth-child(3)', '--:--:--');
+            $browser->assertSeeIn('main table tbody tr:nth-child(1) td:nth-child(5)', '--:--:--');
         });
     }
 
@@ -179,6 +267,11 @@ class AttendancePageTest extends DuskTestCase
             $browser->assertPresent('main nav a[aria-label="' . __('pagination.previous') . '"]');
             $browser->assertPresent('main nav [aria-label="' . __('pagination.next') . '"]:not(a)');
             $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '21');
+
+            $browser->click('main nav a[aria-label="' . __('pagination.previous') . '"]');
+            $browser->assertPresent('main nav a[aria-label="' . __('pagination.previous') . '"]');
+            $browser->assertPresent('main nav a[aria-label="' . __('pagination.next') . '"]');
+            $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '20');
         });
     }
 }

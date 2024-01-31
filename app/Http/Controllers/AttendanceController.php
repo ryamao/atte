@@ -19,7 +19,7 @@ class AttendanceController extends Controller
         $query = $service->attendances()->whereNotNull('shift_begun_at')->orderBy('user_name');
 
         return view('attendance', [
-            'current_date' => $date,
+            'currentDate' => $date,
             'attendances' => $query->paginate(5),
         ]);
     }

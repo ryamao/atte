@@ -108,7 +108,7 @@ class AttendanceTest extends TestCase
 
         $response = $this->getAttendance($dateString, $pageString);
 
-        $this->assertEquals($date, $response['current_date']);
+        $this->assertEquals($date, $response['currentDate']);
 
         $attendances = $response['attendances'];
         $this->assertSameSize($users, $attendances);
