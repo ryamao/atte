@@ -1,22 +1,32 @@
+@props(['css'])
+
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Atte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/sanitize.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/app-layout.css') }}" />
+    @isset($css)
+    <link rel="stylesheet" href="{{ asset('css/' . $css) }}" />
+    @endisset
 </head>
 
 <body>
-    <header>
-        <h1>Atte</h1>
+    <header class="header">
+        <h1 class="header__title">Atte</h1>
 
         @if (Auth::check())
-        <nav>
-            <ul>
-                <li><a href="{{ route('stamp') }}">ホーム</a></li>
-                <li><a href="{{ route('attendance') }}">日付一覧</a></li>
-                <li>
+        <nav class="header__nav">
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="{{ route('stamp') }}">ホーム</a></li>
+                <li class="header__nav-item"><a href="{{ route('attendance') }}">日付一覧</a></li>
+                <li class="header__nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
                         <button type="submit" dusk="logout">ログアウト</button>
@@ -26,11 +36,11 @@
         </nav>
         @endif
     </header>
-    <main>
+    <main class="content">
         {{ $slot }}
     </main>
-    <footer>
-        <small>Atte, inc.</small>
+    <footer class="footer">
+        <small class="footer__text">Atte, inc.</small>
     </footer>
 </body>
 
