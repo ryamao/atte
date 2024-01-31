@@ -116,8 +116,8 @@ class AttendanceTest extends TestCase
             $expected = ['user' => $user->toArray(), 'shift_begins' => $user->shiftBegin()->get()->toArray(), 'shift_timings' => $user->shiftTimings()->get()->toArray()];
             $message = 'expected: ' . var_export($expected, true) . PHP_EOL . 'actual: ' . var_export($attendance->toArray(), true);
             $this->assertSame($user->name, $attendance['user_name'], $message);
-            $this->assertSameDateTime($user->shiftBegunAt($date), $attendance['shift_begun_at'], $message);
-            $this->assertSameDateTime($user->shiftEndedAt($date), $attendance['shift_ended_at'], $message);
+            $this->assertSameDateTime($user->shiftBegunAtDate($date), $attendance['shift_begun_at'], $message);
+            $this->assertSameDateTime($user->shiftEndedAtDate($date), $attendance['shift_ended_at'], $message);
             $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
             $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
         }

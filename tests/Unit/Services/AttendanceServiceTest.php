@@ -375,8 +375,8 @@ class AttendanceServiceTest extends TestCase
 
         foreach ($testData->zip($actualData) as [$user, $shiftSeconds]) {
             $this->assertSame($user->id, $shiftSeconds['user_id']);
-            $this->assertSameDateTime($user->shiftBegunAt($this->today), $shiftSeconds['shift_begun_at']);
-            $this->assertSameDateTime($user->shiftEndedAt($this->today), $shiftSeconds['shift_ended_at']);
+            $this->assertSameDateTime($user->shiftBegunAtDate($this->today), $shiftSeconds['shift_begun_at']);
+            $this->assertSameDateTime($user->shiftEndedAtDate($this->today), $shiftSeconds['shift_ended_at']);
             $this->assertSame($user->shiftTimeInSeconds($this->today), $shiftSeconds['shift_seconds']);
         }
     }
@@ -400,8 +400,8 @@ class AttendanceServiceTest extends TestCase
             $this->assertSame($user->id, $attendance['user_id'], $message);
             $this->assertSame($user->name, $attendance['user_name'], $message);
 
-            $this->assertSameDateTime($user->shiftBegunAt($date), $attendance['shift_begun_at'], $message);
-            $this->assertSameDateTime($user->shiftEndedAt($date), $attendance['shift_ended_at'], $message);
+            $this->assertSameDateTime($user->shiftBegunAtDate($date), $attendance['shift_begun_at'], $message);
+            $this->assertSameDateTime($user->shiftEndedAtDate($date), $attendance['shift_ended_at'], $message);
 
             $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
             $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
