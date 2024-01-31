@@ -86,7 +86,7 @@ class User extends Authenticatable
     }
 
     /** ある日の勤務開始日時を取得する */
-    public function shiftBegunAt(DateTimeInterface $date): ?DateTimeInterface
+    public function shiftBegunAtDate(DateTimeInterface $date): ?DateTimeInterface
     {
         $shiftBegin = $this->shiftBegin()->whereDate('begun_at', $date)->first();
         if ($shiftBegin) {
@@ -98,7 +98,7 @@ class User extends Authenticatable
     }
 
     /** ある日の勤務終了日時を取得する */
-    public function shiftEndedAt(DateTimeInterface $date): ?DateTimeInterface
+    public function shiftEndedAtDate(DateTimeInterface $date): ?DateTimeInterface
     {
         $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
         return CarbonImmutable::make($shiftTiming?->ended_at);

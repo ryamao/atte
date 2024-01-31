@@ -34,44 +34,44 @@ class UserTest extends TestCase
      * @testdox ある日の勤務開始日時を取得する
      * @group model
      */
-    public function testShiftBegunAt(): void
+    public function testShiftBegunAtDate(): void
     {
         $date = CarbonImmutable::create(year: 2021, month: 1, day: 1, tz: 'Asia/Tokyo');
 
         $user = User::factory()->create();
-        $this->assertNull($user->shiftBegunAt($date));
+        $this->assertNull($user->shiftBegunAtDate($date));
 
         $user->shiftBegin()->create(['begun_at' => '2021-01-01 10:00:00']);
-        $this->assertEquals('2021-01-01 10:00:00', $user->shiftBegunAt($date)?->format('Y-m-d H:i:s'));
+        $this->assertEquals('2021-01-01 10:00:00', $user->shiftBegunAtDate($date)?->format('Y-m-d H:i:s'));
 
         $user->shiftBegin()->delete();
         $shiftTiming = $user->shiftTimings()->create(['begun_at' => '2021-01-01 10:00:00']);
-        $this->assertEquals('2021-01-01 10:00:00', $user->shiftBegunAt($date)?->format('Y-m-d H:i:s'));
+        $this->assertEquals('2021-01-01 10:00:00', $user->shiftBegunAtDate($date)?->format('Y-m-d H:i:s'));
 
         $shiftTiming->update(['ended_at' => '2021-01-01 18:00:00']);
-        $this->assertEquals('2021-01-01 10:00:00', $user->shiftBegunAt($date)?->format('Y-m-d H:i:s'));
+        $this->assertEquals('2021-01-01 10:00:00', $user->shiftBegunAtDate($date)?->format('Y-m-d H:i:s'));
     }
 
     /**
      * @testdox ある日の勤務終了日時を取得する
      * @group model
      */
-    public function testShiftEndedAt(): void
+    public function testShiftEndedAtDate(): void
     {
         $date = CarbonImmutable::create(year: 2021, month: 1, day: 1, tz: 'Asia/Tokyo');
 
         $user = User::factory()->create();
-        $this->assertNull($user->shiftEndedAt($date));
+        $this->assertNull($user->shiftEndedAtDate($date));
 
         $user->shiftBegin()->create(['begun_at' => '2021-01-01 10:00:00']);
-        $this->assertNull($user->shiftEndedAt($date));
+        $this->assertNull($user->shiftEndedAtDate($date));
 
         $user->shiftBegin()->delete();
         $shiftTiming = $user->shiftTimings()->create(['begun_at' => '2021-01-01 10:00:00']);
-        $this->assertNull($user->shiftEndedAt($date));
+        $this->assertNull($user->shiftEndedAtDate($date));
 
         $shiftTiming->update(['ended_at' => '2021-01-01 18:00:00']);
-        $this->assertEquals('2021-01-01 18:00:00', $user->shiftEndedAt($date)?->format('Y-m-d H:i:s'));
+        $this->assertEquals('2021-01-01 18:00:00', $user->shiftEndedAtDate($date)?->format('Y-m-d H:i:s'));
     }
 
     /**

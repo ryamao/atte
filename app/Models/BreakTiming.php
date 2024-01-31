@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use DateTimeInterface;
+use App\Traits\EndsTimePeriod;
 use App\Traits\HasTimeInSeconds;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class BreakTiming extends Model
 {
     use HasFactory;
+    use EndsTimePeriod;
     use HasTimeInSeconds;
 
     /** 一括割り当て可能な属性。 */
@@ -20,14 +21,4 @@ class BreakTiming extends Model
 
     /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;
-
-    /** 休憩終了を記録する。 */
-    public static function endBreak(BreakBegin $breakBegin, DateTimeInterface $now): void
-    {
-        static::create([
-            'user_id' => $breakBegin->user_id,
-            'begun_at' => $breakBegin->begun_at,
-            'ended_at' => $now,
-        ]);
-    }
 }

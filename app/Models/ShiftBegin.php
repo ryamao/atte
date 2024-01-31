@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BeginsTimePeriod;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,21 +15,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ShiftBegin extends Model
 {
     use HasFactory;
+    use BeginsTimePeriod;
 
     /** 一括割り当て可能な属性。 */
     protected $fillable = ['user_id', 'begun_at'];
 
     /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;
-
-    /** 勤務開始を記録する。同一会員が勤務中の場合は何もしない。 */
-    public static function beginShift(User $user, DateTimeInterface $now): void
-    {
-        static::firstOrCreate(
-            ['user_id' => $user->id],
-            ['begun_at' => $now],
-        );
-    }
 
     /** 打刻を行った会員を取得する。 */
     public function user(): BelongsTo
