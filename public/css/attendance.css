@@ -1,0 +1,94 @@
+.attendance {
+    width: 90%;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+.attendance__date {
+    width: fit-content;
+    padding: 3rem 0;
+    margin: 0 auto;
+    line-height: 0.5rem;
+}
+
+.attendance__date > * + * {
+    margin-left: 2rem;
+}
+
+.attendance__current-date {
+    font-size: 1.4rem;
+}
+
+.attendance__date a {
+    text-decoration: none;
+    font-size: 1.4rem;
+    color: #204be0;
+    background-color: #fff;
+    border: 1px solid #204be0;
+    border-radius: 0.125rem;
+    display: inline-block;
+    height: fit-content;
+    padding: 0.6rem 0.75rem;
+}
+
+.attendance__table {
+    width: 100%;
+    font-size: 1.1rem;
+}
+
+.attendance__table tr {
+    border-top: 1px solid #999;
+}
+
+.attendance__table tr > * {
+    padding: 1.5rem 2rem;
+}
+
+.attendance__table th {
+    text-align: left;
+}
+
+.attendance__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+}
+
+.pagination__inner {
+    color: #999;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    display: flex;
+}
+
+.pagination__inner > * {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 1.1rem;
+}
+
+.pagination__inner > * + * {
+    border-left: 1px solid #ddd;
+}
+
+.pagination__inner a {
+    text-decoration: none;
+    color: #2484cf;
+}
+
+.pagination__left,
+.pagination__right {
+    padding: 0.5rem 0.75rem;
+}
+
+.pagination__left svg,
+.pagination__right svg {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.pagination__current-page {
+    background-color: #2484cf;
+    color: #fff;
+}
