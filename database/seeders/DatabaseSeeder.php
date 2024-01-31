@@ -2,7 +2,12 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\BreakBegin;
+use App\Models\BreakTiming;
+use App\Models\ShiftBegin;
+use App\Models\ShiftTiming;
+use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +17,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $users = User::factory(103)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $dates = [CarbonImmutable::today(), CarbonImmutable::yesterday()];
+        foreach ($dates as $i => $date) {
+            CarbonImmutable::setTestNow($date);
+
+            foreach ($users as $user) {
+                if (fake()->boolean(5)) {
+                    // 休み
+                } else {
+                    if ($i === 0 && fake()->boolean(10)) {
+                        ShiftBegin::factory()->recycle($user)->create();
+
+                        if (fake()->boolean()) {
+                            BreakBegin::factory()->recycle($user)->create();
+                        }
+                    } else {
+                        ShiftTiming::factory()->recycle($user)->create();
+                    }
+
+                    $breakCount = fake()->numberBetween(0, 2);
+                    if ($breakCount > 0) {
+                        BreakTiming::factory($breakCount)->recycle($user)->create();
+                    }
+                }
+            }
+
+            CarbonImmutable::setTestNow();
+        }
     }
 }
