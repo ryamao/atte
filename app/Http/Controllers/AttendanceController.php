@@ -14,14 +14,17 @@ class AttendanceController extends Controller
     /** 日付別勤怠ページを表示する */
     public function index(DateTimeZone $timezone): View
     {
-        $date = $this->getDateFromQueryString($timezone);
-        $service = new AttendanceService($date);
-        $query = $service->attendances()->whereNotNull('shift_begun_at')->orderBy('user_name')->orderBy('user_id');
+        $currentDate = $this->getDateFromQueryString($timezone);
+        $service = new AttendanceService($currentDate);
+        $attendances = $service
+            ->attendances()
+            ->whereNotNull('shift_begun_at')
+            ->orderBy('user_name')
+            ->orderBy('user_id')
+            ->paginate(5)
+            ->withQueryString();
 
-        return view('attendance', [
-            'currentDate' => $date,
-            'attendances' => $query->paginate(5),
-        ]);
+        return view('attendance', compact('attendances', 'currentDate'));
     }
 
     /** クエリストリングから日付を取得する */
