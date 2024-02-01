@@ -48,7 +48,7 @@ class StampPageTest extends DuskTestCase
      * @testWith ["header h1", "Atte"]
      *           ["footer small", "Atte, inc."]
      */
-    public function test_stamp_page_has_text(string $selector, string $text): void
+    public function testStampPageHasText(string $selector, string $text): void
     {
         $this->browseAfterLogin(function (Browser $browser) use ($selector, $text) {
             $browser->visitRoute('stamp');
@@ -60,7 +60,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [テキスト] ログインユーザに対するねぎらいの言葉が表示されている
      * @group stamp
      */
-    public function test_stamp_page_has_gratitude_text_for_current_user(): void
+    public function testStampPageHasGratitude(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -74,7 +74,7 @@ class StampPageTest extends DuskTestCase
      * @testWith ["ホーム"]
      *           ["日付一覧"]
      */
-    public function test_stamp_page_has_link(string $link): void
+    public function testStampPageHasLink(string $link): void
     {
         $this->browseAfterLogin(function (Browser $browser) use ($link) {
             $browser->visitRoute('stamp');
@@ -88,7 +88,7 @@ class StampPageTest extends DuskTestCase
      * @testWith ["ホーム", "stamp"]
      *           ["日付一覧", "attendance"]
      */
-    public function test_stamp_page_links(string $link, string $routeName): void
+    public function testStampPageHasLinkAndItsRoute(string $link, string $routeName): void
     {
         $this->browseAfterLogin(function (Browser $browser) use ($link, $routeName) {
             $browser->visitRoute('stamp');
@@ -106,7 +106,7 @@ class StampPageTest extends DuskTestCase
      *           ["@break-begin", "休憩開始"]
      *           ["@break-end", "休憩終了"]
      */
-    public function test_stamp_page_has_button(string $selector, string $text): void
+    public function testStampPageHasButton(string $selector, string $text): void
     {
         $this->browseAfterLogin(function (Browser $browser) use ($selector, $text) {
             $browser->visitRoute('stamp');
@@ -118,7 +118,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [ボタン] ログアウト
      * @group stamp
      */
-    public function test_stamp_page_logout_button(): void
+    public function testStampPageHasLogoutButton(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -132,7 +132,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [勤務前] ボタンの有効化・無効化
      * @group stamp
      */
-    public function test_stamp_page_buttons_before_work(): void
+    public function testStampPageButtonsBeforeWork(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -147,7 +147,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [勤務中] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
-    public function test_stamp_page_buttons_during_work(): void
+    public function testStampPageButtonsDuringWork(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -164,7 +164,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [勤務後] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
-    public function test_stamp_page_buttons_after_work(): void
+    public function testStampPageButtonsAfterWork(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -182,7 +182,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [勤務再開後] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
-    public function test_stamp_page_buttons_during_work_again(): void
+    public function testStampPageButtonsAfterResume(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -201,7 +201,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [休憩中] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
-    public function test_stamp_page_buttons_during_break(): void
+    public function testStampPageButtonsDuringBreak(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');
@@ -219,7 +219,7 @@ class StampPageTest extends DuskTestCase
      * @testdox [打刻ページ] [休憩後] ボタン押下時の遷移と有効化・無効化
      * @group stamp
      */
-    public function test_stamp_page_buttons_after_break(): void
+    public function testStampPageButtonsAfterBreak(): void
     {
         $this->browseAfterLogin(function (Browser $browser) {
             $browser->visitRoute('stamp');

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,7 +12,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
 
-class AttendanceTest extends TestCase
+class AttendanceControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 

@@ -48,7 +48,7 @@ class LoginPageTest extends DuskTestCase
      *           ["@info-text", "アカウントをお持ちでない方はこちらから"]
      *           ["footer small", "Atte, inc."]
      */
-    public function test_login_page_has_text(string $selector, string $expected): void
+    public function testLoginPageHasText(string $selector, string $expected): void
     {
         $this->browse(function (Browser $browser) use ($selector, $expected) {
             $browser->visitRoute('login');
@@ -63,7 +63,7 @@ class LoginPageTest extends DuskTestCase
      * @testWith ["email"]
      *           ["password"]
      */
-    public function test_login_page_can_retain_text_typed_in_input_field(string $field): void
+    public function testLoginPageHasInputField(string $field): void
     {
         $this->browse(function (Browser $browser) use ($field) {
             $value = $field . '_test';
@@ -80,7 +80,7 @@ class LoginPageTest extends DuskTestCase
      * @testWith ["email", "メールアドレス"]
      *           ["password", "パスワード"]
      */
-    public function test_login_page_has_placeholder_in_input_field(string $field, string $placeholder): void
+    public function testLoginPageHasInputFieldPlaceholder(string $field, string $placeholder): void
     {
         $this->browse(function (Browser $browser) use ($field, $placeholder) {
             $browser->visitRoute('login');
@@ -92,7 +92,7 @@ class LoginPageTest extends DuskTestCase
      * @testdox [ログインページ] [ボタン/リンク] [ログイン] ログインボタンが表示されている
      * @group login
      */
-    public function test_login_page_displays_submit_button(): void
+    public function testLoginPageHasSubmitButtonNamedLogin(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('login');
@@ -104,7 +104,7 @@ class LoginPageTest extends DuskTestCase
      * @testdox [ログインページ] [ボタン/リンク] [ログイン] バリデーションエラー時にログインページに戻される
      * @group login
      */
-    public function test_login_page_can_redirect_to_login_page_if_submit_button_is_pressed_and_validation_fails(): void
+    public function testLoginPageRedirectsToLoginPageIfValidationFails(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('login');
@@ -117,7 +117,7 @@ class LoginPageTest extends DuskTestCase
      * @testdox [ログインページ] [ボタン/リンク] [ログイン] バリデーション成功時に打刻ページに遷移する
      * @group login
      */
-    public function test_login_page_can_redirect_to_stamping_page_if_submit_button_is_pressed_and_validation_succeeds(): void
+    public function testLoginPageRedirectsToStampPageIfValidationSucceeds(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('login');
@@ -133,7 +133,7 @@ class LoginPageTest extends DuskTestCase
      * @testdox [ログインページ] [ボタン/リンク] [会員登録] 会員登録ページへのリンクが表示されている
      * @group login
      */
-    public function test_login_page_has_link_named_register(): void
+    public function testLoginPageHasLinkToRegisterPage(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('login');
@@ -145,7 +145,7 @@ class LoginPageTest extends DuskTestCase
      * @testdox [ログインページ] [ボタン/リンク] [会員登録] 会員登録ページへのリンクをクリックすると会員登録ページに遷移する
      * @group login
      */
-    public function test_login_page_links_to_register_page(): void
+    public function testLoginPageRedirectsToRegisterPageIfLinkIsClicked(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('login');
@@ -159,7 +159,7 @@ class LoginPageTest extends DuskTestCase
      * @group login
      * @dataProvider provideInputFieldTestData
      */
-    public function test_login_page_displays_error_message_or_not(string $field, string $value, ?string $alert): void
+    public function testLoginPageCanValidateInputField(string $field, string $value, ?string $alert): void
     {
         $callback = function (Browser $browser) use ($field, $value, $alert) {
             $browser->visitRoute('login');
@@ -204,7 +204,7 @@ class LoginPageTest extends DuskTestCase
      * @testWith ["test2@example.com", "password"]
      *           ["test@example.com", "password2"]
      */
-    public function test_login_page_can_display_error_message_for_email_if_email_or_password_is_unregistered(string $email, string $password): void
+    public function testLoginPageCanValidateAuthenticationFailure(string $email, string $password): void
     {
         $callback = function (Browser $browser) use ($email, $password) {
             $browser->visitRoute('login');

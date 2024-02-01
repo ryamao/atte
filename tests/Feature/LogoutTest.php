@@ -31,7 +31,7 @@ class LogoutTest extends TestCase
      * @testdox [POST logout] [認証状態] 非認証状態になる
      * @group logout
      */
-    public function test_post_logout_for_auth_user_deactivate_authentication(): void
+    public function testPostLogoutForAuthUserMakesUserGuest(): void
     {
         $this->actingAs($this->user)->fromRoute('stamp')->post(route('logout'));
         $this->assertGuest();
@@ -41,7 +41,7 @@ class LogoutTest extends TestCase
      * @testdox [POST logout] [認証状態] route('login') へリダイレクトする
      * @group logout
      */
-    public function test_post_logout_for_auth_user_redirects_to_login_page(): void
+    public function testPostLogoutForAuthUserRedirectsToLoginPage(): void
     {
         $response = $this->actingAs($this->user)->fromRoute('stamp')->post(route('logout'));
         $response->assertRedirectToRoute('login');
@@ -51,7 +51,7 @@ class LogoutTest extends TestCase
      * @testdox [POST logout] [非認証状態] route('login') へリダイレクトする
      * @group logout
      */
-    public function test_post_logout_for_guest_redirects_to_login_page(): void
+    public function testPostLogoutForGuestRedirectsToLoginPage(): void
     {
         $response = $this->fromRoute('stamp')->post(route('logout'));
         $response->assertRedirectToRoute('login');
