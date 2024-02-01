@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Feature\Services;
 
 use App\Models\BreakBegin;
 use App\Models\BreakTiming;
