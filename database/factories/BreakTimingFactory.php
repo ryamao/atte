@@ -20,6 +20,7 @@ class BreakTimingFactory extends Factory
     {
         $today = DT::today('Asia/Tokyo');
         $begin = DT::make($this->faker->dateTimeInInterval($today->hour(10), '+6 hours'));
+
         return [
             'user_id' => User::factory(),
             'begun_at' => $begin,

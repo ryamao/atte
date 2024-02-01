@@ -9,7 +9,6 @@ use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
 /** 打刻ページと打刻機能のコントローラ */
@@ -57,15 +56,16 @@ class StampController extends Controller
 
     /**
      * 打刻処理を行う。
-     * 
-     * @param callable(StampService):void $callback
-     * @return RedirectResponse
+     *
+     * @param  callable(StampService):void  $callback
      */
     private function storeStamp(callable $callback): RedirectResponse
     {
         $now = CarbonImmutable::now(app()->make(DateTimeZone::class));
         $service = new StampService(Auth::user(), $now);
+
         $callback($service);
+
         return redirect()->route('stamp');
     }
 }

@@ -8,6 +8,7 @@ class StampControllerTest extends StampControllerTestCase
 {
     /**
      * @testdox [GET stamp] [未認証状態] route(stamp) へリダイレクトする
+     *
      * @group stamp
      */
     public function testGetStampFromGuestRedirectsToLoginPage(): void
@@ -19,6 +20,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [GET stamp] [認証状態] ステータスコード200を返す
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserReturnsStatusCode200(): void
@@ -29,6 +31,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [未認証状態] route(login) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromGuestRedirectsToLoginPage(): void
@@ -40,6 +43,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] route(stamp) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserRedirectsToIndexPage(): void
@@ -50,6 +54,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [未認証状態] route(login) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostShiftEndFromGuestRedirectsToLoginPage(): void
@@ -61,6 +66,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] route(stamp) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserRedirectsToIndexPage(): void
@@ -71,6 +77,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [未認証状態] route(login) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromGuestRedirectsToLoginPage(): void
@@ -82,6 +89,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] route(stamp) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserRedirectsToIndexPage(): void
@@ -92,6 +100,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [未認証状態] route(login) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostBreakEndFromGuestRedirectsToLoginPage(): void
@@ -103,6 +112,7 @@ class StampControllerTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [認証状態] route(stamp) へリダイレクトする
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserRedirectsToIndexPage(): void

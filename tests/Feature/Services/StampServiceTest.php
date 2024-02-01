@@ -15,8 +15,8 @@ use Tests\TestCase;
 
 class StampServiceTest extends TestCase
 {
-    use RefreshDatabase;
     use AssertsDatabase;
+    use RefreshDatabase;
 
     /** 打刻を行うユーザ。 */
     protected array $users;
@@ -48,6 +48,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 勤務開始後に StampService::beginShift を実行しても最初の日時を保持する
+     *
      * @group stamp
      */
     public function test_beginShift_twice(): void
@@ -60,6 +61,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 日付を跨いで StampService::beginShift を実行すると、前日の記録を勤務終了して当日の記録を開始する
+     *
      * @group stamp
      */
     public function test_beginShift_with_previous_data(): void
@@ -75,6 +77,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 休憩後の StampService::beginShift
+     *
      * @group stamp
      */
     public function test_beginShift_before_breaking(): void
@@ -91,6 +94,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 9時に勤務開始、17時に勤務終了、18時に勤務再開、19時に勤務終了
+     *
      * @group stamp
      */
     public function test_endShift(): void
@@ -110,6 +114,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 前日に勤務終了と休憩終了していない状態で StampService::endShift
+     *
      * @group stamp
      */
     public function test_endShift_with_previous_data(): void
@@ -125,6 +130,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 休憩中の StampService::endShift
+     *
      * @group stamp
      */
     public function test_endShift_while_at_break(): void
@@ -140,6 +146,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 休憩後の StampService::endShift
+     *
      * @group stamp
      */
     public function test_endShift_before_breaking(): void
@@ -156,6 +163,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 勤務開始前と勤務終了後では StampService::beginBreak は何もしない
+     *
      * @group stamp
      */
     public function test_beginBreak_do_nothing(): void
@@ -175,6 +183,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 休憩開始後に StampService::beginBreak を実行しても最初の日時を保持する
+     *
      * @group stamp
      */
     public function test_beginBreak_twice(): void
@@ -188,6 +197,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 前日に勤務終了と休憩終了していない状態で StampService::beginBreak
+     *
      * @group stamp
      */
     public function test_beginBreak_with_previous_data(): void
@@ -203,6 +213,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox StampService::endBreak のよくある使用例
+     *
      * @group stamp
      */
     public function test_endBreak(): void
@@ -223,6 +234,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 勤務開始前と勤務終了後では StampService::endBreak は何もしない
+     *
      * @group stamp
      */
     public function test_endBreak_do_nothing(): void
@@ -242,6 +254,7 @@ class StampServiceTest extends TestCase
 
     /**
      * @testdox 前日に勤務終了と休憩終了していない状態で StampService::endBreak
+     *
      * @group stamp
      */
     public function test_endBreak_with_previous_data(): void

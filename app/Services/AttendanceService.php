@@ -17,8 +17,8 @@ class AttendanceService
 {
     /**
      * サービスを初期化する。
-     * 
-     * @param \DateTimeInterface $serviceDate  勤怠情報を取得する日付
+     *
+     * @param  \DateTimeInterface  $serviceDate  勤怠情報を取得する日付
      */
     public function __construct(private readonly \DateTimeInterface $serviceDate)
     {
@@ -34,8 +34,7 @@ class AttendanceService
     public function breakSeconds(): Builder
     {
         // 指定の日付における休憩時間を計算する
-        $breakTimings = BreakTiming
-            ::selectRaw(<<<SQL
+        $breakTimings = BreakTiming::selectRaw(<<<'SQL'
                     user_id,
                     CASE
                         WHEN COUNT(*) = COUNT(ended_at) THEN
@@ -48,12 +47,10 @@ class AttendanceService
             ->groupBy('user_id');
 
         // 指定の日付における休憩中の会員を取得する
-        $breakBegins = BreakBegin
-            ::selectRaw('user_id')
+        $breakBegins = BreakBegin::selectRaw('user_id')
             ->whereDate('begun_at', $this->serviceDate);
 
-        return User
-            ::selectRaw(<<<SQL
+        return User::selectRaw(<<<'SQL'
                     users.id as user_id,
                     CASE
                         WHEN break_begins.user_id IS NOT NULL THEN
@@ -84,15 +81,12 @@ class AttendanceService
      */
     public function shiftSeconds(): Builder
     {
-        $shiftTimings = ShiftTiming
-            ::whereDate('begun_at', $this->serviceDate);
+        $shiftTimings = ShiftTiming::whereDate('begun_at', $this->serviceDate);
 
-        $shiftBegins = ShiftBegin
-            ::selectRaw('*, NULL AS ended_at')
+        $shiftBegins = ShiftBegin::selectRaw('*, NULL AS ended_at')
             ->whereDate('begun_at', $this->serviceDate);
 
-        return User
-            ::selectRaw(<<<SQL
+        return User::selectRaw(<<<'SQL'
                     users.id AS user_id,
                     shift_timings.begun_at AS shift_begun_at,
                     shift_timings.ended_at AS shift_ended_at,
@@ -122,8 +116,7 @@ class AttendanceService
     public function attendances(): Builder
     {
         return DB::transaction(function () {
-            return User
-                ::selectRaw(<<<SQL
+            return User::selectRaw(<<<'SQL'
                         users.id AS user_id,
                         users.name AS user_name,
                         shift_seconds.shift_begun_at,

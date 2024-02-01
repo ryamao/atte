@@ -11,6 +11,7 @@ class BreakTimingTest extends TestCase
 {
     /**
      * @testdox timeInSeconds() は休憩時間を秒数で返す。
+     *
      * @group model
      */
     public function testTimeInSeconds()
@@ -25,6 +26,7 @@ class BreakTimingTest extends TestCase
 
     /**
      * @testdox timeInSeconds() は休憩終了せずに日付を跨いだ場合の休憩時間では null を返す。
+     *
      * @group model
      */
     public function testTimeInSecondsReturnsNullWhenBreakCrossesDate()

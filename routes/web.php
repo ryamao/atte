@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\StampController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\StampController;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -16,12 +16,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * 会員を表すエンティティ
- * 
+ *
  * @property int $id
  * @property string $name
  * @property string $email
  * @property string $password
- * 
  * @property-read \App\Models\ShiftBegin $shiftBegin
  * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\ShiftTiming> $shiftTimings
  * @property-read \App\Models\BreakBegin $breakBegin
@@ -110,6 +109,7 @@ class User extends Authenticatable
         }
 
         $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
+
         return CarbonImmutable::make($shiftTiming?->begun_at);
     }
 
@@ -117,6 +117,7 @@ class User extends Authenticatable
     public function shiftEndedAtDate(DateTimeInterface $date): ?CarbonImmutable
     {
         $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
+
         return CarbonImmutable::make($shiftTiming?->ended_at);
     }
 
@@ -124,11 +125,16 @@ class User extends Authenticatable
     public function breakTimeInSeconds(DateTimeInterface $date): ?int
     {
         $breakBegin = $this->breakBegin()->whereDate('begun_at', $date)->first();
-        if ($breakBegin) return null;
+        if ($breakBegin) {
+            return null;
+        }
 
-        if ($this->breakTimings()->whereNull('ended_at')->exists()) return null;
+        if ($this->breakTimings()->whereNull('ended_at')->exists()) {
+            return null;
+        }
 
         $breakTimings = $this->breakTimings()->whereDate('begun_at', $date)->get();
+
         return $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
     }
 
@@ -136,12 +142,18 @@ class User extends Authenticatable
     public function shiftTimeInSeconds(DateTimeInterface $date): ?int
     {
         $shiftBegin = $this->shiftBegin()->whereDate('begun_at', $date)->first();
-        if ($shiftBegin) return null;
+        if ($shiftBegin) {
+            return null;
+        }
 
         $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
-        if (is_null($shiftTiming)) return 0;
+        if (is_null($shiftTiming)) {
+            return 0;
+        }
 
-        if (is_null($shiftTiming->ended_at)) return null;
+        if (is_null($shiftTiming->ended_at)) {
+            return null;
+        }
 
         return $shiftTiming->timeInSeconds();
     }
@@ -150,10 +162,14 @@ class User extends Authenticatable
     public function workTimeInSeconds(DateTimeInterface $date): ?int
     {
         $shiftTime = $this->shiftTimeInSeconds($date);
-        if (is_null($shiftTime)) return null;
+        if (is_null($shiftTime)) {
+            return null;
+        }
 
         $breakTime = $this->breakTimeInSeconds($date);
-        if (is_null($breakTime)) return null;
+        if (is_null($breakTime)) {
+            return null;
+        }
 
         return $shiftTime - $breakTime;
     }
@@ -161,8 +177,13 @@ class User extends Authenticatable
     /** ある日の勤務状況を取得する */
     public function workStatus(DateTimeInterface $date): WorkStatus
     {
-        if ($this->breakBegin()->whereDate('begun_at', $date)->exists()) return WorkStatus::Break;
-        if ($this->shiftBegin()->whereDate('begun_at', $date)->exists()) return WorkStatus::During;
+        if ($this->breakBegin()->whereDate('begun_at', $date)->exists()) {
+            return WorkStatus::Break;
+        }
+        if ($this->shiftBegin()->whereDate('begun_at', $date)->exists()) {
+            return WorkStatus::During;
+        }
+
         return WorkStatus::Before;
     }
 }

@@ -13,20 +13,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * 勤務開始を表すイベントエンティティ
- * 
+ *
  * @property int $id
  * @property int $user_id
  * @property \Illuminate\Support\CarbonImmutable $begun_at
- * 
  * @property-read \App\Models\User $user
- * 
+ *
  * @method static \Illuminate\Database\Eloquent\Builder currentShift(\App\Models\User $user, \DateTimeInterface $today)
  * @method static \Illuminate\Database\Eloquent\Builder previousShift(\App\Models\User $user, \DateTimeInterface $today)
  */
 class ShiftBegin extends Model
 {
-    use HasFactory;
     use BeginsTimePeriod;
+    use HasFactory;
 
     /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;

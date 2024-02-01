@@ -18,7 +18,9 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [テキスト] "$selector" - "$expected"
+     *
      * @group register
+     *
      * @testWith ["header h1", "Atte"]
      *           ["main h2", "会員登録"]
      *           ["@info-text", "アカウントをお持ちの方はこちらから"]
@@ -35,7 +37,9 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [入力フィールド] [$field] タイプしたテキストが入力されている
+     *
      * @group register
+     *
      * @testWith ["name"]
      *           ["email"]
      *           ["password"]
@@ -44,7 +48,7 @@ class RegisterPageTest extends DuskTestCase
     public function testRegisterPageHasInputField(string $field): void
     {
         $this->browse(function (Browser $browser) use ($field) {
-            $value = $field . '_test';
+            $value = $field.'_test';
             $browser->visitRoute('register');
             $browser->assertInputValue($field, '');
             $browser->type($field, $value);
@@ -54,7 +58,9 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [入力フィールド] [$field] プレースホルダが表示されている
+     *
      * @group register
+     *
      * @testWith ["name", "名前"]
      *           ["email", "メールアドレス"]
      *           ["password", "パスワード"]
@@ -70,6 +76,7 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録ボタンが表示されている
+     *
      * @group register
      */
     public function testRegisterPageHasSubmitButton(): void
@@ -82,6 +89,7 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] バリデーションエラー時に会員登録ページに戻される
+     *
      * @group register
      */
     public function testRegisterPageRedirectsToRegisterPageIfValidationFails(): void
@@ -95,6 +103,7 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録後、打刻ページに遷移する
+     *
      * @group register
      */
     public function testRegisterPageRedirectsToStampPageIfRegistrationSucceeds(): void
@@ -112,6 +121,7 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [ボタン/リンク] [ログイン] ログインリンクが表示されている
+     *
      * @group register
      */
     public function testRegisterPageHasLoginLink(): void
@@ -124,6 +134,7 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [ボタン/リンク] [ログイン] ログインリンクをクリックするとログインページに遷移する
+     *
      * @group register
      */
     public function testRegisterPageRedirectsToLoginPageIfLoginLinkIsClicked(): void
@@ -137,7 +148,9 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [入力フィールド]
+     *
      * @group register
+     *
      * @dataProvider provideInputFieldTestData
      */
     public function testRegisterPageValidatesInputFields(string $field, string $value, ?string $alert): void
@@ -150,7 +163,7 @@ class RegisterPageTest extends DuskTestCase
             $browser->type($field, $value);
             if ($field === 'password') {
                 $browser->type('password_confirmation', $value);
-            } else if ($field === 'password_confirmation') {
+            } elseif ($field === 'password_confirmation') {
                 $selector = '@password-alert';
                 $browser->type('password', 'password');
             }
@@ -177,10 +190,10 @@ class RegisterPageTest extends DuskTestCase
             '"name" - 未入力 - エラー' => ['name', '', '名前を入力してください'],
             '"name" - 192文字 - エラー' => ['name', str_repeat('a', 192), '名前は191文字以内で入力してください'],
             '"email" - メール形式 - ok' => ['email', 'test@example.com', null],
-            '"email" - ローカル64文字、ドメイン63文字 - ok' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 63), null],
+            '"email" - ローカル64文字、ドメイン63文字 - ok' => ['email', str_repeat('a', 64).'@'.str_repeat('a', 63), null],
             '"email" - 未入力 - エラー' => ['email', '', 'メールアドレスを入力してください'],
             '"email" - 非メール形式 - エラー' => ['email', 'example.com', '有効なメールアドレスを入力してください'],
-            '"email" - ローカル64文字、ドメイン64文字 - エラー' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 64), '有効なメールアドレスを入力してください'],
+            '"email" - ローカル64文字、ドメイン64文字 - エラー' => ['email', str_repeat('a', 64).'@'.str_repeat('a', 64), '有効なメールアドレスを入力してください'],
             '"password" - 8文字 - ok' => ['password', str_repeat('a', 8), null],
             '"password" - 191文字 - ok' => ['password', str_repeat('a', 191), null],
             '"password" - 未入力 - エラー' => ['password', '', 'パスワードを入力してください'],
@@ -193,6 +206,7 @@ class RegisterPageTest extends DuskTestCase
 
     /**
      * @testdox [会員登録ページ] [入力フィールド] [email] メールアドレスが登録済みの場合、エラーメッセージが表示される
+     *
      * @group register
      */
     public function testRegisterPageShowsErrorMessageIfEmailIsAlreadyRegistered(): void

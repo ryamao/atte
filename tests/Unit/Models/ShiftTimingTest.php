@@ -11,6 +11,7 @@ class ShiftTimingTest extends TestCase
 {
     /**
      * @testdox timeInSeconds() は勤務時間を秒数で返す。
+     *
      * @group model
      */
     public function testTimeInSeconds()
@@ -25,6 +26,7 @@ class ShiftTimingTest extends TestCase
 
     /**
      * @testdox timeInSeconds() は勤務終了せずに日付を跨いだ場合の勤務時間では null を返す。
+     *
      * @group model
      */
     public function testTimeInSecondsReturnsNullWhenShiftCrossesDate()

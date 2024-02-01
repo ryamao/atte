@@ -33,6 +33,7 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [GET login] ステータスコード200を返す
+     *
      * @group login
      */
     public function testGetLoginReturnsStatusCode200(): void
@@ -43,6 +44,7 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [POST login] [認証成功] 認証状態になる
+     *
      * @group login
      */
     public function testPostLoginWithValidParametersAuthenticatesCurrentUser(): void
@@ -54,6 +56,7 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [POST login] [認証成功] route('stamp') へリダイレクトする
+     *
      * @group login
      */
     public function testPostLoginWithValidParametersRedirectsToStampPage(): void
@@ -64,6 +67,7 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [POST login] [認証失敗] 非認証状態を維持する
+     *
      * @group login
      */
     public function testPostLoginWithInvalidParametersKeepsGuest(): void
@@ -74,6 +78,7 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [POST login] [認証失敗] route('login') へリダイレクトする
+     *
      * @group login
      */
     public function testPostLoginWithInvalidParametersRedirectsToLoginPage(): void
@@ -84,7 +89,9 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [POST login] [バリデーション]
+     *
      * @group login
+     *
      * @dataProvider provideLoginData
      */
     public function testPostLoginValidatesParameters(string $field, mixed $value, ?string $alert): void
@@ -101,8 +108,8 @@ class LoginTest extends TestCase
     {
         return [
             '"email" - ローカル1文字、ドメイン1文字 - OK' => ['email', 'a@a', null],
-            '"email" - ローカル64文字、ドメイン63文字 - OK' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 63), null],
-            '"email" - ローカル64文字、ドメイン64文字 - OK' => ['email', str_repeat('a', 64) . '@' . str_repeat('a', 64), null],
+            '"email" - ローカル64文字、ドメイン63文字 - OK' => ['email', str_repeat('a', 64).'@'.str_repeat('a', 63), null],
+            '"email" - ローカル64文字、ドメイン64文字 - OK' => ['email', str_repeat('a', 64).'@'.str_repeat('a', 64), null],
             '"email" - 非メール形式 - OK' => ['email', 'example.com', null],
             '"email" - null - エラー' => ['email', null, 'メールアドレスを入力してください'],
             '"email" - 非文字列 - エラー' => ['email', 123, 'メールアドレスは文字列を入力してください'],
@@ -117,6 +124,7 @@ class LoginTest extends TestCase
 
     /**
      * @testdox [POST login] [バリデーション] "email" が未登録の場合、エラーメッセージが返る
+     *
      * @group login
      */
     public function testPostLoginWithUnregisteredEmailReturnsErrorMessage(): void

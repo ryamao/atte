@@ -36,6 +36,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [GET stamp] [認証状態] [休憩中]
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserDuringBreak(): void
@@ -49,6 +50,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [GET stamp] [認証状態] [休憩中] 日付を跨いだ場合
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserDuringBreakWithPreviousData(): void
@@ -62,6 +64,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [休憩中]
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserDuringBreak(): void
@@ -75,6 +78,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [休憩中]
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserDuringBreak(): void
@@ -88,6 +92,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [休憩中]
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserWhileAtBreak(): void
@@ -101,6 +106,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [休憩中] 日付を跨いだ場合
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserDuringBreakWithCrossDate(): void
@@ -114,6 +120,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [認証状態] [休憩中]
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserDuringBreak(): void
@@ -128,6 +135,7 @@ class StampControllerDuringBreakTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [認証状態] [休憩中] 日付を跨いだ場合
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserDuringBreakWithCrossDate(): void

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Controllers;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Carbon\CarbonImmutable;
 use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\TestResponse;
+use Tests\TestCase;
 
 class AttendanceControllerTest extends TestCase
 {
@@ -51,6 +51,7 @@ class AttendanceControllerTest extends TestCase
 
     /**
      * @testdox [GET attendance] [非認証状態] route('login') へリダイレクトする
+     *
      * @group attendance
      */
     public function testGetAttendanceFromGuestReturnsRedirectToRouteLogin(): void
@@ -61,6 +62,7 @@ class AttendanceControllerTest extends TestCase
 
     /**
      * @testdox [GET attendance] [認証状態] ステータスコード200が返ってくる
+     *
      * @group attendance
      */
     public function testGetAttendanceFromAuthenticatedUserReturnsStatusCode200(): void
@@ -71,7 +73,9 @@ class AttendanceControllerTest extends TestCase
 
     /**
      * @testdox [GET attendance] [認証状態] date=$dateString&page=$pageString
+     *
      * @group attendance
+     *
      * @testWith [null        , null  ]
      *           ["2024-01-22", null  ]
      *           ["2024-01-23", null  ]
@@ -116,7 +120,7 @@ class AttendanceControllerTest extends TestCase
         $this->assertSameSize($users, $attendances);
         foreach ($attendances->zip($users) as [$attendance, $user]) {
             $expected = ['user' => $user->toArray(), 'shift_begins' => $user->shiftBegin()->get()->toArray(), 'shift_timings' => $user->shiftTimings()->get()->toArray()];
-            $message = 'expected: ' . var_export($expected, true) . PHP_EOL . 'actual: ' . var_export($attendance->toArray(), true);
+            $message = 'expected: '.var_export($expected, true).PHP_EOL.'actual: '.var_export($attendance->toArray(), true);
             $this->assertSame($user->name, $attendance['user_name'], $message);
             $this->assertSameDateTime($user->shiftBegunAtDate($date), $attendance['shift_begun_at'], $message);
             $this->assertSameDateTime($user->shiftEndedAtDate($date), $attendance['shift_ended_at'], $message);

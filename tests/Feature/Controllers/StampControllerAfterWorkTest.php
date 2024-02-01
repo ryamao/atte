@@ -28,6 +28,7 @@ class StampControllerAfterWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [GET stamp] [認証状態] [勤務後]
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserAfterWork(): void
@@ -41,6 +42,7 @@ class StampControllerAfterWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務後]
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserDoNothingToShiftBeginsTableAfterWork(): void
@@ -54,6 +56,7 @@ class StampControllerAfterWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務後] 前日に勤務時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserAfterWorkWithPreviousData(): void
@@ -69,6 +72,7 @@ class StampControllerAfterWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [勤務後]
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserAfterWork(): void
@@ -82,6 +86,7 @@ class StampControllerAfterWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [勤務後] 前日に勤務時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserAfterWorkWithPreviousData(): void

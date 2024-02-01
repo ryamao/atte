@@ -42,7 +42,9 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [テキスト] "$selector" - "$expected"
+     *
      * @group login
+     *
      * @testWith ["header h1", "Atte"]
      *           ["main h2", "ログイン"]
      *           ["@info-text", "アカウントをお持ちでない方はこちらから"]
@@ -59,14 +61,16 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [入力フィールド] [$field] タイプしたテキストが入力されている
+     *
      * @group login
+     *
      * @testWith ["email"]
      *           ["password"]
      */
     public function testLoginPageHasInputField(string $field): void
     {
         $this->browse(function (Browser $browser) use ($field) {
-            $value = $field . '_test';
+            $value = $field.'_test';
             $browser->visitRoute('login');
             $browser->assertInputValue($field, '');
             $browser->type($field, $value);
@@ -76,7 +80,9 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [入力フィールド] [$field] プレースホルダが表示されている
+     *
      * @group login
+     *
      * @testWith ["email", "メールアドレス"]
      *           ["password", "パスワード"]
      */
@@ -90,6 +96,7 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [ボタン/リンク] [ログイン] ログインボタンが表示されている
+     *
      * @group login
      */
     public function testLoginPageHasSubmitButtonNamedLogin(): void
@@ -102,6 +109,7 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [ボタン/リンク] [ログイン] バリデーションエラー時にログインページに戻される
+     *
      * @group login
      */
     public function testLoginPageRedirectsToLoginPageIfValidationFails(): void
@@ -115,6 +123,7 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [ボタン/リンク] [ログイン] バリデーション成功時に打刻ページに遷移する
+     *
      * @group login
      */
     public function testLoginPageRedirectsToStampPageIfValidationSucceeds(): void
@@ -131,6 +140,7 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [ボタン/リンク] [会員登録] 会員登録ページへのリンクが表示されている
+     *
      * @group login
      */
     public function testLoginPageHasLinkToRegisterPage(): void
@@ -143,6 +153,7 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [ボタン/リンク] [会員登録] 会員登録ページへのリンクをクリックすると会員登録ページに遷移する
+     *
      * @group login
      */
     public function testLoginPageRedirectsToRegisterPageIfLinkIsClicked(): void
@@ -156,7 +167,9 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [入力フィールド] バリデーション
+     *
      * @group login
+     *
      * @dataProvider provideInputFieldTestData
      */
     public function testLoginPageCanValidateInputField(string $field, string $value, ?string $alert): void
@@ -200,7 +213,9 @@ class LoginPageTest extends DuskTestCase
 
     /**
      * @testdox [ログインページ] [入力フィールド] [認証失敗] email="$email" - password="$password"
+     *
      * @group login
+     *
      * @testWith ["test2@example.com", "password"]
      *           ["test@example.com", "password2"]
      */
