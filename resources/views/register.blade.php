@@ -7,14 +7,14 @@
         <form class="auth__form" action="{{ route('register') }}" method="post" novalidate>
             @csrf
             <div class="auth__form-field">
-                <input type="text" name="name" placeholder="名前" />
+                <input type="text" name="name" placeholder="名前" value="{{ old('name') }}" />
                 @error('name')
                 <div class="auth__form-alert" dusk="name-alert">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="auth__form-field">
-                <input type="email" name="email" placeholder="メールアドレス" />
+                <input type="email" name="email" placeholder="メールアドレス" value="{{ old('email') }}" />
                 @error('email')
                 <div class="auth__form-alert" dusk="email-alert">{{ $message }}</div>
                 @enderror
