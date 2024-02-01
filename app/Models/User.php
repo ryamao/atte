@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\WorkStatus;
@@ -12,6 +14,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * 会員を表すエンティティ
+ * 
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * 
+ * @property-read \App\Models\ShiftBegin $shiftBegin
+ * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\ShiftTiming> $shiftTimings
+ * @property-read \App\Models\BreakBegin $breakBegin
+ * @property-read \Illuminate\Database\Eloquent\Collection<\App\Models\BreakTiming> $breakTimings
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -87,7 +102,7 @@ class User extends Authenticatable
     }
 
     /** ある日の勤務開始日時を取得する */
-    public function shiftBegunAtDate(DateTimeInterface $date): ?DateTimeInterface
+    public function shiftBegunAtDate(DateTimeInterface $date): ?CarbonImmutable
     {
         $shiftBegin = $this->shiftBegin()->whereDate('begun_at', $date)->first();
         if ($shiftBegin) {
@@ -99,7 +114,7 @@ class User extends Authenticatable
     }
 
     /** ある日の勤務終了日時を取得する */
-    public function shiftEndedAtDate(DateTimeInterface $date): ?DateTimeInterface
+    public function shiftEndedAtDate(DateTimeInterface $date): ?CarbonImmutable
     {
         $shiftTiming = $this->shiftTimings()->whereDate('begun_at', $date)->first();
         return CarbonImmutable::make($shiftTiming?->ended_at);
