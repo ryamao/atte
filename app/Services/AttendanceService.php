@@ -10,6 +10,7 @@ use App\Models\ShiftBegin;
 use App\Models\ShiftTiming;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 /** 日付別の勤怠情報を取得するサービスクラス */
 class AttendanceService
@@ -111,31 +112,37 @@ class AttendanceService
      */
     public function attendances(): Builder
     {
-        return User
-            ::selectRaw(<<<SQL
-                    users.id AS user_id,
-                    users.name AS user_name,
-                    shift_seconds.shift_begun_at,
-                    shift_seconds.shift_ended_at,
-                    break_seconds.break_seconds,
-                    CASE
-                        WHEN shift_seconds.shift_seconds IS NULL THEN
-                            NULL
-                        WHEN break_seconds.break_seconds IS NULL THEN
-                            NULL
-                        ELSE
-                            shift_seconds.shift_seconds - break_seconds.break_seconds
-                    END AS work_seconds
-                SQL)
-            ->leftJoinSub(
-                $this->breakSeconds(),
-                'break_seconds',
-                fn ($join) => $join->on('users.id', '=', 'break_seconds.user_id')
-            )
-            ->leftJoinSub(
-                $this->shiftSeconds(),
-                'shift_seconds',
-                fn ($join) => $join->on('users.id', '=', 'shift_seconds.user_id')
-            );
+        return DB::transaction(function () {
+            return User
+                ::selectRaw(<<<SQL
+                        users.id AS user_id,
+                        users.name AS user_name,
+                        shift_seconds.shift_begun_at,
+                        shift_seconds.shift_ended_at,
+                        break_seconds.break_seconds,
+                        CASE
+                            WHEN shift_seconds.shift_seconds IS NULL THEN
+                                NULL
+                            WHEN break_seconds.break_seconds IS NULL THEN
+                                NULL
+                            ELSE
+                                shift_seconds.shift_seconds - break_seconds.break_seconds
+                        END AS work_seconds
+                    SQL)
+                ->leftJoinSub(
+                    $this->breakSeconds(),
+                    'break_seconds',
+                    fn ($join) => $join->on('users.id', '=', 'break_seconds.user_id')
+                )->leftJoinSub(
+                    $this->shiftSeconds(),
+                    'shift_seconds',
+                    fn ($join) => $join->on('users.id', '=', 'shift_seconds.user_id')
+                )->withCasts([
+                    'shift_begun_at' => 'immutable_date:Y-m-d H:i:s',
+                    'shift_ended_at' => 'immutable_date:Y-m-d H:i:s',
+                    'break_seconds' => 'integer',
+                    'work_seconds' => 'integer',
+                ])->sharedLock();
+        });
     }
 }
