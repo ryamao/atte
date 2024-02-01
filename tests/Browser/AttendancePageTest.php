@@ -21,7 +21,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * テストデータ作成
-     * 
+     *
      * - 1ページ5名なので3ページ分
      * - 3ページ目が半端な人数になるようにする
      * - 当日と前日の2日分
@@ -44,6 +44,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] "/attendance" にアクセスできる
+     *
      * @group attendance
      */
     public function testAttendancePageIsAccessible(): void
@@ -57,7 +58,9 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [テキスト] "$selector" に "$text" が表示されている
+     *
      * @group attendance
+     *
      * @testWith ["header h1", "Atte"]
      *           ["@logout", "ログアウト"]
      *           ["footer small", "Atte, inc."]
@@ -73,7 +76,9 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [リンク/ボタン] "$link" が表示されていて、クリック時に route('$routeName') に遷移する
+     *
      * @group attendance
+     *
      * @testWith ["ホーム", "stamp"]
      *           ["日付一覧", "attendance"]
      */
@@ -90,6 +95,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [リンク/ボタン] "ログアウト" を押すとログアウトする
+     *
      * @group attendance
      */
     public function testAttendancePageHasLogoutLink(): void
@@ -105,6 +111,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [日付] 当日の日付が表示されている
+     *
      * @group attendance
      */
     public function testAttendancePageHasCurrentDate(): void
@@ -118,6 +125,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [日付] 前日リンクが存在していて、押下時に前日の勤怠ページに遷移する
+     *
      * @group attendance
      */
     public function testAttendancePageHasPreviousDateLink(): void
@@ -133,6 +141,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [日付] 翌日リンクが存在していて、押下時に翌日の勤怠ページに遷移する
+     *
      * @group attendance
      */
     public function testAttendancePageHasNextDateLink(): void
@@ -148,7 +157,9 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] 左から $n 番目のヘッダにテキスト "$text" が表示されている
+     *
      * @group attendance
+     *
      * @testWith [1, "名前"]
      *           [2, "勤務開始"]
      *           [3, "勤務終了"]
@@ -166,6 +177,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] 13名分のデータが1ページ5名ずつで3ページ表示されている
+     *
      * @group attendance
      */
     public function testAttendancePageHasCorrectNumberOfRows(): void
@@ -193,6 +205,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] 時刻と時間の表示形式が正しい
+     *
      * @group attendance
      */
     public function testAttendancePageHasCorrectShiftTimingFormat(): void
@@ -211,6 +224,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] 勤務終了していないユーザの終了時刻と勤務時間が "--:--:--" である
+     *
      * @group attendance
      */
     public function testAttendancePageHasCorrectWorkTimeForUserWhoHasNotEndedShift(): void
@@ -229,6 +243,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] 休憩終了していないユーザの休憩時間が "--:--:--" である
+     *
      * @group attendance
      */
     public function testAttendancePageHasCorrectBreakTimeForUserWhoHasNotEndedBreak(): void
@@ -246,6 +261,7 @@ class AttendancePageTest extends DuskTestCase
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] ページネーションが正しく表示される
+     *
      * @group attendance
      */
     public function testAttendancePageHasPagination(): void
@@ -253,17 +269,18 @@ class AttendancePageTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->users->first());
             $browser->visitRoute('attendance');
-            $browser->assertPresent('main nav[aria-label="' . __('Pagination Navigation') . '"]');
-            $browser->assertPresent('main nav [aria-label="' . __('pagination.previous') . '"]:not(a)');
-            $browser->assertPresent('main nav a[aria-label="' . __('pagination.next') . '"]');
+            $browser->assertPresent('main nav[aria-label="'.__('Pagination Navigation').'"]');
+            $browser->assertPresent('main nav [aria-label="'.__('pagination.previous').'"]:not(a)');
+            $browser->assertPresent('main nav a[aria-label="'.__('pagination.next').'"]');
             $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '1');
-            $browser->assertSeeIn('main nav a[aria-label="' . __('Go to page :page', ['page' => 2]) . '"]', '2');
-            $browser->assertSeeIn('main nav a[aria-label="' . __('Go to page :page', ['page' => 3]) . '"]', '3');
+            $browser->assertSeeIn('main nav a[aria-label="'.__('Go to page :page', ['page' => 2]).'"]', '2');
+            $browser->assertSeeIn('main nav a[aria-label="'.__('Go to page :page', ['page' => 3]).'"]', '3');
         });
     }
 
     /**
      * @testdox [日付別勤怠ページ] [勤怠テーブル] ページネーションのリンクが正しく機能する
+     *
      * @group attendance
      */
     public function testAttendancePageHasPaginationLinks(): void
@@ -271,13 +288,13 @@ class AttendancePageTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs($this->users->first());
             $browser->visitRoute('attendance');
-            $browser->click('main nav a[aria-label="' . __('pagination.next') . '"]');
+            $browser->click('main nav a[aria-label="'.__('pagination.next').'"]');
             $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '2');
-            $browser->click('main nav a[aria-label="' . __('Go to page :page', ['page' => 3]) . '"]');
+            $browser->click('main nav a[aria-label="'.__('Go to page :page', ['page' => 3]).'"]');
             $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '3');
-            $browser->click('main nav a[aria-label="' . __('pagination.previous') . '"]');
+            $browser->click('main nav a[aria-label="'.__('pagination.previous').'"]');
             $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '2');
-            $browser->click('main nav a[aria-label="' . __('Go to page :page', ['page' => 1]) . '"]');
+            $browser->click('main nav a[aria-label="'.__('Go to page :page', ['page' => 1]).'"]');
             $browser->assertSeeIn('main nav [aria-current="page"]:not(a)', '1');
         });
     }

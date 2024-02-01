@@ -44,7 +44,9 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [テキスト] "$selector" に "$text" が表示されている
+     *
      * @group stamp
+     *
      * @testWith ["header h1", "Atte"]
      *           ["footer small", "Atte, inc."]
      */
@@ -58,6 +60,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [テキスト] ログインユーザに対するねぎらいの言葉が表示されている
+     *
      * @group stamp
      */
     public function testStampPageHasGratitude(): void
@@ -70,7 +73,9 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [リンク] "$link" が表示されている
+     *
      * @group stamp
+     *
      * @testWith ["ホーム"]
      *           ["日付一覧"]
      */
@@ -84,7 +89,9 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [リンク] "$link" クリック時の遷移先が "$routeName"
+     *
      * @group stamp
+     *
      * @testWith ["ホーム", "stamp"]
      *           ["日付一覧", "attendance"]
      */
@@ -99,7 +106,9 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [ボタン] "$text" が表示されている
+     *
      * @group stamp
+     *
      * @testWith ["@logout", "ログアウト"]
      *           ["@shift-begin", "勤務開始"]
      *           ["@shift-end", "勤務終了"]
@@ -116,6 +125,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [ボタン] ログアウト
+     *
      * @group stamp
      */
     public function testStampPageHasLogoutButton(): void
@@ -130,6 +140,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [勤務前] ボタンの有効化・無効化
+     *
      * @group stamp
      */
     public function testStampPageButtonsBeforeWork(): void
@@ -145,6 +156,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [勤務中] ボタン押下時の遷移と有効化・無効化
+     *
      * @group stamp
      */
     public function testStampPageButtonsDuringWork(): void
@@ -162,6 +174,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [勤務後] ボタン押下時の遷移と有効化・無効化
+     *
      * @group stamp
      */
     public function testStampPageButtonsAfterWork(): void
@@ -180,6 +193,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [勤務再開後] ボタン押下時の遷移と有効化・無効化
+     *
      * @group stamp
      */
     public function testStampPageButtonsAfterResume(): void
@@ -199,6 +213,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [休憩中] ボタン押下時の遷移と有効化・無効化
+     *
      * @group stamp
      */
     public function testStampPageButtonsDuringBreak(): void
@@ -217,6 +232,7 @@ class StampPageTest extends DuskTestCase
 
     /**
      * @testdox [打刻ページ] [休憩後] ボタン押下時の遷移と有効化・無効化
+     *
      * @group stamp
      */
     public function testStampPageButtonsAfterBreak(): void

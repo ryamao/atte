@@ -19,6 +19,7 @@ class BreakBeginFactory extends Factory
     public function definition(): array
     {
         $today = DT::today('Asia/Tokyo');
+
         return [
             'user_id' => User::factory(),
             'begun_at' => DT::make($this->faker->dateTimeInInterval($today->hour(10), '+6 hours')),

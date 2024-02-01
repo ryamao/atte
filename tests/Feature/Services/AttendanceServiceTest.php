@@ -34,7 +34,9 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 休憩時間の取得
+     *
      * @group attendance
+     *
      * @dataProvider provideBreakSecondsTestData
      */
     public function testBreakSeconds(Factory $userFactory): void
@@ -47,6 +49,7 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 休憩時間の取得 (複数ユーザ)
+     *
      * @group attendance
      */
     public function testBreakSecondsWithMixedShifts(): void
@@ -61,7 +64,9 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 勤務時間の取得
+     *
      * @group attendance
+     *
      * @dataProvider provideShiftSecondsTestData
      */
     public function testShiftSeconds(Factory $userFactory): void
@@ -74,6 +79,7 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 勤務時間の取得 (複数ユーザ)
+     *
      * @group attendance
      */
     public function testShiftSecondsWithMixedShifts(): void
@@ -88,6 +94,7 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 勤務時間の取得 (複数日)
+     *
      * @group attendance
      */
     public function testShiftSecondsWithMultipleDays(): void
@@ -109,7 +116,7 @@ class AttendanceServiceTest extends TestCase
 
             $this->assertSameSize($expectedResult, $shiftSeconds);
             foreach ($expectedResult->zip($shiftSeconds) as [$expected, $actual]) {
-                $dump = "\nexpected: " . var_export($expected, true) . "\nactual: " . var_export($actual->toArray(), true);
+                $dump = "\nexpected: ".var_export($expected, true)."\nactual: ".var_export($actual->toArray(), true);
                 $message = "{$date->toDateString()} {$dump}";
                 $this->assertSame($expected['user_id'], $actual['user_id'], $message);
                 $this->assertSameDateTime($expected['shift_begun_at'], $actual['shift_begun_at'], $message);
@@ -121,7 +128,9 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 勤務情報の取得
+     *
      * @group attendance
+     *
      * @dataProvider provideAttendanceTestData
      */
     public function testAttendances(Factory $userFactory): void
@@ -134,6 +143,7 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 勤務情報の取得 (複数ユーザ)
+     *
      * @group attendance
      */
     public function testAttendancesWithMixedShifts(): void
@@ -148,6 +158,7 @@ class AttendanceServiceTest extends TestCase
 
     /**
      * @testdox 勤務情報の取得 (複数日)
+     *
      * @group attendance
      */
     public function testAttendancesWithMultipleDays(): void
@@ -169,7 +180,7 @@ class AttendanceServiceTest extends TestCase
 
             $this->assertSameSize($expected, $attendances);
             foreach ($expected->zip($attendances) as [$expected, $attendance]) {
-                $dump = 'expected: ' . var_export($expected, true) . PHP_EOL . 'actual: ' . var_export($attendance->toArray(), true);
+                $dump = 'expected: '.var_export($expected, true).PHP_EOL.'actual: '.var_export($attendance->toArray(), true);
                 $message = "{$date->toDateString()} {$dump}";
                 $this->assertSame($expected['user_id'], $attendance['user_id'], $message);
                 $this->assertSameDateTime($expected['shift_begun_at'], $attendance['shift_begun_at'], $message);
@@ -185,43 +196,43 @@ class AttendanceServiceTest extends TestCase
     {
         return [
             '勤務前' => [
-                User::factory()
+                User::factory(),
             ],
             '休憩0回' => [
                 User::factory()
-                    ->has(ShiftBegin::factory())
+                    ->has(ShiftBegin::factory()),
             ],
             '休憩1回(休憩中)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
             '休憩1回(未終了)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended()),
             ],
             '休憩1回' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakTiming::factory())
+                    ->has(BreakTiming::factory()),
             ],
             '休憩2回(休憩中)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
                     ->has(BreakTiming::factory())
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
             '休憩2回(未終了)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
                     ->has(BreakTiming::factory())
-                    ->has(BreakTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended()),
             ],
             '休憩2回' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakTiming::factory(2))
+                    ->has(BreakTiming::factory(2)),
             ],
         ];
     }
@@ -231,19 +242,19 @@ class AttendanceServiceTest extends TestCase
     {
         return [
             '勤務前' => [
-                User::factory()
+                User::factory(),
             ],
             '勤務中' => [
                 User::factory()
-                    ->has(ShiftBegin::factory())
+                    ->has(ShiftBegin::factory()),
             ],
             '勤務後' => [
                 User::factory()
-                    ->has(ShiftTiming::factory())
+                    ->has(ShiftTiming::factory()),
             ],
             '勤務後(未終了)' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->unended())
+                    ->has(ShiftTiming::factory()->unended()),
             ],
         ];
     }
@@ -253,92 +264,92 @@ class AttendanceServiceTest extends TestCase
     {
         return [
             '勤務前' => [
-                User::factory()
+                User::factory(),
             ],
             '勤務中 / 休憩0回' => [
                 User::factory()
-                    ->has(ShiftBegin::factory())
+                    ->has(ShiftBegin::factory()),
             ],
             '勤務中 / 休憩1回(休憩中)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
             '勤務中 / 休憩1回' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakTiming::factory())
+                    ->has(BreakTiming::factory()),
             ],
             '勤務中 / 休憩2回(休憩中)' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
                     ->has(BreakTiming::factory())
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
             '勤務中 / 休憩2回' => [
                 User::factory()
                     ->has(ShiftBegin::factory())
-                    ->has(BreakTiming::factory(2))
+                    ->has(BreakTiming::factory(2)),
             ],
 
             '勤務後 / 休憩0回' => [
                 User::factory()
-                    ->has(ShiftTiming::factory())
+                    ->has(ShiftTiming::factory()),
             ],
             '勤務後 / 休憩1回' => [
                 User::factory()
                     ->has(ShiftTiming::factory())
-                    ->has(BreakTiming::factory())
+                    ->has(BreakTiming::factory()),
             ],
             '勤務後 / 休憩2回' => [
                 User::factory()
                     ->has(ShiftTiming::factory())
-                    ->has(BreakTiming::factory(2))
+                    ->has(BreakTiming::factory(2)),
             ],
 
             '勤務後(未終了) / 休憩0回' => [
                 User::factory()
-                    ->has(ShiftTiming::factory()->unended())
+                    ->has(ShiftTiming::factory()->unended()),
             ],
             '勤務後(未終了) / 休憩1回(未終了)' => [
                 User::factory()
                     ->has(ShiftTiming::factory()->unended())
-                    ->has(BreakTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended()),
             ],
             '勤務後(未終了) / 休憩2回' => [
                 User::factory()
                     ->has(ShiftTiming::factory()->unended())
-                    ->has(BreakTiming::factory(2))
+                    ->has(BreakTiming::factory(2)),
             ],
             '勤務後(未終了) / 休憩2回(未終了)' => [
                 User::factory()
                     ->has(ShiftTiming::factory()->unended())
                     ->has(BreakTiming::factory())
-                    ->has(BreakTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended()),
             ],
 
             '異常系 / 勤務前 / 休憩中' => [
                 User::factory()
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
             '異常系 / 勤務前 / 休憩1回(未終了)' => [
                 User::factory()
-                    ->has(BreakTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended()),
             ],
             '異常系 / 勤務後 / 休憩中' => [
                 User::factory()
                     ->has(ShiftTiming::factory())
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
             '異常系 / 勤務後 / 休憩1回(未終了)' => [
                 User::factory()
                     ->has(ShiftTiming::factory())
-                    ->has(BreakTiming::factory()->unended())
+                    ->has(BreakTiming::factory()->unended()),
             ],
             '異常系 / 勤務後(未終了) / 休憩中' => [
                 User::factory()
                     ->has(ShiftTiming::factory()->unended())
-                    ->has(BreakBegin::factory())
+                    ->has(BreakBegin::factory()),
             ],
         ];
     }
@@ -346,8 +357,8 @@ class AttendanceServiceTest extends TestCase
     /**
      * 休憩時間をアサーションする
      *
-     * @param Collection<User> $testData
-     * @param Collection<array{id: int, break_seconds: string|null}> $actualData
+     * @param  Collection<User>  $testData
+     * @param  Collection<array{id: int, break_seconds: string|null}>  $actualData
      */
     private function assertBreakSeconds(Collection $testData, Collection $actualData, CarbonImmutable $date): void
     {
@@ -365,8 +376,8 @@ class AttendanceServiceTest extends TestCase
     /**
      * 勤務時間をアサーションする
      *
-     * @param Collection<User> $testData
-     * @param Collection<array{user_id: int, begun_at: string, ended_at: string|null, shift_seconds: int|null}> $actualData
+     * @param  Collection<User>  $testData
+     * @param  Collection<array{user_id: int, begun_at: string, ended_at: string|null, shift_seconds: int|null}>  $actualData
      */
     private function assertShiftSeconds(Collection $testData, Collection $actualData): void
     {
@@ -386,8 +397,8 @@ class AttendanceServiceTest extends TestCase
     /**
      * 勤務情報をアサーションする
      *
-     * @param Collection<User> $users
-     * @param Collection<array{user_name: string, shift_begun_at: string, shift_ended_at: string|null, work_seconds: string|null, break_seconds: string|null}> $attendances
+     * @param  Collection<User>  $users
+     * @param  Collection<array{user_name: string, shift_begun_at: string, shift_ended_at: string|null, work_seconds: string|null, break_seconds: string|null}>  $attendances
      */
     private function assertAttendances(Collection $testData, Collection $attendances, CarbonImmutable $date): void
     {
@@ -397,7 +408,7 @@ class AttendanceServiceTest extends TestCase
         $attendances = $attendances->sortBy('user_id');
 
         foreach ($testData->zip($attendances) as [$user, $attendance]) {
-            $message = 'actual: ' . var_export($attendance->toArray(), true);
+            $message = 'actual: '.var_export($attendance->toArray(), true);
 
             $this->assertSame($user->id, $attendance['user_id'], $message);
             $this->assertSame($user->name, $attendance['user_name'], $message);
@@ -413,7 +424,10 @@ class AttendanceServiceTest extends TestCase
     /** 2つの日付が同じ日かどうかを判定する。 */
     private function isSameDay(mixed $date1, mixed $date2): bool
     {
-        if (is_null($date1) || is_null($date2)) return false;
+        if (is_null($date1) || is_null($date2)) {
+            return false;
+        }
+
         return CarbonImmutable::make($date1)->isSameDay(CarbonImmutable::make($date2));
     }
 
@@ -435,7 +449,9 @@ class AttendanceServiceTest extends TestCase
                     $breakTimings = BreakTiming::factory($countBreaks)->recycle($user)->create();
                     $data['break_seconds'] = $breakTimings->sum(fn (BreakTiming $breakTiming) => $breakTiming->timeInSeconds());
                 } else {
-                    if ($countBreaks >= 2) BreakTiming::factory($countBreaks - 1)->recycle($user)->create();
+                    if ($countBreaks >= 2) {
+                        BreakTiming::factory($countBreaks - 1)->recycle($user)->create();
+                    }
                     BreakTiming::factory()->recycle($user)->unended()->create();
                     $data['break_seconds'] = null;
                 }

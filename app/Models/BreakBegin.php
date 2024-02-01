@@ -12,17 +12,17 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * 休憩開始を表すイベントエンティティ
- * 
+ *
  * @property int $id
  * @property int $user_id
  * @property \Illuminate\Support\CarbonImmutable $begun_at
- * 
+ *
  * @method static \Illuminate\Database\Eloquent\Builder currentBreak(\App\Models\User $user, \DateTimeInterface $today)
  */
 class BreakBegin extends Model
 {
-    use HasFactory;
     use BeginsTimePeriod;
+    use HasFactory;
 
     /** created_atとupdated_atの自動更新を解除する。 */
     public $timestamps = false;

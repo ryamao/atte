@@ -16,6 +16,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日に勤務しているかどうかを判定する
+     *
      * @group model
      */
     public function testIsWorkingOn(): void
@@ -35,6 +36,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日の勤務開始日時を取得する
+     *
      * @group model
      */
     public function testShiftBegunAtDate(): void
@@ -57,6 +59,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日の勤務終了日時を取得する
+     *
      * @group model
      */
     public function testShiftEndedAtDate(): void
@@ -79,6 +82,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日の休憩時間を秒数で取得する
+     *
      * @group model
      */
     public function testBreakTimeInSeconds(): void
@@ -101,6 +105,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日の勤務時間を秒数で取得する
+     *
      * @group model
      */
     public function testShiftTimeInSeconds(): void
@@ -123,6 +128,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日の労働時間を秒数で取得する
+     *
      * @group model
      */
     public function testWorkTimeInSeconds(): void
@@ -155,6 +161,7 @@ class UserTest extends TestCase
 
     /**
      * @testdox ある日の勤務状況を取得する
+     *
      * @group model
      */
     public function testWorkStatus(): void

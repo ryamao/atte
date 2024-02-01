@@ -18,8 +18,8 @@ use Tests\TestCase;
 
 class StampControllerTestCase extends TestCase
 {
-    use RefreshDatabase;
     use AssertsDatabase;
+    use RefreshDatabase;
 
     /** テスト中の認証に使用するユーザ */
     protected User $loginUser;
@@ -46,6 +46,7 @@ class StampControllerTestCase extends TestCase
     {
         $user = $user ?? $this->loginUser;
         $begunAt = $begunAt ?? $this->testBegunAt;
+
         return ShiftTiming::create([
             'user_id' => $user->id,
             'begun_at' => $begunAt,
@@ -58,6 +59,7 @@ class StampControllerTestCase extends TestCase
     {
         $user = $user ?? $this->loginUser;
         $begunAt = $begunAt ?? $this->testBegunAt;
+
         return BreakTiming::create([
             'user_id' => $user->id,
             'begun_at' => $begunAt,
@@ -69,6 +71,7 @@ class StampControllerTestCase extends TestCase
     protected function loginAndPost(string $routeName, ?DateTimeInterface $when = null): TestResponse
     {
         $datetime = $when ?? $this->testBegunAt;
+
         return $this->travelTo(
             $datetime,
             fn () => $this->actingAs($this->loginUser)->post(route($routeName))

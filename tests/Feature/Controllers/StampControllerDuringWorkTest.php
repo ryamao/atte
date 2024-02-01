@@ -27,6 +27,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [GET stamp] [認証状態] [勤務中]
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserDuringWork(): void
@@ -40,6 +41,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [GET stamp] [認証状態] [勤務中] 日付を跨いだ場合
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserDuringWorkWithPreviousData(): void
@@ -53,6 +55,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務中]
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserDuringWork(): void
@@ -66,6 +69,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserDuringWorkWithPreviousData(): void
@@ -81,6 +85,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] 日付を跨いだ場合
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserOfCrossDate(): void
@@ -95,6 +100,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [勤務中]
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserDuringWork(): void
@@ -109,6 +115,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserDuringWorkWithPreviousData(): void
@@ -128,6 +135,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] 日付を跨いだ場合
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserOfCrossDate(): void
@@ -141,6 +149,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [勤務中]
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserDuringWork(): void
@@ -155,6 +164,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserDuringWorkWithPreviousData(): void
@@ -171,6 +181,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [認証状態] [勤務中]
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserDuringWork(): void
@@ -184,6 +195,7 @@ class StampControllerDuringWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserDuringWorkWithPreviousData(): void

@@ -15,6 +15,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 {
     /**
      * @testdox [GET stamp] [認証状態] [勤務前]
+     *
      * @group stamp
      */
     public function testGetStampFromAuthenticatedUserBeforeWork(): void
@@ -28,6 +29,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務前]
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserBeforeWork(): void
@@ -41,6 +43,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務前] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserBeforeWorkWithPreviousData(): void
@@ -56,6 +59,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-begin] [認証状態] [勤務前] 複数ユーザによる操作
+     *
      * @group stamp
      */
     public function testPostShiftBeginFromAuthenticatedUserBeforeWorkWithAnotherUser(): void
@@ -76,6 +80,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [勤務前]
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserBeforeWork(): void
@@ -89,6 +94,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST shift-end] [認証状態] [勤務前] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostShiftEndFromAuthenticatedUserBeforeWorkWithPreviousData(): void
@@ -104,6 +110,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [勤務前]
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserBeforeWork(): void
@@ -117,6 +124,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [勤務前] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostBreakBeginFromAuthenticatedUserBeforeWorkWithPreviousData(): void
@@ -132,6 +140,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-end] [認証状態] [勤務前]
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserBeforeWork(): void
@@ -145,6 +154,7 @@ class StampControllerBeforeWorkTest extends StampControllerTestCase
 
     /**
      * @testdox [POST break-begin] [認証状態] [勤務前] 前日に勤務時間と休憩時間が記録されている場合
+     *
      * @group stamp
      */
     public function testPostBreakEndFromAuthenticatedUserBeforeWorkWithPreviousData(): void

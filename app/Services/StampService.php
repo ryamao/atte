@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * 複数のモデルを操作して打刻処理を実行するサービスクラス
- * 
+ *
  * @property-read User  $user  打刻を行う会員
  * @property-read DateTimeInterface  $now  打刻を行う日時
  */
@@ -57,10 +57,11 @@ class StampService
 
         DB::transaction(function () {
             $breakBegin = BreakBegin::currentBreak($this->user, $this->now)->first();
-            if ($breakBegin) return;
+            if ($breakBegin) {
+                return;
+            }
 
-            $shiftBegin = ShiftBegin
-                ::currentShift($this->user, $this->now)
+            $shiftBegin = ShiftBegin::currentShift($this->user, $this->now)
                 ->lockForUpdate()
                 ->first();
             if ($shiftBegin) {
@@ -89,8 +90,7 @@ class StampService
         $this->handlePreviousEvents();
 
         DB::transaction(function () {
-            $breakBegin = BreakBegin
-                ::currentBreak($this->user, $this->now)
+            $breakBegin = BreakBegin::currentBreak($this->user, $this->now)
                 ->lockForUpdate()
                 ->first();
             if ($breakBegin) {
@@ -104,8 +104,7 @@ class StampService
     private function handlePreviousShift(): void
     {
         DB::transaction(function () {
-            $previousBegins = ShiftBegin
-                ::previousShift($this->user, $this->now)
+            $previousBegins = ShiftBegin::previousShift($this->user, $this->now)
                 ->lockForUpdate()
                 ->get();
 
@@ -120,8 +119,7 @@ class StampService
     private function handlePreviousBreak(): void
     {
         DB::transaction(function () {
-            $previousBegins = BreakBegin
-                ::previousBreak($this->user, $this->now)
+            $previousBegins = BreakBegin::previousBreak($this->user, $this->now)
                 ->lockForUpdate()
                 ->get();
 

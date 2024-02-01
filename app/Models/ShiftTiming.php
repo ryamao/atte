@@ -14,20 +14,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * 確定済みの勤務時間を表すリソースエンティティ
- * 
+ *
  * @property int $id
  * @property int $user_id
  * @property \Illuminate\Support\CarbonImmutable $begun_at
  * @property \Illuminate\Support\CarbonImmutable $ended_at
- * 
  * @property-read \App\Models\User $user
- * 
+ *
  * @method static \Illuminate\Database\Eloquent\Builder begunAtDate(\App\Models\User $user, \DateTimeInterface $date)
  */
 class ShiftTiming extends Model
 {
-    use HasFactory;
     use EndsTimePeriod;
+    use HasFactory;
     use HasTimeInSeconds;
 
     /** created_atとupdated_atの自動更新を解除する。 */

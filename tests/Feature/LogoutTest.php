@@ -29,6 +29,7 @@ class LogoutTest extends TestCase
 
     /**
      * @testdox [POST logout] [認証状態] 非認証状態になる
+     *
      * @group logout
      */
     public function testPostLogoutForAuthUserMakesUserGuest(): void
@@ -39,6 +40,7 @@ class LogoutTest extends TestCase
 
     /**
      * @testdox [POST logout] [認証状態] route('login') へリダイレクトする
+     *
      * @group logout
      */
     public function testPostLogoutForAuthUserRedirectsToLoginPage(): void
@@ -49,6 +51,7 @@ class LogoutTest extends TestCase
 
     /**
      * @testdox [POST logout] [非認証状態] route('login') へリダイレクトする
+     *
      * @group logout
      */
     public function testPostLogoutForGuestRedirectsToLoginPage(): void

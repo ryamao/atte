@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * 確定済みの休憩時間を表すリソースエンティティ
- * 
+ *
  * @property int $id
  * @property int $user_id
  * @property \Illuminate\Support\CarbonImmutable $begun_at
@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BreakTiming extends Model
 {
-    use HasFactory;
     use EndsTimePeriod;
+    use HasFactory;
     use HasTimeInSeconds;
 
     /** created_atとupdated_atの自動更新を解除する。 */
