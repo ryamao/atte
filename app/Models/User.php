@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\WorkStatus;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -140,5 +141,13 @@ class User extends Authenticatable
         if (is_null($breakTime)) return null;
 
         return $shiftTime - $breakTime;
+    }
+
+    /** ある日の勤務状況を取得する */
+    public function workStatus(DateTimeInterface $date): WorkStatus
+    {
+        if ($this->breakBegin()->whereDate('begun_at', $date)->exists()) return WorkStatus::Break;
+        if ($this->shiftBegin()->whereDate('begun_at', $date)->exists()) return WorkStatus::During;
+        return WorkStatus::Before;
     }
 }

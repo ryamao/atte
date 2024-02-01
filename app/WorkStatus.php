@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Models\BreakBegin;
-use App\Models\ShiftBegin;
-use App\Models\User;
-use DateTimeInterface;
-
 /** 会員の勤務状態と休憩状態を表す列挙型 */
 enum WorkStatus
 {
@@ -19,15 +14,21 @@ enum WorkStatus
     /** `勤務開始後 && 休憩開始後` */
     case Break;
 
-    /** 現在日時における会員の状態を取得する。 */
-    public static function ask(User $user, DateTimeInterface $now): self
+    /** 勤務中であることを判定する */
+    public function isDuring(): bool
     {
-        $breakBegins = BreakBegin::currentBreak($user, $now);
-        if ($breakBegins->exists()) return self::Break;
+        return $this === self::During;
+    }
 
-        $shiftBegins = ShiftBegin::currentShift($user, $now);
-        if ($shiftBegins->exists()) return self::During;
+    /** 休憩中であることを判定する */
+    public function isBreak(): bool
+    {
+        return $this === self::Break;
+    }
 
-        return self::Before;
+    /** 勤務中でも休憩中でもないことを判定する */
+    public function isBefore(): bool
+    {
+        return $this === self::Before;
     }
 }

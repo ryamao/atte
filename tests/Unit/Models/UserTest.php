@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\Models\User;
+use App\WorkStatus;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -148,5 +151,31 @@ class UserTest extends TestCase
 
         $breakTiming->update(['ended_at' => '2021-01-01 13:00:00']);
         $this->assertEquals(60 * 60 * 7, $user->workTimeInSeconds($date));
+    }
+
+    /**
+     * @testdox ある日の勤務状況を取得する
+     * @group model
+     */
+    public function testWorkStatus(): void
+    {
+        $date = CarbonImmutable::create(year: 2021, month: 1, day: 1, tz: 'Asia/Tokyo');
+
+        $user = User::factory()->create();
+        $this->assertSame(WorkStatus::Before, $user->workStatus($date));
+
+        $user->shiftBegin()->create(['begun_at' => '2021-01-01 10:00:00']);
+        $this->assertSame(WorkStatus::During, $user->workStatus($date));
+
+        $user->breakBegin()->create(['begun_at' => '2021-01-01 12:00:00']);
+        $this->assertSame(WorkStatus::Break, $user->workStatus($date));
+
+        $user->breakBegin()->delete();
+        $user->breakTimings()->create(['begun_at' => '2021-01-01 12:00:00']);
+        $this->assertSame(WorkStatus::During, $user->workStatus($date));
+
+        $user->shiftBegin()->delete();
+        $user->shiftTimings()->create(['begun_at' => '2021-01-01 10:00:00', 'ended_at' => '2021-01-01 18:00:00']);
+        $this->assertSame(WorkStatus::Before, $user->workStatus($date));
     }
 }

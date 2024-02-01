@@ -25,7 +25,7 @@ class StampController extends Controller
         $now = CarbonImmutable::now($timezone);
         return view('stamp', [
             'userName' => $user->name,
-            'workStatus' => WorkStatus::ask($user, $now),
+            'workStatus' => $user->workStatus($now),
         ]);
     }
 
