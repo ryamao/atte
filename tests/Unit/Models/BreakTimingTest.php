@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\BreakTiming;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class BreakTimingTest extends TestCase
 {

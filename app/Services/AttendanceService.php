@@ -33,6 +33,7 @@ class AttendanceService
      */
     public function breakSeconds(): Builder
     {
+        // 指定の日付における休憩時間を計算する
         $breakTimings = BreakTiming
             ::selectRaw(<<<SQL
                     user_id,
@@ -45,6 +46,8 @@ class AttendanceService
                 SQL)
             ->whereDate('begun_at', $this->serviceDate)
             ->groupBy('user_id');
+
+        // 指定の日付における休憩中の会員を取得する
         $breakBegins = BreakBegin
             ::selectRaw('user_id')
             ->whereDate('begun_at', $this->serviceDate);
@@ -65,12 +68,13 @@ class AttendanceService
                 $breakTimings,
                 'break_timings',
                 fn ($join) => $join->on('users.id', '=', 'break_timings.user_id')
-            )
-            ->leftJoinSub(
+            )->leftJoinSub(
                 $breakBegins,
                 'break_begins',
                 fn ($join) => $join->on('users.id', '=', 'break_begins.user_id')
-            );
+            )->withCasts([
+                'break_seconds' => 'integer',
+            ]);
     }
 
     /**
@@ -82,29 +86,34 @@ class AttendanceService
     {
         $shiftTimings = ShiftTiming
             ::whereDate('begun_at', $this->serviceDate);
+
         $shiftBegins = ShiftBegin
             ::selectRaw('*, NULL AS ended_at')
             ->whereDate('begun_at', $this->serviceDate);
 
         return User
             ::selectRaw(<<<SQL
-                users.id AS user_id,
-                shift_timings.begun_at AS shift_begun_at,
-                shift_timings.ended_at AS shift_ended_at,
-                CASE
-                    WHEN shift_timings.id IS NULL THEN
-                        0
-                    WHEN shift_timings.ended_at IS NULL THEN
-                        NULL
-                    ELSE
-                        TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at)
-                END AS shift_seconds
-            SQL)
+                    users.id AS user_id,
+                    shift_timings.begun_at AS shift_begun_at,
+                    shift_timings.ended_at AS shift_ended_at,
+                    CASE
+                        WHEN shift_timings.id IS NULL THEN
+                            0
+                        WHEN shift_timings.ended_at IS NULL THEN
+                            NULL
+                        ELSE
+                            TIMESTAMPDIFF(SECOND, shift_timings.begun_at, shift_timings.ended_at)
+                    END AS shift_seconds
+                SQL)
             ->leftJoinSub(
                 $shiftTimings->union($shiftBegins),
                 'shift_timings',
                 fn ($join) => $join->on('users.id', '=', 'shift_timings.user_id')
-            );
+            )->withCasts([
+                'shift_begun_at' => 'immutable_datetime:Y-m-d H:i:s',
+                'shift_ended_at' => 'immutable_datetime:Y-m-d H:i:s',
+                'shift_seconds' => 'integer',
+            ]);
     }
 
     /**

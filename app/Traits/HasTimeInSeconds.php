@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Traits;
+declare(strict_types=1);
 
-use Carbon\CarbonImmutable;
+namespace App\Traits;
 
 trait HasTimeInSeconds
 {
@@ -10,9 +10,6 @@ trait HasTimeInSeconds
     public function timeInSeconds(): ?int
     {
         if (is_null($this->ended_at)) return null;
-
-        $begunAt = CarbonImmutable::make($this->begun_at);
-        $endedAt = CarbonImmutable::make($this->ended_at);
-        return $begunAt->diffInSeconds($endedAt);
+        return $this->begun_at->diffInSeconds($this->ended_at);
     }
 }

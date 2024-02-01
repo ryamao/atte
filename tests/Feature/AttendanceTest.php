@@ -118,8 +118,8 @@ class AttendanceTest extends TestCase
             $this->assertSame($user->name, $attendance['user_name'], $message);
             $this->assertSameDateTime($user->shiftBegunAtDate($date), $attendance['shift_begun_at'], $message);
             $this->assertSameDateTime($user->shiftEndedAtDate($date), $attendance['shift_ended_at'], $message);
-            $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
-            $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
+            $this->assertSame($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
+            $this->assertSame($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
         }
     }
 }
