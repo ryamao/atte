@@ -110,10 +110,11 @@ class AttendanceServiceTest extends TestCase
             $this->assertSameSize($expectedResult, $shiftSeconds);
             foreach ($expectedResult->zip($shiftSeconds) as [$expected, $actual]) {
                 $dump = "\nexpected: " . var_export($expected, true) . "\nactual: " . var_export($actual->toArray(), true);
-                $this->assertSame($expected['user_id'], $actual['user_id'], "{$date->toDateString()} {$dump}");
-                $this->assertSame($expected['shift_begun_at'], $actual['shift_begun_at'], "{$date->toDateString()} {$dump}");
-                $this->assertSame($expected['shift_ended_at'], $actual['shift_ended_at'], "{$date->toDateString()} {$dump}");
-                $this->assertSameSeconds($expected['shift_seconds'], $actual['shift_seconds'], "{$date->toDateString()} {$dump}");
+                $message = "{$date->toDateString()} {$dump}";
+                $this->assertSame($expected['user_id'], $actual['user_id'], $message);
+                $this->assertSameDateTime($expected['shift_begun_at'], $actual['shift_begun_at'], $message);
+                $this->assertSameDateTime($expected['shift_ended_at'], $actual['shift_ended_at'], $message);
+                $this->assertSame($expected['shift_seconds'], $actual['shift_seconds'], $message);
             }
         }
     }
@@ -168,12 +169,13 @@ class AttendanceServiceTest extends TestCase
 
             $this->assertSameSize($expected, $attendances);
             foreach ($expected->zip($attendances) as [$expected, $attendance]) {
-                $dump = "\nexpected: " . var_export($expected, true) . "\nactual: " . var_export($attendance->toArray(), true);
-                $this->assertSame($expected['user_id'], $attendance['user_id'], "{$date->toDateString()} {$dump}");
-                $this->assertSame($expected['shift_begun_at'], $attendance['shift_begun_at'], "{$date->toDateString()} {$dump}");
-                $this->assertSame($expected['shift_ended_at'], $attendance['shift_ended_at'], "{$date->toDateString()} {$dump}");
-                $this->assertSameSeconds($expected['work_seconds'], $attendance['work_seconds'], "{$date->toDateString()} {$dump}");
-                $this->assertSameSeconds($expected['break_seconds'], $attendance['break_seconds'], "{$date->toDateString()} {$dump}");
+                $dump = 'expected: ' . var_export($expected, true) . PHP_EOL . 'actual: ' . var_export($attendance->toArray(), true);
+                $message = "{$date->toDateString()} {$dump}";
+                $this->assertSame($expected['user_id'], $attendance['user_id'], $message);
+                $this->assertSameDateTime($expected['shift_begun_at'], $attendance['shift_begun_at'], $message);
+                $this->assertSameDateTime($expected['shift_ended_at'], $attendance['shift_ended_at'], $message);
+                $this->assertSame($expected['work_seconds'], $attendance['work_seconds'], $message);
+                $this->assertSame($expected['break_seconds'], $attendance['break_seconds'], $message);
             }
         }
     }
@@ -356,7 +358,7 @@ class AttendanceServiceTest extends TestCase
 
         foreach ($testData->zip($actualData) as [$user, $actual]) {
             $this->assertSame($user->id, $actual['user_id']);
-            $this->assertSameSeconds($user->breakTimeInSeconds($date), $actual['break_seconds']);
+            $this->assertSame($user->breakTimeInSeconds($date), $actual['break_seconds']);
         }
     }
 
@@ -403,8 +405,8 @@ class AttendanceServiceTest extends TestCase
             $this->assertSameDateTime($user->shiftBegunAtDate($date), $attendance['shift_begun_at'], $message);
             $this->assertSameDateTime($user->shiftEndedAtDate($date), $attendance['shift_ended_at'], $message);
 
-            $this->assertSameSeconds($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
-            $this->assertSameSeconds($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
+            $this->assertSame($user->breakTimeInSeconds($date), $attendance['break_seconds'], $message);
+            $this->assertSame($user->workTimeInSeconds($date), $attendance['work_seconds'], $message);
         }
     }
 
@@ -449,7 +451,7 @@ class AttendanceServiceTest extends TestCase
                     $data['break_seconds'] = null;
                 }
 
-                $data['shift_begun_at'] = $shiftBegin->begun_at->toDateTimeString();
+                $data['shift_begun_at'] = $shiftBegin->begun_at;
                 $data['shift_ended_at'] = null;
                 $data['shift_seconds'] = null;
                 $data['work_seconds'] = null;
@@ -464,8 +466,8 @@ class AttendanceServiceTest extends TestCase
                     $data['work_seconds'] = null;
                 }
 
-                $data['shift_begun_at'] = $shiftTiming->begun_at->toDateTimeString();
-                $data['shift_ended_at'] = $shiftTiming->ended_at?->toDateTimeString();
+                $data['shift_begun_at'] = $shiftTiming->begun_at;
+                $data['shift_ended_at'] = $shiftTiming->ended_at;
             }
         }
 

@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components;
 
 use Carbon\CarbonImmutable;
 use Closure;
+use DateTimeInterface;
+use DateTimeZone;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\Component;
@@ -14,7 +18,7 @@ class AttendanceRow extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(private Model $attendance)
+    public function __construct(private DateTimeZone $timezone, private Model $attendance)
     {
         //
     }
@@ -33,14 +37,16 @@ class AttendanceRow extends Component
     }
 
     /** 開始日時や終了日時を表示形式に変換する。日時が null の場合は '--:--:--' を返す。 */
-    private function formatTime(?string $datetime): string
+    private function formatTime(?DateTimeInterface $datetime): string
     {
-        return $datetime ? CarbonImmutable::parse($datetime)->format('H:i:s') : '--:--:--';
+        if (is_null($datetime)) return '--:--:--';
+        return $datetime->format('H:i:s');
     }
 
     /** 休憩時間や勤務時間を表示形式に変換する。 */
     private function formatSeconds(?int $seconds): string
     {
-        return $seconds ? today()->addSeconds($seconds)->format('H:i:s') : '--:--:--';
+        if (is_null($seconds)) return '--:--:--';
+        return today($this->timezone)->addSeconds($seconds)->format('H:i:s');
     }
 }

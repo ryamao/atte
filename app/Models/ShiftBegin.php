@@ -11,17 +11,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** 勤務開始イベントを表すモデル */
+/**
+ * 勤務開始を表すイベントエンティティ
+ * 
+ * @property int $id
+ * @property int $user_id
+ * @property \Illuminate\Support\CarbonImmutable $begun_at
+ * 
+ * @property-read \App\Models\User $user
+ * 
+ * @method static \Illuminate\Database\Eloquent\Builder currentShift(\App\Models\User $user, \DateTimeInterface $today)
+ * @method static \Illuminate\Database\Eloquent\Builder previousShift(\App\Models\User $user, \DateTimeInterface $today)
+ */
 class ShiftBegin extends Model
 {
     use HasFactory;
     use BeginsTimePeriod;
 
+    /** created_atとupdated_atの自動更新を解除する。 */
+    public $timestamps = false;
+
     /** 一括割り当て可能な属性。 */
     protected $fillable = ['user_id', 'begun_at'];
 
-    /** created_atとupdated_atの自動更新を解除する。 */
-    public $timestamps = false;
+    /** 日付キャストの定義。 */
+    protected $casts = [
+        'begun_at' => 'immutable_date:Y-m-d H:i:s',
+    ];
 
     /** 打刻を行った会員を取得する。 */
     public function user(): BelongsTo
