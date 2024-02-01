@@ -24,7 +24,7 @@ class RegisterPageTest extends DuskTestCase
      *           ["@info-text", "アカウントをお持ちの方はこちらから"]
      *           ["footer small", "Atte, inc."]
      */
-    public function test_register_page_has_text(string $selector, string $expected): void
+    public function testRegisterPageDisplaysTexts(string $selector, string $expected): void
     {
         $this->browse(function (Browser $browser) use ($selector, $expected) {
             $browser->visitRoute('register');
@@ -41,7 +41,7 @@ class RegisterPageTest extends DuskTestCase
      *           ["password"]
      *           ["password_confirmation"]
      */
-    public function test_register_page_holds_typed_text_in_input_field(string $field): void
+    public function testRegisterPageHasInputField(string $field): void
     {
         $this->browse(function (Browser $browser) use ($field) {
             $value = $field . '_test';
@@ -60,7 +60,7 @@ class RegisterPageTest extends DuskTestCase
      *           ["password", "パスワード"]
      *           ["password_confirmation", "確認用パスワード"]
      */
-    public function test_register_page_has_placeholder_in_input_field(string $field, string $placeholder): void
+    public function testRegisterPageHasInputFieldWithPlaceholder(string $field, string $placeholder): void
     {
         $this->browse(function (Browser $browser) use ($field, $placeholder) {
             $browser->visitRoute('register');
@@ -72,7 +72,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録ボタンが表示されている
      * @group register
      */
-    public function test_register_page_displays_submit_button(): void
+    public function testRegisterPageHasSubmitButton(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('register');
@@ -84,7 +84,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] バリデーションエラー時に会員登録ページに戻される
      * @group register
      */
-    public function test_register_page_can_redirect_to_register_page_if_submit_button_is_pressed_and_validation_fails(): void
+    public function testRegisterPageRedirectsToRegisterPageIfValidationFails(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('register');
@@ -97,7 +97,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録後、打刻ページに遷移する
      * @group register
      */
-    public function test_register_page_can_redirect_to_stamping_page_if_submit_button_is_pressed_and_validation_succeeds(): void
+    public function testRegisterPageRedirectsToStampPageIfRegistrationSucceeds(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('register');
@@ -114,7 +114,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [ログイン] ログインリンクが表示されている
      * @group register
      */
-    public function test_register_page_has_link_named_login(): void
+    public function testRegisterPageHasLoginLink(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('register');
@@ -126,7 +126,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [ボタン/リンク] [ログイン] ログインリンクをクリックするとログインページに遷移する
      * @group register
      */
-    public function test_register_page_links_to_login_page(): void
+    public function testRegisterPageRedirectsToLoginPageIfLoginLinkIsClicked(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('register');
@@ -140,7 +140,7 @@ class RegisterPageTest extends DuskTestCase
      * @group register
      * @dataProvider provideInputFieldTestData
      */
-    public function test_register_page_displays_error_message_or_not(string $field, string $value, ?string $alert): void
+    public function testRegisterPageValidatesInputFields(string $field, string $value, ?string $alert): void
     {
         $this->browse(function (Browser $browser) use ($field, $value, $alert) {
             $selector = "@{$field}-alert";
@@ -195,7 +195,7 @@ class RegisterPageTest extends DuskTestCase
      * @testdox [会員登録ページ] [入力フィールド] [email] メールアドレスが登録済みの場合、エラーメッセージが表示される
      * @group register
      */
-    public function test_register_page_will_display_error_message_for_email_if_same_email_is_registered(): void
+    public function testRegisterPageShowsErrorMessageIfEmailIsAlreadyRegistered(): void
     {
         User::create([
             'name' => 'a',

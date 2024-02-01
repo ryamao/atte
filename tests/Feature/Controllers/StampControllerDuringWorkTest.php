@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
 use App\Models\ShiftBegin;
 
 /**
  * 打刻ページのバックエンドのテストの内、ログイン済み、勤務開始済みのテストケースを扱う。
  */
-class StampWhileAtWorkTest extends StampTestCase
+class StampControllerDuringWorkTest extends StampControllerTestCase
 {
     /** テスト開始前に保存された勤務開始イベント */
     private ShiftBegin $shiftBegin;
@@ -29,7 +29,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [GET stamp] [認証状態] [勤務中]
      * @group stamp
      */
-    public function test_get_stamp_from_auth_user_while_at_work(): void
+    public function testGetStampFromAuthenticatedUserDuringWork(): void
     {
         $this->travelTo($this->testBegunAt->addHours(6), fn () => $this->actingAs($this->loginUser)->get(route('stamp')));
         $this->assertShiftBegins([$this->shiftBegin]);
@@ -42,7 +42,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [GET stamp] [認証状態] [勤務中] 日付を跨いだ場合
      * @group stamp
      */
-    public function test_get_stamp_from_auth_user_while_at_work_with_previous_data(): void
+    public function testGetStampFromAuthenticatedUserDuringWorkWithPreviousData(): void
     {
         $this->travelTo($this->testBegunAt->addHours(24), fn () => $this->actingAs($this->loginUser)->get(route('stamp')));
         $this->assertShiftBegins([]);
@@ -55,7 +55,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST shift-begin] [認証状態] [勤務中]
      * @group stamp
      */
-    public function test_post_shift_begin_from_auth_user_while_at_work(): void
+    public function testPostShiftBeginFromAuthenticatedUserDuringWork(): void
     {
         $this->loginAndPost('shift-begin', when: $this->testBegunAt->addHour());
         $this->assertShiftBegins([[$this->loginUser->id, $this->shiftBegin->begun_at]]);
@@ -68,7 +68,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST shift-begin] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
      * @group stamp
      */
-    public function test_post_shift_begin_from_auth_user_while_at_work_with_previous_data(): void
+    public function testPostShiftBeginFromAuthenticatedUserDuringWorkWithPreviousData(): void
     {
         $shiftTiming = $this->createShiftTiming(begunAt: $this->testBegunAt->subHours(24));
         $breakTiming = $this->createBreakTiming(begunAt: $this->testBegunAt->subHours(20));
@@ -83,7 +83,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST shift-begin] [認証状態] 日付を跨いだ場合
      * @group stamp
      */
-    public function test_post_shift_begin_from_auth_user_of_cross_date(): void
+    public function testPostShiftBeginFromAuthenticatedUserOfCrossDate(): void
     {
         $begunAt = $this->testBegunAt->addHours(24);
         $this->loginAndPost('shift-begin', when: $begunAt);
@@ -97,7 +97,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST shift-end] [認証状態] [勤務中]
      * @group stamp
      */
-    public function test_post_shift_end_from_auth_user_while_at_work(): void
+    public function testPostShiftEndFromAuthenticatedUserDuringWork(): void
     {
         $endedAt = $this->testBegunAt->addHours(8);
         $this->loginAndPost('shift-end', when: $endedAt);
@@ -111,7 +111,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST shift-end] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
      * @group stamp
      */
-    public function test_post_shift_end_from_auth_user_while_at_work_with_previous_data(): void
+    public function testPostShiftEndFromAuthenticatedUserDuringWorkWithPreviousData(): void
     {
         $shiftTiming = $this->createShiftTiming(begunAt: $this->testBegunAt->subHours(24));
         $breakTiming = $this->createBreakTiming(begunAt: $this->testBegunAt->subHours(20));
@@ -130,7 +130,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST shift-end] [認証状態] 日付を跨いだ場合
      * @group stamp
      */
-    public function test_post_shift_end_from_auth_user_of_cross_date(): void
+    public function testPostShiftEndFromAuthenticatedUserOfCrossDate(): void
     {
         $this->loginAndPost('shift-end', when: $this->testBegunAt->addHours(24));
         $this->assertShiftBegins([]);
@@ -143,7 +143,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST break-begin] [認証状態] [勤務中]
      * @group stamp
      */
-    public function test_post_break_begin_from_auth_user_while_at_work(): void
+    public function testPostBreakBeginFromAuthenticatedUserDuringWork(): void
     {
         $begunAt = $this->testBegunAt->addHour();
         $this->loginAndPost('break-begin', when: $begunAt);
@@ -157,7 +157,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST break-begin] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
      * @group stamp
      */
-    public function test_post_break_begin_from_auth_user_while_at_work_with_previous_data(): void
+    public function testPostBreakBeginFromAuthenticatedUserDuringWorkWithPreviousData(): void
     {
         $shiftTiming = $this->createShiftTiming(begunAt: $this->testBegunAt->subHours(24));
         $breakTiming = $this->createBreakTiming(begunAt: $this->testBegunAt->subHours(20));
@@ -173,7 +173,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST break-end] [認証状態] [勤務中]
      * @group stamp
      */
-    public function test_post_break_end_from_auth_user_while_at_work(): void
+    public function testPostBreakEndFromAuthenticatedUserDuringWork(): void
     {
         $this->loginAndPost('break-end', when: $this->testBegunAt->addHour());
         $this->assertShiftBegins([[$this->loginUser->id, $this->shiftBegin->begun_at]]);
@@ -186,7 +186,7 @@ class StampWhileAtWorkTest extends StampTestCase
      * @testdox [POST break-end] [認証状態] [勤務中] 前日に勤務時間と休憩時間が記録されている場合
      * @group stamp
      */
-    public function test_post_break_end_from_auth_user_while_at_work_with_previous_data(): void
+    public function testPostBreakEndFromAuthenticatedUserDuringWorkWithPreviousData(): void
     {
         $shiftTiming = $this->createShiftTiming(begunAt: $this->testBegunAt->subHours(24));
         $breakTiming = $this->createBreakTiming(begunAt: $this->testBegunAt->subHours(20));

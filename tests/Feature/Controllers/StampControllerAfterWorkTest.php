@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
 use App\Models\ShiftTiming;
 
 /**
  * 打刻ページのバックエンドのテストの内、ログイン済み、勤務終了済みのテストケースを扱う。
  */
-class StampAfterWorkingTest extends StampTestCase
+class StampControllerAfterWorkTest extends StampControllerTestCase
 {
     /** テスト開始前に保存された勤務時間 */
     private ShiftTiming $shiftTiming;
@@ -30,7 +30,7 @@ class StampAfterWorkingTest extends StampTestCase
      * @testdox [GET stamp] [認証状態] [勤務後]
      * @group stamp
      */
-    public function test_get_stamp_from_auth_user_after_working(): void
+    public function testGetStampFromAuthenticatedUserAfterWork(): void
     {
         $this->travelTo($this->testBegunAt->addHours(24), fn () => $this->actingAs($this->loginUser)->get(route('stamp')));
         $this->assertShiftBegins([]);
@@ -43,7 +43,7 @@ class StampAfterWorkingTest extends StampTestCase
      * @testdox [POST shift-begin] [認証状態] [勤務後]
      * @group stamp
      */
-    public function test_post_shift_begin_from_auth_user_do_nothing_to_shift_begins_table_after_working(): void
+    public function testPostShiftBeginFromAuthenticatedUserDoNothingToShiftBeginsTableAfterWork(): void
     {
         $this->loginAndPost('shift-begin', when: $this->shiftTiming->ended_at->addHour());
         $this->assertShiftBegins([[$this->loginUser->id, $this->shiftTiming->begun_at]]);
@@ -56,7 +56,7 @@ class StampAfterWorkingTest extends StampTestCase
      * @testdox [POST shift-begin] [認証状態] [勤務後] 前日に勤務時間が記録されている場合
      * @group stamp
      */
-    public function test_post_shift_begin_from_auth_user_after_working_with_previous_data(): void
+    public function testPostShiftBeginFromAuthenticatedUserAfterWorkWithPreviousData(): void
     {
         $shiftTiming = $this->createShiftTiming(begunAt: $this->testBegunAt->subHours(24));
         $breakTiming = $this->createBreakTiming(begunAt: $this->testBegunAt->subHours(20));
@@ -71,7 +71,7 @@ class StampAfterWorkingTest extends StampTestCase
      * @testdox [POST shift-end] [認証状態] [勤務後]
      * @group stamp
      */
-    public function test_post_shift_end_from_auth_user_after_working(): void
+    public function testPostShiftEndFromAuthenticatedUserAfterWork(): void
     {
         $this->loginAndPost('shift-end', when: $this->shiftTiming->ended_at->addHour());
         $this->assertShiftBegins([]);
@@ -84,7 +84,7 @@ class StampAfterWorkingTest extends StampTestCase
      * @testdox [POST shift-end] [認証状態] [勤務後] 前日に勤務時間が記録されている場合
      * @group stamp
      */
-    public function test_post_shift_end_from_auth_user_after_working_with_previous_data(): void
+    public function testPostShiftEndFromAuthenticatedUserAfterWorkWithPreviousData(): void
     {
         $shiftTiming = $this->createShiftTiming(begunAt: $this->testBegunAt->subHours(24));
         $breakTiming = $this->createBreakTiming(begunAt: $this->testBegunAt->subHours(20));

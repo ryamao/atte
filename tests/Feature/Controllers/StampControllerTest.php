@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
-class StampTest extends StampTestCase
+class StampControllerTest extends StampControllerTestCase
 {
     /**
      * @testdox [GET stamp] [未認証状態] route(stamp) へリダイレクトする
      * @group stamp
      */
-    public function test_get_stamp_from_guest_redirects_to_login_page(): void
+    public function testGetStampFromGuestRedirectsToLoginPage(): void
     {
         $this->assertGuest();
         $response = $this->get(route('stamp'));
@@ -21,7 +21,7 @@ class StampTest extends StampTestCase
      * @testdox [GET stamp] [認証状態] ステータスコード200を返す
      * @group stamp
      */
-    public function test_get_stamp_from_auth_user_returns_status_code_200(): void
+    public function testGetStampFromAuthenticatedUserReturnsStatusCode200(): void
     {
         $response = $this->actingAs($this->loginUser)->get(route('stamp'));
         $response->assertStatus(200);
@@ -31,7 +31,7 @@ class StampTest extends StampTestCase
      * @testdox [POST shift-begin] [未認証状態] route(login) へリダイレクトする
      * @group stamp
      */
-    public function test_post_shift_begin_from_guest_redirects_to_login_page(): void
+    public function testPostShiftBeginFromGuestRedirectsToLoginPage(): void
     {
         $this->assertGuest();
         $response = $this->post(route('shift-begin'));
@@ -42,7 +42,7 @@ class StampTest extends StampTestCase
      * @testdox [POST shift-begin] [認証状態] route(stamp) へリダイレクトする
      * @group stamp
      */
-    public function test_post_shift_begin_from_auth_user_redirects_to_index_page(): void
+    public function testPostShiftBeginFromAuthenticatedUserRedirectsToIndexPage(): void
     {
         $response = $this->actingAs($this->loginUser)->post(route('shift-begin'));
         $response->assertRedirect(route('stamp'));
@@ -52,7 +52,7 @@ class StampTest extends StampTestCase
      * @testdox [POST shift-end] [未認証状態] route(login) へリダイレクトする
      * @group stamp
      */
-    public function test_post_shift_end_from_guest_redirects_to_login_page(): void
+    public function testPostShiftEndFromGuestRedirectsToLoginPage(): void
     {
         $this->assertGuest();
         $response = $this->post(route('shift-end'));
@@ -63,7 +63,7 @@ class StampTest extends StampTestCase
      * @testdox [POST shift-end] [認証状態] route(stamp) へリダイレクトする
      * @group stamp
      */
-    public function test_post_shift_end_from_auth_user_redirects_to_index_page(): void
+    public function testPostShiftEndFromAuthenticatedUserRedirectsToIndexPage(): void
     {
         $response = $this->actingAs($this->loginUser)->post(route('shift-end'));
         $response->assertRedirect(route('stamp'));
@@ -73,7 +73,7 @@ class StampTest extends StampTestCase
      * @testdox [POST break-begin] [未認証状態] route(login) へリダイレクトする
      * @group stamp
      */
-    public function test_post_break_begin_from_guest_redirects_to_login_page(): void
+    public function testPostBreakBeginFromGuestRedirectsToLoginPage(): void
     {
         $this->assertGuest();
         $response = $this->post(route('break-begin'));
@@ -84,7 +84,7 @@ class StampTest extends StampTestCase
      * @testdox [POST break-begin] [認証状態] route(stamp) へリダイレクトする
      * @group stamp
      */
-    public function test_post_break_begin_from_auth_user_redirects_to_index_page(): void
+    public function testPostBreakBeginFromAuthenticatedUserRedirectsToIndexPage(): void
     {
         $response = $this->actingAs($this->loginUser)->post(route('break-begin'));
         $response->assertRedirect(route('stamp'));
@@ -94,7 +94,7 @@ class StampTest extends StampTestCase
      * @testdox [POST break-end] [未認証状態] route(login) へリダイレクトする
      * @group stamp
      */
-    public function test_post_break_end_from_guest_redirects_to_login_page(): void
+    public function testPostBreakEndFromGuestRedirectsToLoginPage(): void
     {
         $this->assertGuest();
         $response = $this->post(route('break-end'));
@@ -105,7 +105,7 @@ class StampTest extends StampTestCase
      * @testdox [POST break-end] [認証状態] route(stamp) へリダイレクトする
      * @group stamp
      */
-    public function test_post_break_end_from_auth_user_redirects_to_index_page(): void
+    public function testPostBreakEndFromAuthenticatedUserRedirectsToIndexPage(): void
     {
         $response = $this->actingAs($this->loginUser)->post(route('break-end'));
         $response->assertRedirect(route('stamp'));

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers;
 
 use App\Models\BreakTiming;
 use App\Models\ShiftTiming;
@@ -16,7 +16,7 @@ use Illuminate\Testing\TestResponse;
 use Tests\AssertsDatabase;
 use Tests\TestCase;
 
-class StampTestCase extends TestCase
+class StampControllerTestCase extends TestCase
 {
     use RefreshDatabase;
     use AssertsDatabase;

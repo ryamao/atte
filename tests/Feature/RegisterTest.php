@@ -17,7 +17,7 @@ class RegisterTest extends TestCase
      * @testdox [GET register] ステータスコード200を返す
      * @group register
      */
-    public function test_get_register_returns_status_code_200(): void
+    public function testGetRegisterReturnsStatusCode200(): void
     {
         $response = $this->get(route('register'));
         $response->assertStatus(200);
@@ -27,7 +27,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] [登録成功] route('stamp') にリダイレクトする
      * @group register
      */
-    public function test_post_register_redirects_to_stamping_page_if_registration_succeeds(): void
+    public function testPostRegisterRedirectsToStampPageIfRegistrationSucceeds(): void
     {
         $response = $this->fromRoute('register')->post(route('register'), [
             'name' => 'a',
@@ -42,7 +42,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] [登録成功] バリデーションに成功する
      * @group register
      */
-    public function test_post_register_causes_no_validation_errors_if_registration_succeeds(): void
+    public function testPostRegisterValidatesSuccessfullyIfRegistrationSucceeds(): void
     {
         $response = $this->fromRoute('register')->post(route('register'), [
             'name' => 'a',
@@ -57,7 +57,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] [登録成功] usersテーブルにリクエストパラメータを保存する
      * @group register
      */
-    public function test_post_register_stores_users_table_if_registration_succeeds(): void
+    public function testPostRegisterSavesRequestParametersToUsersTableIfRegistrationSucceeds(): void
     {
         $this->assertDatabaseEmpty('users');
 
@@ -79,7 +79,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] [登録成功] 認証状態になる
      * @group register
      */
-    public function test_post_register_authenticates_current_user_if_registration_succeeds(): void
+    public function testPostRegisterAuthenticatesCurrentUserIfRegistrationSucceeds(): void
     {
         $this->assertGuest();
 
@@ -97,17 +97,17 @@ class RegisterTest extends TestCase
      * @testdox [POST register] [登録失敗] route('register') へリダイレクトする
      * @group register
      */
-    public function test_post_register_redirects_to_register_page_if_registration_fails(): void
+    public function testPostRegisterRedirectsToRegisterPageIfRegistrationFails(): void
     {
         $response = $this->fromRoute('register')->post(route('register'), []);
         $response->assertRedirect('register');
     }
 
     /**
-     * @testdox [POST register] [登録失敗] usersテーブルに変化がない
+     * @testdox [POST register] [登録失敗] usersテーブルに何も保存しない
      * @group register
      */
-    public function test_post_register_do_nothing_to_users_table_if_registration_fails(): void
+    public function testPostRegisterDoesntSaveAnythingToUsersTableIfRegistrationFails(): void
     {
         $this->assertDatabaseEmpty('users');
         $this->fromRoute('register')->post(route('register'), []);
@@ -118,7 +118,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] [登録失敗] 非認証状態を維持する
      * @group register
      */
-    public function test_post_register_doesnt_authenticates_current_user_if_registration_fails(): void
+    public function testPostRegisterKeepsGuestIfRegistrationFails(): void
     {
         $this->assertGuest();
         $this->fromRoute('register')->post(route('register'), []);
@@ -130,7 +130,7 @@ class RegisterTest extends TestCase
      * @group register
      * @dataProvider provideValidationTestParams
      */
-    public function test_post_register_with_various_parameters_causes_validation_error_or_not(string $field, mixed $value, ?string $alert): void
+    public function testPostRegisterValidates(string $field, $value, ?string $alert): void
     {
         $passwordConfirmation = $field === 'password' ? $value : null;
 
@@ -173,7 +173,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] メールアドレスが登録済みの場合、バリデーションエラーになる
      * @group register
      */
-    public function test_post_register_with_registered_email_causes_validation_error_for_email(): void
+    public function testPostRegisterWithAlreadyRegisteredEmailCausesValidationErrorForEmail(): void
     {
         User::create([
             'name' => 'a',
@@ -194,7 +194,7 @@ class RegisterTest extends TestCase
      * @testdox [POST register] passwordとpassword_confirmationが一致しない場合、バリデーションエラーになる
      * @group register
      */
-    public function test_post_register_with_unmatched_password_confirmation_causes_validation_error_for_password(): void
+    public function testPostRegisterWithUnmatchedPasswordCausesValidationErrorForPassword(): void
     {
         $response = $this->fromRoute('register')->post(route('register'), [
             'password' => 'password1',
