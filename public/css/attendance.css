@@ -46,6 +46,7 @@
 
 .attendance__table th {
     text-align: left;
+    font-weight: bold;
 }
 
 .attendance__pagination {
@@ -57,6 +58,7 @@
 
 .pagination__inner {
     color: #999;
+    font-weight: normal;
     background-color: #fff;
     border-radius: 0.25rem;
     display: flex;
@@ -91,4 +93,9 @@
 .pagination__current-page {
     background-color: #2484cf;
     color: #fff;
+}
+
+.pagination__inner *[aria-current="page"],
+.pagination__inner *[aria-disabled="true"] {
+    cursor: not-allowed;
 }

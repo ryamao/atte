@@ -29,9 +29,14 @@
     border: none;
     border-radius: 0.25rem;
     font-size: var(--text-size);
-    font-weight: bold;
+    text-align: center;
 }
 
 .stamp__layout button:enabled {
     cursor: pointer;
+}
+
+.stamp__layout button:disabled {
+    color: #ddd;
+    cursor: not-allowed;
 }
