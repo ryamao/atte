@@ -6,6 +6,7 @@ namespace Tests\Feature\Services;
 
 use App\Models\User;
 use App\Services\StampService;
+use App\WorkStatus;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -44,6 +45,34 @@ class StampServiceTest extends TestCase
     private function stamper(int $id = 0, int $elapsedHours = 0): StampService
     {
         return new StampService($this->users[$id], $this->testBegunAt->addHours($elapsedHours));
+    }
+
+    /**
+     * @testdox ある日の勤務状況を取得する
+     *
+     * @group model
+     */
+    public function testWorkStatus(): void
+    {
+        $user = User::factory()->create();
+        $date = CarbonImmutable::create(year: 2021, month: 1, day: 1, tz: 'Asia/Tokyo');
+        $service = new StampService($user, $date);
+
+        $this->assertSame(WorkStatus::Before, $service->workStatus());
+
+        $user->shiftBegin()->create(['begun_at' => '2021-01-01 10:00:00']);
+        $this->assertSame(WorkStatus::During, $service->workStatus());
+
+        $user->breakBegin()->create(['begun_at' => '2021-01-01 12:00:00']);
+        $this->assertSame(WorkStatus::Break, $service->workStatus());
+
+        $user->breakBegin()->delete();
+        $user->breakTimings()->create(['begun_at' => '2021-01-01 12:00:00']);
+        $this->assertSame(WorkStatus::During, $service->workStatus());
+
+        $user->shiftBegin()->delete();
+        $user->shiftTimings()->create(['begun_at' => '2021-01-01 10:00:00', 'ended_at' => '2021-01-01 18:00:00']);
+        $this->assertSame(WorkStatus::Before, $service->workStatus());
     }
 
     /**
