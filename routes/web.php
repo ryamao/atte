@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [StampController::class, 'index'])->name('stamp');
     Route::post('/shift/begin', [StampController::class, 'storeShiftBegin'])->name('shift-begin');
     Route::post('/shift/end', [StampController::class, 'storeShiftTiming'])->name('shift-end');
