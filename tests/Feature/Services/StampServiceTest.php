@@ -80,7 +80,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginShift_twice(): void
+    public function testBeginShiftTwice(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
@@ -93,7 +93,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginShift_with_previous_data(): void
+    public function testBeginShiftCrossingDate(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -109,7 +109,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginShift_before_breaking(): void
+    public function testBeginShiftAfterBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -122,11 +122,11 @@ class StampServiceTest extends TestCase
     }
 
     /**
-     * @testdox 9時に勤務開始、17時に勤務終了、18時に勤務再開、19時に勤務終了
+     * @testdox 勤務終了と勤務再開
      *
      * @group stamp
      */
-    public function test_endShift(): void
+    public function testEndShiftAndBeginShift(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
@@ -146,7 +146,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endShift_with_previous_data(): void
+    public function testEndShiftWithPreviousData(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -162,7 +162,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endShift_while_at_break(): void
+    public function testEndShiftWhileAtBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -178,7 +178,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endShift_before_breaking(): void
+    public function testEndShiftAfterBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -195,7 +195,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginBreak_do_nothing(): void
+    public function testBeginBreakDoNothing(): void
     {
         // 勤務開始前
         $this->stamper(elapsedHours: 0)->beginBreak();
@@ -215,7 +215,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginBreak_twice(): void
+    public function testBeginBreakTwice(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -229,7 +229,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginBreak_with_previous_data(): void
+    public function testBeginBreakWithPreviousData(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -245,7 +245,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endBreak(): void
+    public function testEndBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -266,7 +266,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endBreak_do_nothing(): void
+    public function testEndBreakDoNothing(): void
     {
         // 勤務開始前
         $this->stamper(elapsedHours: 0)->endBreak();
@@ -286,7 +286,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endBreak_with_previous_data(): void
+    public function testEndBreakWithPreviousData(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
