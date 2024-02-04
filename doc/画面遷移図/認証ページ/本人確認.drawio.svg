@@ -1,9 +1,11 @@
-<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="491px" height="101px" viewBox="-0.5 -0.5 491 101" content="&lt;mxfile&gt;&lt;diagram id=&quot;Wq7zA7MHmZFFam_-9jtU&quot; name=&quot;ページ1&quot;&gt;1VdRk5owEP41ee0QQAyPgNi+9MmHXh9zEoEZIEyMJ/bXdwOJkBO9m9bz2hnH2f2yG3a/fBsReUndfRW0Lb7zjFXIdbIOeSvkusvAgW8FnF4BuSizAcIjsCl/MQ2asEOZsb0VKDmvZNna4JY3DdtKC6NC8KMdtuOV/dSW5uwC2GxpdYn+KDNZDChxlyP+jZV5YZ6Mg3BYqakJ1p3sC5rx4wTyUuQlgnM5WHWXsEpxZ3gZ8tZXVs+FCdbI9yS4Q8ILrQ66N12XPJlmBT80GVPxDvLiY1FKtmnpVq0e4XQBK2RdgYfB1NsxIVl3tSR8bhQEwnjNpDhBiE4w1Jxs9zgS7YcaK6YkOxqk+nDz885j/2BoCq7QgS/aZxkcvXYb3jC7X9aV8mli/1Q0fVlob9Vp1nrnZJwGqnqaOpMs5Y5pvWfyhtJUPbeZhfL5QWxNlD5RSUXOTBiZPwHBKirLF3v/v+ETz+gr9RDxUIS1EScGiXvDRZGJIaFZSvRSHGojhF2DCtqJnwVYubJQSlAUIbLqDWJ2xig0WSS+oW78trp3vJH6NsL3Untoy92/lPtZ2VO5B/dQu3NBx3+vdn9G7e6j1O7Pq91BJP1k2esy1jf3GcpYm6dHph7PXro9UEAJ/AyzDx8cvPi8wcHhAwbnDwdgOTMA/qMGYDkzAAEKk17KPooj9UmXSuvKMMKd1+KVaXnNPLxCtcpkncrM+OG5X3nHdU737fB2uCs79RNwD1n6b6oy+ChRklny4TYJYYAXiMDVEF+lOoxsquGAyL9OtfcorsEdX8n7tcn/Gi/9DQ==&lt;/diagram&gt;&lt;/mxfile&gt;">
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="491px" height="221px" viewBox="-0.5 -0.5 491 221" content="&lt;mxfile&gt;&lt;diagram id=&quot;Wq7zA7MHmZFFam_-9jtU&quot; name=&quot;ページ1&quot;&gt;1VfNk5owFP9rcu0QQQ1HQGwP7fSwh+4eI0RgioSJccX+9X2BREDBtVtX2xnHeZ/hvd/7ICA72FSfBS3TbzxmOZpYcYXsBZpM5jML/pXgcCJIRBY3ItwKnrJfTAuN2S6L2bZnKDnPZVb2hREvChbJnowKwfd9szXP+08tacLOBE8Rzc+lP7JYpo2UTOat/AvLktQ8Gc/cRrOhxlhnsk1pzPcdkR0iOxCcy4baVAHLFXYGl8ZvOaI9BiZYIa9xmDQOrzTf6dx0XPJgkhV8V8RM2VvI9vdpJtlTSSOl3UN1QZbKTQ4cBlIfx4Rk1WhI+JgoNAjjGybFAUy0g4Hm0Gf3LdCOq2VpB+SjIdXFTY4nt/kDoSEYgQOfpc9iKL1mC16wfr6syuRzh35RMH2aam5RadRq5mCYAqJ67jIdL8W2bjVn/JrQVDyXkYXw+U5ExkpXVFKRMGNGhisgWE5l9to//6/wtN+JZ4vhS0czjOftcGm6/w644IG5C21EbORhTfiBkfg1MUGesSGuUQVa5buacOHUWQ7p+CsBVKIoFBLkeYgsaoKYkzFyjRfxL0w9fnvq17yQekvjW20Bt78GnPM1gK2BNTC7xRawzuD477eAM7AF7tbtznC3W4iED257Hcby4jlNGEvzdM/EY/dVlwcKIIHrCfvwwcHTxw0Odu8wOO8cgPnAADj3GoD5wADMkBvUrewg31O/cK56XRGmcYd7cWRaTpGHq2WpSFYpz5jvVrXminVOt2Vza15nlXoF3KItnTe7cvZRTUkGwYdt4sIATxGB1eCPQu16faihQORfh9p+GNZD3xMaPv+qjlc2IJzWhKvgHsM6OuQZ3FCE3Qd01dxbvq6OAhr9TOrbzPedBBdTmK1eu2rZ0DxLCnUmIMzEyV62blOV0wsNvnYxkz+vC7DtJ2St63yH2+Fv&lt;/diagram&gt;&lt;/mxfile&gt;">
     <defs/>
     <g>
-        <rect x="0" y="0" width="490" height="100" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
+        <rect x="0" y="0" width="490" height="220" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
         <path d="M 370 50 L 403.63 50" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
         <path d="M 408.88 50 L 401.88 53.5 L 403.63 50 L 401.88 46.5 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 320 80 L 320 113.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 320 118.88 L 316.5 111.88 L 320 113.63 L 323.5 111.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
         <rect x="270" y="20" width="100" height="60" rx="9" ry="9" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
         <g transform="translate(-0.5 -0.5)">
             <switch>
@@ -88,6 +90,24 @@
                 <text x="440" y="54" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">
                     打刻
 ページ
+                </text>
+            </switch>
+        </g>
+        <path d="M 270 135 C 270 126.72 292.39 120 320 120 C 333.26 120 345.98 121.58 355.36 124.39 C 364.73 127.21 370 131.02 370 135 L 370 185 C 370 193.28 347.61 200 320 200 C 292.39 200 270 193.28 270 185 Z" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 370 135 C 370 143.28 347.61 150 320 150 C 292.39 150 270 143.28 270 135" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 173px; margin-left: 320px;">
+                        <div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;">
+                            <div style="display: inline-block; font-size: 10px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: nowrap;">
+                                ・本人確認日時
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="320" y="176" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="10px" text-anchor="middle">
+                    ・本人確認日時
                 </text>
             </switch>
         </g>
