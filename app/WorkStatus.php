@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-/** 会員の勤務状態と休憩状態を表す列挙型 */
+/** 会員の勤務状況を表す列挙型 */
 enum WorkStatus
 {
     /** `勤務開始前 || 勤務終了後` */
@@ -13,6 +13,8 @@ enum WorkStatus
     case During;
     /** `勤務開始後 && 休憩開始後` */
     case Break;
+    /** 勤務状況が取得できない場合 */
+    case Error;
 
     /** 勤務中であることを判定する */
     public function isDuring(): bool

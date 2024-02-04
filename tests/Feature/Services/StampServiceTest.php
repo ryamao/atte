@@ -6,6 +6,7 @@ namespace Tests\Feature\Services;
 
 use App\Models\User;
 use App\Services\StampService;
+use App\WorkStatus;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -47,11 +48,39 @@ class StampServiceTest extends TestCase
     }
 
     /**
+     * @testdox ある日の勤務状況を取得する
+     *
+     * @group model
+     */
+    public function testWorkStatus(): void
+    {
+        $user = User::factory()->create();
+        $date = CarbonImmutable::create(year: 2021, month: 1, day: 1, tz: 'Asia/Tokyo');
+        $service = new StampService($user, $date);
+
+        $this->assertSame(WorkStatus::Before, $service->workStatus());
+
+        $user->shiftBegin()->create(['begun_at' => '2021-01-01 10:00:00']);
+        $this->assertSame(WorkStatus::During, $service->workStatus());
+
+        $user->breakBegin()->create(['begun_at' => '2021-01-01 12:00:00']);
+        $this->assertSame(WorkStatus::Break, $service->workStatus());
+
+        $user->breakBegin()->delete();
+        $user->breakTimings()->create(['begun_at' => '2021-01-01 12:00:00']);
+        $this->assertSame(WorkStatus::During, $service->workStatus());
+
+        $user->shiftBegin()->delete();
+        $user->shiftTimings()->create(['begun_at' => '2021-01-01 10:00:00', 'ended_at' => '2021-01-01 18:00:00']);
+        $this->assertSame(WorkStatus::Before, $service->workStatus());
+    }
+
+    /**
      * @testdox 勤務開始後に StampService::beginShift を実行しても最初の日時を保持する
      *
      * @group stamp
      */
-    public function test_beginShift_twice(): void
+    public function testBeginShiftTwice(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
@@ -64,7 +93,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginShift_with_previous_data(): void
+    public function testBeginShiftCrossingDate(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -80,7 +109,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginShift_before_breaking(): void
+    public function testBeginShiftAfterBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -93,11 +122,11 @@ class StampServiceTest extends TestCase
     }
 
     /**
-     * @testdox 9時に勤務開始、17時に勤務終了、18時に勤務再開、19時に勤務終了
+     * @testdox 勤務終了と勤務再開
      *
      * @group stamp
      */
-    public function test_endShift(): void
+    public function testEndShiftAndBeginShift(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->assertShiftBegins([[$this->users[0]->id, $this->testBegunAt]]);
@@ -117,7 +146,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endShift_with_previous_data(): void
+    public function testEndShiftWithPreviousData(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -133,7 +162,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endShift_while_at_break(): void
+    public function testEndShiftWhileAtBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -149,7 +178,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endShift_before_breaking(): void
+    public function testEndShiftAfterBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -166,7 +195,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginBreak_do_nothing(): void
+    public function testBeginBreakDoNothing(): void
     {
         // 勤務開始前
         $this->stamper(elapsedHours: 0)->beginBreak();
@@ -186,7 +215,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginBreak_twice(): void
+    public function testBeginBreakTwice(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -200,7 +229,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_beginBreak_with_previous_data(): void
+    public function testBeginBreakWithPreviousData(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -216,7 +245,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endBreak(): void
+    public function testEndBreak(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();
@@ -237,7 +266,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endBreak_do_nothing(): void
+    public function testEndBreakDoNothing(): void
     {
         // 勤務開始前
         $this->stamper(elapsedHours: 0)->endBreak();
@@ -257,7 +286,7 @@ class StampServiceTest extends TestCase
      *
      * @group stamp
      */
-    public function test_endBreak_with_previous_data(): void
+    public function testEndBreakWithPreviousData(): void
     {
         $this->stamper(elapsedHours: 0)->beginShift();
         $this->stamper(elapsedHours: 4)->beginBreak();

@@ -17,16 +17,14 @@ class StampController extends Controller
     /** 打刻ページを表示する。 */
     public function index(): View
     {
-        $now = CarbonImmutable::now(app()->make(DateTimeZone::class));
-        $service = new StampService(Auth::user(), $now);
-        $service->handlePreviousEvents();
-
-        /** @var \App\Models\User */
         $user = Auth::user();
+        $now = CarbonImmutable::now(app()->make(DateTimeZone::class));
+        $service = new StampService($user, $now);
+        $service->handlePreviousEvents();
 
         return view('stamp', [
             'userName' => $user->name,
-            'workStatus' => $user->workStatus($now),
+            'workStatus' => $service->workStatus(),
         ]);
     }
 

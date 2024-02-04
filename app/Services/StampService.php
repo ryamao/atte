@@ -9,6 +9,7 @@ use App\Models\BreakTiming;
 use App\Models\ShiftBegin;
 use App\Models\ShiftTiming;
 use App\Models\User;
+use App\WorkStatus;
 use DateTimeInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -23,6 +24,28 @@ class StampService
     public function __construct(private readonly User $user, private readonly DateTimeInterface $now)
     {
         //
+    }
+
+    /** 勤務状況を取得する */
+    public function workStatus(): WorkStatus
+    {
+        try {
+            return DB::transaction(function () {
+                $shiftBegin = $this->user->shiftBegin()->whereDate('begun_at', $this->now)->sharedLock()->exists();
+                $breakBegin = $this->user->breakBegin()->whereDate('begun_at', $this->now)->sharedLock()->exists();
+
+                if ($breakBegin) {
+                    return WorkStatus::Break;
+                }
+                if ($shiftBegin) {
+                    return WorkStatus::During;
+                }
+
+                return WorkStatus::Before;
+            });
+        } catch (\Throwable $e) {
+            return WorkStatus::Error;
+        }
     }
 
     /** 開始イベントを終了せずに日付を跨いだ場合の処理を行う。 */
