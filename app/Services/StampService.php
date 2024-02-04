@@ -29,17 +29,23 @@ class StampService
     /** 勤務状況を取得する */
     public function workStatus(): WorkStatus
     {
-        $shiftBegin = $this->user->shiftBegin()->whereDate('begun_at', $this->now)->sharedLock()->exists();
-        $breakBegin = $this->user->breakBegin()->whereDate('begun_at', $this->now)->sharedLock()->exists();
+        try {
+            return DB::transaction(function () {
+                $shiftBegin = $this->user->shiftBegin()->whereDate('begun_at', $this->now)->sharedLock()->exists();
+                $breakBegin = $this->user->breakBegin()->whereDate('begun_at', $this->now)->sharedLock()->exists();
 
-        if ($breakBegin) {
-            return WorkStatus::Break;
-        }
-        if ($shiftBegin) {
-            return WorkStatus::During;
-        }
+                if ($breakBegin) {
+                    return WorkStatus::Break;
+                }
+                if ($shiftBegin) {
+                    return WorkStatus::During;
+                }
 
-        return WorkStatus::Before;
+                return WorkStatus::Before;
+            });
+        } catch (\Throwable $e) {
+            return WorkStatus::Error;
+        }
     }
 
     /** 開始イベントを終了せずに日付を跨いだ場合の処理を行う。 */
