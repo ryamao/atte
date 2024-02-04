@@ -50,7 +50,50 @@
 
 ## ER図
 
-![ER図](doc/ER図.drawio.svg)
+```mermaid
+erDiagram
+  users ||--o| shift_begins : ""
+  users ||--o{ shift_timings : ""
+  users ||--o| break_begins : ""
+  users ||--o{ break_timings : ""
+
+  users {
+     BIGINT id PK
+     VARCHAR(191) name
+     VARCHAR(191) email
+     TIMESTAMP email_verified_at
+     VARCHAR(191) password
+     VARCHAR(100) remember_token
+     TIMESTAMP created_at
+     TIMESTAMP updated_at
+  }
+
+  shift_begins {
+    BIGINT id PK
+    BIGINT user_id FK
+    DATETIME begun_at
+  }
+
+  shift_timings {
+    BIGINT id PK
+    BIGINT user_id FK
+    DATETIME begun_at
+    DATETIME ended_at
+  }
+
+  break_begins {
+    BIGINT id PK
+    BIGINT user_id FK
+    DATETIME begun_at
+  }
+
+  break_timings {
+    BIGINT id PK
+    BIGINT user_id FK
+    DATETIME begun_at
+    DATETIME ended_at
+  }
+```
 
 ## 環境構築
 
