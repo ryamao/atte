@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -38,6 +40,27 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password',
         ]);
         $response->assertRedirectToRoute('stamp');
+    }
+
+    /**
+     * @testdox [POST register] [登録成功] メールが送信される
+     *
+     * @group register
+     */
+    public function testPostRegisterSendsEmailIfRegistrationSucceeds(): void
+    {
+        Notification::fake();
+
+        $this->fromRoute('register')->post(route('register'), [
+            'name' => 'a',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $user = User::firstWhere('name', 'a');
+        $this->assertNull($user->email_verified_at);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     /**

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Controllers;
 
 use App\Models\ShiftTiming;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * 打刻ページのバックエンドのテストの内、ログイン済み、勤務終了済みのテストケースを扱う。
  */
 class StampControllerAfterWorkTest extends StampControllerTestCase
 {
+    use RefreshDatabase;
+
     /** テスト開始前に保存された勤務時間 */
     private ShiftTiming $shiftTiming;
 

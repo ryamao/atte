@@ -6,12 +6,15 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\BreakBegin;
 use App\Models\ShiftBegin;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * 打刻ページのバックエンドのテストの内、ログイン済み、勤務開始済み、休憩開始済みのテストケースを扱う。
  */
 class StampControllerDuringBreakTest extends StampControllerTestCase
 {
+    use RefreshDatabase;
+
     /** テスト開始前に保存された勤務開始イベント */
     private ShiftBegin $shiftBegin;
 

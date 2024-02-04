@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Controllers;
 
 use App\Models\ShiftBegin;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * 打刻ページのバックエンドのテストの内、ログイン済み、勤務開始済みのテストケースを扱う。
  */
 class StampControllerDuringWorkTest extends StampControllerTestCase
 {
+    use RefreshDatabase;
+
     /** テスト開始前に保存された勤務開始イベント */
     private ShiftBegin $shiftBegin;
 
