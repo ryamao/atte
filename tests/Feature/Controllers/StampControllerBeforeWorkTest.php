@@ -6,6 +6,7 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\ShiftBegin;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Hash;
  */
 class StampControllerBeforeWorkTest extends StampControllerTestCase
 {
+    use RefreshDatabase;
+
     /**
      * @testdox [GET stamp] [認証状態] [勤務前]
      *

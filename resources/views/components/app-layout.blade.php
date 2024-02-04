@@ -24,8 +24,10 @@
         @if (Auth::check())
         <nav class="header__nav">
             <ul class="header__nav-list">
+                @if (Auth::user()->hasVerifiedEmail())
                 <li class="header__nav-item"><a href="{{ route('stamp') }}">ホーム</a></li>
                 <li class="header__nav-item"><a href="{{ route('attendance') }}">日付一覧</a></li>
+                @endif
                 <li class="header__nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf

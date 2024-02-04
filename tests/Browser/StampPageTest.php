@@ -27,6 +27,7 @@ class StampPageTest extends DuskTestCase
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
         ]);
+        $this->user->markEmailAsVerified();
     }
 
     /** ログイン状態でテストを開始するためのラッパー関数。 */

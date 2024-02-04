@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Controllers;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 class StampControllerTest extends StampControllerTestCase
 {
+    use RefreshDatabase;
+
     /**
      * @testdox [GET stamp] [未認証状態] route(stamp) へリダイレクトする
      *

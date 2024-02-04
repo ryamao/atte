@@ -68,6 +68,9 @@ jobs:
           path: ./vendor
           key: ${{ runner.os }}-composer-${{ github.sha }}
 
+      - name: Remove .env.testing
+        run: php -r "file_exists('.env.testing') && unlink('.env.testing');"
+
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
 
@@ -118,6 +121,9 @@ jobs:
           enableCrossOsArchive: true
           path: ./vendor
           key: ${{ runner.os }}-composer-${{ github.sha }}
+
+      - name: Remove .env.dusk.testing
+        run: php -r "file_exists('.env.dusk.testing') && unlink('.env.dusk.testing');"
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"

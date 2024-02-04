@@ -102,11 +102,11 @@ class RegisterPageTest extends DuskTestCase
     }
 
     /**
-     * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録後、打刻ページに遷移する
+     * @testdox [会員登録ページ] [ボタン/リンク] [会員登録] 会員登録後、メール確認ページに遷移する
      *
      * @group register
      */
-    public function testRegisterPageRedirectsToStampPageIfRegistrationSucceeds(): void
+    public function testRegisterPageRedirectsToEmailVerificationPageIfRegistrationSucceeds(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visitRoute('register');
@@ -115,7 +115,7 @@ class RegisterPageTest extends DuskTestCase
             $browser->type('password', 'password');
             $browser->type('password_confirmation', 'password');
             $browser->press('会員登録');
-            $browser->assertRouteIs('stamp');
+            $browser->assertRouteIs('verification.notice');
         });
     }
 

@@ -10,7 +10,6 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use DateTimeZone;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\TestResponse;
 use Tests\AssertsDatabase;
@@ -19,7 +18,6 @@ use Tests\TestCase;
 class StampControllerTestCase extends TestCase
 {
     use AssertsDatabase;
-    use RefreshDatabase;
 
     /** テスト中の認証に使用するユーザ */
     protected User $loginUser;
@@ -32,13 +30,14 @@ class StampControllerTestCase extends TestCase
     {
         parent::setUp();
 
+        $this->testBegunAt = CarbonImmutable::create(2024, 1, 24, 9, 0, 0, new DateTimeZone('Asia/Tokyo'));
+
         $this->loginUser = User::create([
             'name' => 'test',
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
         ]);
-
-        $this->testBegunAt = CarbonImmutable::create(2024, 1, 24, 9, 0, 0, new DateTimeZone('Asia/Tokyo'));
+        $this->loginUser->markEmailAsVerified();
     }
 
     /** 勤務時間をデータベースに保存する。 */

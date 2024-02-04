@@ -37,7 +37,8 @@ class LoginPageTest extends DuskTestCase
         ]);
 
         $hashedPassword = Hash::make($this->userData['password']);
-        User::create($this->userData->merge(['password' => $hashedPassword])->all());
+        $user = User::create($this->userData->merge(['password' => $hashedPassword])->all());
+        $user->markEmailAsVerified();
     }
 
     /**
