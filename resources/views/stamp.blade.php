@@ -1,6 +1,4 @@
-<x-app-layout>
-    <x-slot name="css">stamp.css</x-slot>
-
+<x-app-layout :css="'stamp.css'">
     <div class="stamp">
         <h2 class="stamp__title" dusk="gratitude">{{ $userName }}さんお疲れ様です！</h2>
 
