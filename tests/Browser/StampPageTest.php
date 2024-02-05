@@ -79,6 +79,7 @@ class StampPageTest extends DuskTestCase
      *
      * @testWith ["ホーム"]
      *           ["日付一覧"]
+     *           ["会員一覧"]
      */
     public function testStampPageHasLink(string $link): void
     {
@@ -95,6 +96,7 @@ class StampPageTest extends DuskTestCase
      *
      * @testWith ["ホーム", "stamp"]
      *           ["日付一覧", "attendance"]
+     *           ["会員一覧", "users.index"]
      */
     public function testStampPageHasLinkAndItsRoute(string $link, string $routeName): void
     {

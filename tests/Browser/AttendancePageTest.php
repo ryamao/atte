@@ -81,6 +81,7 @@ class AttendancePageTest extends DuskTestCase
      *
      * @testWith ["ホーム", "stamp"]
      *           ["日付一覧", "attendance"]
+     *           ["会員一覧", "users.index"]
      */
     public function testAttendancePageHasLink(string $link, string $routeName): void
     {
