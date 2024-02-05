@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="{{ asset('css/reset.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/app-layout.css') }}" />
     @isset($css)
-    <link rel="stylesheet" href="{{ asset('css/' . $css) }}" />
+        @foreach (Arr::flatten([$css]) as $c)
+            <link rel="stylesheet" href="{{ asset('css/' . $c) }}" />
+        @endforeach
     @endisset
 </head>
 

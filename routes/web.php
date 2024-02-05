@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\StampController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,4 +23,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/break/begin', [StampController::class, 'storeBreakBegin'])->name('break-begin');
     Route::post('/break/end', [StampController::class, 'storeBreakTiming'])->name('break-end');
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+    Route::resource('users', UserController::class)->only(['index', 'show']);
 });
