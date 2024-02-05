@@ -1,6 +1,4 @@
-<x-app-layout>
-    <x-slot name="css">attendance.css</x-slot>
-
+<x-app-layout :css="['components/pagination.css', 'attendance.css']">
     <div class="attendance">
         <div class="attendance__date">
             <a href="{{ route('attendance', ['date' => $currentDate->subDay()->format('Y-m-d')]) }}" dusk="previous-date">&lt;</a>

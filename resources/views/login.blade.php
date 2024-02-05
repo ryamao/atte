@@ -1,6 +1,4 @@
-<x-app-layout>
-    <x-slot name="css">auth.css</x-slot>
-
+<x-app-layout css="auth.css">
     <div class="auth">
         <h2 class="auth__title">ログイン</h2>
 

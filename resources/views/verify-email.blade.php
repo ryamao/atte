@@ -1,6 +1,4 @@
-<x-app-layout>
-    <x-slot name="css">verify-email.css</x-slot>
-
+<x-app-layout css="verify-email.css">
     <div class="verify">
         <h2 class="verify__title">メール認証</h2>
 
