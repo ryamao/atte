@@ -9,6 +9,11 @@ use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * @see \App\Http\Controllers\UserController
+ *
+ * @group users
+ */
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -21,21 +26,17 @@ class UserControllerTest extends TestCase
     {
         parent::setUp();
 
-        $today = CarbonImmutable::create(year: 2024, month: 1, day: 24, tz: 'Asia/Tokyo');
+        $today = CarbonImmutable::create(year: 2024, month: 2, day: 8, tz: 'Asia/Tokyo');
         CarbonImmutable::setTestNow($today);
 
-        $this->travelTo($today, function () {
-            foreach (range(1, 99) as $i) {
-                User::factory()->create(['name' => sprintf('user%02d', fake()->numberBetween(1, 99))]);
-            }
-        });
+        foreach (range(1, 99) as $i) {
+            User::factory()->create(['name' => sprintf('user%02d', fake()->numberBetween(1, 99))]);
+        }
         $this->user = User::first();
     }
 
     /**
      * @testdox [GET /users] [非認証状態] route('login') へリダイレクトする
-     *
-     * @group users
      */
     public function testGetUsersFromGuestRedirectsToLoginPage(): void
     {
@@ -45,8 +46,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] ステータスコード200を返す
-     *
-     * @group users
      */
     public function testGetUsersReturnsStatusCode200(): void
     {
@@ -56,8 +55,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] [検索条件なし] [ページ指定なし] 名前順で先頭から12件取得する
-     *
-     * @group users
      */
     public function testGetUsersReturnsFirstTwelveUsersOrderedByName(): void
     {
@@ -70,8 +67,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] [検索条件なし] [ページ指定あり] 名前順で (ページ番号 * 12) 件目から12件取得する
-     *
-     * @group users
      */
     public function testGetUsersReturnsTwelveUsersOrderedByNameFromPageNumberTimesTwelve(): void
     {
@@ -88,8 +83,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] [検索条件なし] [ページ指定あり] ページ番号が0以下の場合は先頭のページを表示する
-     *
-     * @group users
      */
     public function testGetUsersReturnsFirstPageWhenPageNumberIsZeroOrLess(): void
     {
@@ -102,8 +95,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] [検索条件なし] [ページ指定あり] ページ番号が最大ページ数を超える場合は空のコレクションを返す
-     *
-     * @group users
      */
     public function testGetUsersReturnsEmptyCollectionWhenPageNumberExceedsMaxPage(): void
     {
@@ -114,8 +105,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] [検索条件あり] [ページ指定なし] 検索条件に一致する名前順で先頭から12件取得する
-     *
-     * @group users
      */
     public function testGetUsersReturnsFirstTwelveUsersOrderedByNameMatchingSearchQuery(): void
     {
@@ -129,8 +118,6 @@ class UserControllerTest extends TestCase
 
     /**
      * @testdox [GET /users] [認証済み] [検索条件あり] [ページ指定あり] 検索条件に一致する名前順で (ページ番号 * 12) 件目から12件取得する
-     *
-     * @group users
      */
     public function testGetUsersReturnsTwelveUsersOrderedByNameMatchingSearchQueryFromPageNumberTimesTwelve(): void
     {
