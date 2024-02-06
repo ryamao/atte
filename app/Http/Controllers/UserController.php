@@ -1,14 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserAttendanceService;
 use App\Services\UserService;
+use Carbon\CarbonImmutable;
+use DateTimeZone;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     const int PAGINATE = 12;
+
+    const int MAX_ATTENDANCES_PER_PAGE = 5;
 
     /**
      * Display a listing of the resource.
@@ -43,9 +51,31 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request, User $user, DateTimeZone $tz): View
     {
-        //
+        $userName = $user->name;
+
+        $date = CarbonImmutable::today($tz);
+        try {
+            $date = CarbonImmutable::createFromFormat('Y-m', $request->query('ym'), $tz);
+        } catch (\Carbon\Exceptions\InvalidFormatException) {
+            // ignore
+        }
+
+        $currentMonth = $date->firstOfMonth();
+
+        $service = app(UserAttendanceService::class, compact('user', 'date'));
+        $attendances = $service->attendances()
+            ->orderBy('date')
+            ->paginate(static::MAX_ATTENDANCES_PER_PAGE)
+            ->withQueryString();
+
+        return view('users.show', compact(
+            'user',
+            'userName',
+            'currentMonth',
+            'attendances',
+        ));
     }
 
     /**
