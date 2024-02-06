@@ -1,35 +1,11 @@
-<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="451px" height="231px" viewBox="-0.5 -0.5 451 231" content="&lt;mxfile&gt;&lt;diagram id=&quot;Vu7xEyBTOIMugCgbG6aH&quot; name=&quot;ページ1&quot;&gt;zVhLj9owEP41ltpDKzshITkmwG4PrbrSHrp7NMQkUUNMjVlCf339zIMEltVmRSUEM2OPPZ7P30wCcGeb6p7hbfaDJqQADkwq4M6B40ygI76l4agNUx9qQ8ryRJtQY3jM/xJjtNP2eUJ2nYmc0oLn265xRcuSrHjHhhmjh+60NS26u25xSnqGxxUu+tZfecIzbQ2caWP/RvI0szsjP9QjG2wnm5PsMpzQQ8vkLoA7Y5RyLW2qGSlk7mxetN/dmdE6MEZKfpWDpz1ecLE3hzOB8aM9LaP7MiHSAQI3PmQ5J49bvJKjBwGvsGV8UwgNCbEfgInphTBOqpbJBHRP6IZwdhRTzKjNzbGrHppMTzxjy1pZdlxjxAbdtF65SYAQTA7O5MPvHZ8kAnujlrQk3fOSKudPLflZpumrZ7R5ZbKmlKNVShHVU1tpeUm1cVOa9Tub2x3dsxWxaTCEwCwlNjUGVHmUiwgwUmCev3Sv+VA+jesDzUUoNXIIdaELThDRcRqnE1DqKK7DaXoRJ8p4RlNa4mLRWIdgg2+BTSgPhOUiTMJOoUQfACUKBqCEY0N5NTWCfqlYuCBwQRyDhQeCGEQTI4QhWIQg9KUsLNFUCT4IpyDylBCCQCzmF+JY8ZJ1kPT/7GX5i9e05F92qvhHYgJC20plzo4LKVW/TRQTEM9AiOQOgQ+iG0VR50LsDEEElSBGPRUFBDH6qJNHcofQBRFSAgTBvMcT0XK2Ulwdi1zUdeZ2mbHU1f77sjbg1e9U9YCfey5ciLHr+OZIXnVc5GkplIKsbfyma6ORmoLrd0sLmvTbQjjQFcIxmkJ4g2JT94imljy368y7egQcKCzurQqLjaZTWPTtnbXo6koyBYrb0UzdcHX55Z3XLJgpwQFxoAQEokWbZ5Yy9YITSZwwUHwNlOUK4uotQmdo5UBGFYkFp3KRODJhyGKovIL4wrMVev3Z6gNohaYntPL7tKq7eptX3gi8qq/mWx+2GvI8t0beRiQ4CpGc/6lD22hOO7SgjWQC3sj7pO+qAz9dQ6TP1v/u4sVXQ9Gd8Y/sQuLTGbpMBXEW8f5GbkQDr0ODgeaC4AAL/DFY4A6gdr5IDaS/V7aGITpTK889H5BKeiZ0vyxsy38FGLzb6rftdV7JmjYGMhP4GjD+OLgItXnt1m8kzX8X7uIf&lt;/diagram&gt;&lt;/mxfile&gt;">
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="451px" height="231px" viewBox="-0.5 -0.5 451 231" content="&lt;mxfile&gt;&lt;diagram id=&quot;Vu7xEyBTOIMugCgbG6aH&quot; name=&quot;ページ1&quot;&gt;xVjfb5swEP5rLG0PmzAGAo+QpN1Dp03qw9ZHJziARnDmOA3ZXz/b2PwIkJI17aSqujv77PN3990lAWi+Le8Z3qVfaUxyYFtxCdAC2LYPbfFfGk7aYHuVIWFZXJlgY3jM/hBttLT1kMVk39nIKc15tusa17QoyJp3bJgxeuxu29C8e+sOJ6RneFzjvG/9kcU8Na+YNfYvJEtSczP0gmpli81m/ZJ9imN6bJnQEqA5o5RX0rack1xiZ3Cp/O5GVuvAGCn4JAe38njG+UE/TgfGT+a1jB6KmEgHC6DomGacPO7wWq4eRXqFLeXbXGhQiP0AdEzPhHFStkw6oHtCt4Szk9iiVw02p656bJB2XG1LWyjbSBuxzm5Sn9wAIASNwQgeXu/5JBa512pBC9J9Lykz/rMlP0mYPrtaW5QaNaWcjFKIqH62lZaXVBs3pRm/UWz39MDWxMCgCYFZQgw0OqnyKRczwEiOefbcLfMhPLXrd5qJUOrMQdhNnX+WkSpO7XSWlDqKaXmaXcwTZTylCS1wvmysk8q0A6UzAKX1PlAirwsl9N03wzJ4HZaGAtY/UaCp+idz3qspYA3kDd06b1Nbiomm3WKXLggs4M/B0gPBDIQuWCIg2OJDaQnnIITKgkAQaiGaK8EGka8ECMIlsL1cvC9aMSElUmod6IAoAoEv7/J9ZRFCBEJH7hF3hZYSxFFqSagR1FcE9tDJvowqFAfO5CFRqMMIAu3lRxdGB3x5dGxowfWshzcaJXB2xiKvP0zqptUeJu4NZkldmtfOkoY8T62V64hk3YRI9ns0wMl42gNEqmgjmYC3sp6qWrWtD1OI9NH4310sfLUU3mn/0Bwk/jpLl6kg3iI+npL/RAO3QwNngAXWAAu8W7AADWRtvEkNwN9rW8MpGumV53kQn7h3UiSl9IzpYaVWJvQnvN9VXyY2WSl72i0y41gvJcZ7q7w4w2xCMiMyL3OFpxhUSJGomliLUfCjdqaUINngyqEiEy3IuACRc9G9ulSNQF/sv9a9f3sAAk/KcrzNlFAXnic3+B26t6rE+32Q38AUFz/tFRlDsQHCXanybtYnPWJKFCNFuj7lmRigDHUrcVWN1YdVbcDrX4katt8OXLiYit7rPiJHA86zpBBKTjZ8oM3sRd1nRfKgVhdOXd69Wh6o+NHyRu7Z/EXutM5TG68ocaE2X5yrz8HNrw9o+Rc=&lt;/diagram&gt;&lt;/mxfile&gt;">
     <defs/>
     <g>
         <rect x="0" y="0" width="450" height="230" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
         <path d="M 80 50 L 148.63 50" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
         <path d="M 153.88 50 L 146.88 53.5 L 148.63 50 L 146.88 46.5 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
-        <path d="M 340 165 L 266.37 165" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 330 165 L 266.37 165" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
         <path d="M 261.12 165 L 268.12 161.5 L 266.37 165 L 268.12 168.5 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
-        <path d="M 340 135 C 340 126.72 360.15 120 385 120 C 396.93 120 408.38 121.58 416.82 124.39 C 425.26 127.21 430 131.02 430 135 L 430 195 C 430 203.28 409.85 210 385 210 C 360.15 210 340 203.28 340 195 Z" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
-        <path d="M 430 135 C 430 143.28 409.85 150 385 150 C 360.15 150 340 143.28 340 135" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
-        <g transform="translate(-0.5 -0.5)">
-            <switch>
-                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
-                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 178px; margin-left: 342px;">
-                        <div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;">
-                            <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: nowrap;">
-                                ・勤務開始日時
-                                <br style="font-size: 11px;"/>
-                                ・休憩開始日時
-                                <br style="font-size: 11px;"/>
-                                ・勤怠情報
-                                <br style="font-size: 11px;"/>
-                                ・会員名
-                            </div>
-                        </div>
-                    </div>
-                </foreignObject>
-                <text x="342" y="181" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="11px">
-                    ・勤務開始日時・休憩開始日時・勤怠情報・会員名...
-                </text>
-            </switch>
-        </g>
         <path d="M 150 165 L 60 165 Q 50 165 50 155 L 50 86.37" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
         <path d="M 50 81.12 L 53.5 88.12 L 50 86.37 L 46.5 88.12 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
         <rect x="150" y="140" width="110" height="50" rx="7.5" ry="7.5" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" pointer-events="all"/>
@@ -93,6 +69,32 @@
                 </foreignObject>
                 <text x="50" y="54" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">
                     日付別勤怠ページ...
+                </text>
+            </switch>
+        </g>
+        <path d="M 330 130 C 330 121.72 352.39 115 380 115 C 393.26 115 405.98 116.58 415.36 119.39 C 424.73 122.21 430 126.02 430 130 L 430 200 C 430 208.28 407.61 215 380 215 C 352.39 215 330 208.28 330 200 Z" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 430 130 C 430 138.28 407.61 145 380 145 C 352.39 145 330 138.28 330 130" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 178px; margin-left: 336px;">
+                        <div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: nowrap;">
+                                ・会員名
+                                <br/>
+                                ・勤務履歴
+                                <br/>
+                                ・休憩履歴
+                                <br/>
+                                ・勤務開始日時
+                                <br style="font-size: 11px;"/>
+                                ・休憩開始日時
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="336" y="181" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="11px">
+                    ・会員名・勤務履歴・休憩履歴・勤務開始日時・休憩開始日時...
                 </text>
             </switch>
         </g>
