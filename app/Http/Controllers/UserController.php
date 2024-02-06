@@ -14,19 +14,19 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    const int PAGINATE = 12;
+    const int MAX_USERS_PER_PAGE = 12;
 
     const int MAX_ATTENDANCES_PER_PAGE = 5;
 
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $service = app(UserService::class);
         $search = $request->query('search');
         $users = $service->searchUserNames($search ?? '')
-            ->paginate(static::PAGINATE)
+            ->paginate(static::MAX_USERS_PER_PAGE)
             ->withQueryString();
 
         return view('users.index', compact('users'));
