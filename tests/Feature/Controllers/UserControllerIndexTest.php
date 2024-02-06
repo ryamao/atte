@@ -14,7 +14,7 @@ use Tests\TestCase;
  *
  * @group users
  */
-class UserControllerTest extends TestCase
+class UserControllerIndexTest extends TestCase
 {
     use RefreshDatabase;
 
