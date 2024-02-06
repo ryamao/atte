@@ -9,7 +9,7 @@ use App\Models\BreakTiming;
 use App\Models\ShiftBegin;
 use App\Models\ShiftTiming;
 use App\Models\User;
-use App\Services\AttendanceService;
+use App\Services\DailyAttendanceService;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,7 +17,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Collection;
 use Tests\TestCase;
 
-class AttendanceServiceTest extends TestCase
+class DailyAttendanceServiceTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
@@ -42,7 +42,7 @@ class AttendanceServiceTest extends TestCase
     public function testBreakSeconds(Factory $userFactory): void
     {
         $user = $this->travelTo($this->today, fn () => $userFactory->create());
-        $service = new AttendanceService($this->today);
+        $service = new DailyAttendanceService($this->today);
         $breakSeconds = $service->breakSeconds()->get();
         $this->assertBreakSeconds(collect([$user]), $breakSeconds, $this->today);
     }
@@ -57,7 +57,7 @@ class AttendanceServiceTest extends TestCase
         $users = collect(static::provideBreakSecondsTestData())->map(
             fn (array $data) => $this->travelTo($this->today, fn () => $data[0]->create())
         );
-        $service = new AttendanceService($this->today);
+        $service = new DailyAttendanceService($this->today);
         $breakSeconds = $service->breakSeconds()->get();
         $this->assertBreakSeconds($users, $breakSeconds, $this->today);
     }
@@ -72,7 +72,7 @@ class AttendanceServiceTest extends TestCase
     public function testShiftSeconds(Factory $userFactory): void
     {
         $user = $this->travelTo($this->today, fn () => $userFactory->create());
-        $service = new AttendanceService($this->today);
+        $service = new DailyAttendanceService($this->today);
         $shiftSeconds = $service->shiftSeconds()->get();
         $this->assertShiftSeconds(collect([$user]), $shiftSeconds, $this->today);
     }
@@ -87,7 +87,7 @@ class AttendanceServiceTest extends TestCase
         $users = collect(static::provideShiftSecondsTestData())->map(
             fn (array $data) => $this->travelTo($this->today, fn () => $data[0]->create())
         );
-        $service = new AttendanceService($this->today);
+        $service = new DailyAttendanceService($this->today);
         $shiftSeconds = $service->shiftSeconds()->get();
         $this->assertShiftSeconds($users, $shiftSeconds, $this->today);
     }
@@ -111,7 +111,7 @@ class AttendanceServiceTest extends TestCase
         foreach ($dates as $date) {
             $expectedResult = $testData[$date->toDateString()]->sortBy('user_id');
 
-            $service = new AttendanceService($date);
+            $service = new DailyAttendanceService($date);
             $shiftSeconds = $service->shiftSeconds()->orderBy('user_id')->get();
 
             $this->assertSameSize($expectedResult, $shiftSeconds);
@@ -136,7 +136,7 @@ class AttendanceServiceTest extends TestCase
     public function testAttendances(Factory $userFactory): void
     {
         $user = $this->travelTo($this->today, fn () => $userFactory->create());
-        $service = new AttendanceService($this->today);
+        $service = new DailyAttendanceService($this->today);
         $attendances = $service->attendances()->get();
         $this->assertAttendances(collect([$user]), $attendances, $this->today);
     }
@@ -151,7 +151,7 @@ class AttendanceServiceTest extends TestCase
         $users = collect(static::provideAttendanceTestData())->map(
             fn (array $data) => $this->travelTo($this->today, fn () => $data[0]->create())
         );
-        $service = new AttendanceService($this->today);
+        $service = new DailyAttendanceService($this->today);
         $attendances = $service->attendances()->get();
         $this->assertAttendances($users, $attendances, $this->today);
     }
@@ -175,7 +175,7 @@ class AttendanceServiceTest extends TestCase
         foreach ($dates as $date) {
             $expected = $testData[$date->toDateString()]->sortBy('user_id');
 
-            $service = new AttendanceService($date);
+            $service = new DailyAttendanceService($date);
             $attendances = $service->attendances()->orderBy('user_id')->get();
 
             $this->assertSameSize($expected, $attendances);

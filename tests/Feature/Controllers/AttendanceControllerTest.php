@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\BreakTiming;
+use App\Models\ShiftTiming;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Carbon\Exceptions\InvalidFormatException;
@@ -31,10 +33,20 @@ class AttendanceControllerTest extends TestCase
         parent::setUp();
 
         $this->today = CarbonImmutable::create(year: 2024, month: 1, day: 24, tz: 'Asia/Tokyo');
-        $this->travelTo($this->today, function () {
-            $seeder = new \Database\Seeders\DatabaseSeeder();
-            $seeder->run();
-        });
+
+        $users = User::factory(5 + 5 + 3)->create();
+
+        $dates = [$this->today, $this->today->subDay()];
+        foreach ($dates as $i => $date) {
+            CarbonImmutable::setTestNow($date);
+
+            $users->each(function ($user) {
+                $user->shiftTimings()->save(ShiftTiming::factory()->make());
+                $user->shiftTimings()->save(BreakTiming::factory()->make());
+                $user->shiftTimings()->save(BreakTiming::factory()->make());
+            });
+        }
+
         $this->user = User::first();
     }
 
@@ -85,9 +97,7 @@ class AttendanceControllerTest extends TestCase
      *           [null        , "0"   ]
      *           [null        , "1"   ]
      *           [null        , "2"   ]
-     *           [null        , "20"  ]
-     *           [null        , "21"  ]
-     *           [null        , "22"  ]
+     *           [null        , "3"  ]
      *           [null        , "test"]
      */
     public function testGetAttendanceFromAuthenticatedUser(?string $dateString, ?string $pageString): void

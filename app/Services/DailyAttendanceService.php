@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /** 日付別の勤怠情報を取得するサービスクラス */
-class AttendanceService
+class DailyAttendanceService
 {
     /**
      * サービスを初期化する。

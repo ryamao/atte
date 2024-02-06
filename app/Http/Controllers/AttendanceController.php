@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Services\AttendanceService;
+use App\Services\DailyAttendanceService;
 use Carbon\CarbonImmutable;
 use Carbon\Exceptions\InvalidFormatException;
 use DateTimeZone;
@@ -20,7 +20,7 @@ class AttendanceController extends Controller
         $currentDate = $this->getDateFromQueryString($timezone);
 
         try {
-            $service = new AttendanceService($currentDate);
+            $service = app(DailyAttendanceService::class, ['serviceDate' => $currentDate]);
             $attendances = $service
                 ->attendances()
                 ->whereNotNull('shift_begun_at')
@@ -31,7 +31,6 @@ class AttendanceController extends Controller
 
             return view('attendance', compact('attendances', 'currentDate'));
         } catch (Throwable $e) {
-            // TODO 共有ロックに失敗した場合の処理を追加する
             abort(500, $e->getMessage());
         }
     }

@@ -19,32 +19,33 @@ class DatabaseSeeder extends Seeder
     {
         $users = User::factory(103)->create();
 
-        $dates = [CarbonImmutable::today(), CarbonImmutable::yesterday()];
-        foreach ($dates as $i => $date) {
+        $firstOfPreviousMonth = CarbonImmutable::today()->subMonth()->firstOfMonth();
+
+        $dates = $firstOfPreviousMonth->daysUntil(CarbonImmutable::today()->subDay());
+        foreach ($dates as $date) {
             CarbonImmutable::setTestNow($date);
 
             foreach ($users as $user) {
-                if (fake()->boolean(5)) {
-                    // 休み
-                } else {
-                    if ($i === 0 && fake()->boolean(10)) {
-                        ShiftBegin::factory()->recycle($user)->create();
-
-                        if (fake()->boolean()) {
-                            BreakBegin::factory()->recycle($user)->create();
-                        }
-                    } else {
-                        ShiftTiming::factory()->recycle($user)->create();
-                    }
-
-                    $breakCount = fake()->numberBetween(0, 2);
-                    if ($breakCount > 0) {
-                        BreakTiming::factory($breakCount)->recycle($user)->create();
-                    }
+                if (fake()->numberBetween(1, 7) <= 2) {
+                    continue;
                 }
+
+                ShiftTiming::factory()->recycle($user)->create();
+                BreakTiming::factory(fake()->numberBetween(1, 3))->recycle($user)->create();
+            }
+        }
+
+        CarbonImmutable::setTestNow();
+
+        foreach ($users as $user) {
+            if (fake()->numberBetween(1, 7) <= 2) {
+                continue;
             }
 
-            CarbonImmutable::setTestNow();
+            ShiftBegin::factory()->recycle($user)->create();
+            if (fake()->boolean()) {
+                BreakBegin::factory()->recycle($user)->create();
+            }
         }
     }
 }
