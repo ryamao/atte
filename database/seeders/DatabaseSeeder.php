@@ -17,6 +17,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        User::factory()->create([
+            'name' => 'TEST',
+            'email' => 'test@example.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        ]);
+
         $users = User::factory(103)->create();
 
         $firstOfPreviousMonth = CarbonImmutable::today()->subMonth()->firstOfMonth();
