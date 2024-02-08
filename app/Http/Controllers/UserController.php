@@ -14,9 +14,19 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    const int MAX_USERS_PER_PAGE = 12;
+    /**
+     * 会員一覧ページで1ぺーじあたりに表示する会員数
+     *
+     * @var int
+     */
+    const MAX_USERS_PER_PAGE = 12;
 
-    const int MAX_ATTENDANCES_PER_PAGE = 5;
+    /**
+     * 会員別勤怠ページで1ぺーじあたりに表示する勤怠情報数
+     *
+     * @var int
+     */
+    const MAX_ATTENDANCES_PER_PAGE = 5;
 
     /**
      * Display a listing of the resource.
