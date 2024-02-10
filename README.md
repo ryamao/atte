@@ -2,7 +2,7 @@
 
 [![test](https://github.com/ryamao/atte/actions/workflows/laravel.yml/badge.svg?branch=main)](https://github.com/ryamao/atte/actions/workflows/laravel.yml)
 
-「Atte」はWebベースの勤怠管理システムです。ユーザー登録を行い、個々のユーザーが勤務開始/終了時間と休憩開始/終了時間を記録できます。また、日付別に全ユーザーの勤怠情報を閲覧することが可能です。
+「Atte」は Web ベースの勤怠管理システムです。ユーザー登録を行い、個々のユーザーが勤務開始/終了時間と休憩開始/終了時間を記録できます。また、日付別に全ユーザーの勤怠情報を閲覧することが可能です。
 
 ![打刻ページ](doc/打刻ページ.png)
 
@@ -12,46 +12,64 @@
 
 アプリ自体は、ある架空の企業の人事評価のために利用されるという想定で開発しました。
 
-## アプリケーションURL
+## アプリケーション URL
 
-現在デプロイは完了していませんが、AWSを使用してのデプロイを予定しています。
+AWS にデプロイした「Atte」の実行環境は以下のリンクからアクセスできます。アプリケーションは 6:00 〜 25:00 の間で稼働しています。
+
+* [ログインページ](http://stagin-loadb-lhxejx7bseut-1487813113.ap-northeast-1.elb.amazonaws.com/login)
+* [会員登録ページ](http://stagin-loadb-lhxejx7bseut-1487813113.ap-northeast-1.elb.amazonaws.com/register)
+* [打刻ページ](http://stagin-loadb-lhxejx7bseut-1487813113.ap-northeast-1.elb.amazonaws.com/)
+* [日付別勤怠ページ](http://stagin-loadb-lhxejx7bseut-1487813113.ap-northeast-1.elb.amazonaws.com/attendance)
+* [会員一覧ページ](http://stagin-loadb-lhxejx7bseut-1487813113.ap-northeast-1.elb.amazonaws.com/users)
+
+ログインには以下のテストユーザーを使用してください。
+
+* メールアドレス: `test@example.com`
+* パスワード: `password`
+
+デプロイ環境ではメール送信ができないため、本人確認機能は利用できません。
+
+## 他のリポジトリ
+
+* [ryamao/staging-atte](https://github.com/ryamao/staging-atte)
+  * AWS へのデプロイを自動化するための AWS CDK プロジェクトです。
 
 ## 機能一覧
 
-- 認証機能
-  - ユーザー登録
-  - ログイン/ログアウト
-  - メールでの本人確認
-- 打刻機能
-  - 勤務開始/終了の記録
-  - 休憩開始/終了の記録
-  - ボタン操作で現在日時を記録
-- 日付別勤怠情報表示
-  - 1日分の全ユーザー勤怠情報表示
-  - ページネーション機能
-  - 前日・翌日へのリンク
-- ユーザー一覧機能
-  - 全ユーザーの名前表示
-  - 名前の部分一致検索
-  - ページネーション機能
-- ユーザー別勤怠情報表示
-  - 1月分の個別ユーザー勤怠情報表示
-  - ページネーション機能
-  - 前月・翌月へのリンク
+* 認証機能
+  * ユーザー登録
+  * ログイン/ログアウト
+  * メールでの本人確認
+* 打刻機能
+  * 勤務開始/終了の記録
+  * 休憩開始/終了の記録
+  * ボタン操作で現在日時を記録
+* 日付別勤怠情報表示
+  * 1 日分の全ユーザー勤怠情報表示
+  * ページネーション機能
+  * 前日・翌日へのリンク
+* ユーザー一覧機能
+  * 全ユーザーの名前表示
+  * 名前の部分一致検索
+  * ページネーション機能
+* ユーザー別勤怠情報表示
+  * 1 月分の個別ユーザー勤怠情報表示
+  * ページネーション機能
+  * 前月・翌月へのリンク
 
 ## 使用技術(実行環境)
 
-- PHP 8.3
-- Laravel Framework 10.42
-- Laravel Fortify 1.20
-- MySQL 8.0
-- Docker（ローカル開発環境）
+* PHP 8.2
+* Laravel Framework 10.42
+* Laravel Fortify 1.20
+* MySQL 8.0
+* Docker（ローカル開発環境）
 
 ## テーブル設計
 
 [テーブル仕様書](doc/テーブル仕様書.md)
 
-## ER図
+## ER 図
 
 ```mermaid
 erDiagram
@@ -100,8 +118,8 @@ erDiagram
 
 ## 環境構築
 
-- 環境構築の前提として Docker がシステムにインストールされている必要があります。
-- 開発と動作確認は macOS 14 上で行いました。他の環境では動作確認していませんので、不具合があるかもしれませんがご了承ください。
+* 環境構築の前提として Docker がシステムにインストールされている必要があります。
+* 開発と動作確認は macOS 14 上で行いました。他の環境では動作確認していませんので、不具合があるかもしれませんがご了承ください。
 
 1. プロジェクトのリポジトリをクローンします。
 
@@ -121,19 +139,19 @@ cd atte
 cp .env.example .env
 ```
 
-4. `.env` ファイル内の `DB_HOST` の値を `mysql` に設定します。これはDocker内のMySQLサービスに接続するための設定です。
+4. `.env` ファイル内の `DB_HOST` の値を `mysql` に設定します。これは Docker 内の MySQL サービスに接続するための設定です。
 
 ```shell-session
 sed -i '' 's/^DB_HOST=.*$/DB_HOST=mysql/' .env
 ```
 
-5. Composerを使ってプロジェクトの依存関係をインストールします。
+5. Composer を使ってプロジェクトの依存関係をインストールします。
 
 ```shell-session
 docker run --rm -it -v $PWD:/app composer install
 ```
 
-6. Laravel Sailを使用して、Dockerコンテナをビルドし、デタッチドモードで起動します。
+6. Laravel Sail を使用して、Docker コンテナをビルドし、デタッチドモードで起動します。
 
 ```shell-session
 vendor/bin/sail up -d --build
@@ -151,13 +169,15 @@ vendor/bin/sail artisan key:generate
 vendor/bin/sail artisan migrate --seed
 ```
 
-これでローカル環境で「Atte」を実行する準備が整いました。WebサーバーはTCPポート80でリッスンしているため、ブラウザから `http://localhost` にアクセスすることで、「Atte」を使用することができます。
+これでローカル環境で「Atte」を実行する準備が整いました。Web サーバーは TCP ポート 80 でリッスンしているため、ブラウザから `http://localhost` にアクセスすることで、「Atte」を使用することができます。
+
+ローカル環境では本人確認メールは開発用メールサーバーに送信されます。`http://localhost:8025` にアクセスすることで、開発用メールサーバーの Web インターフェースにアクセスできます。
 
 ## その他のドキュメント
 
-- [ユースケース図](doc/ユースケース図.md)
-- [行動シナリオ](doc/行動シナリオ.md)
-- [画面遷移図](doc/画面遷移図.md)
-- [ワークセット](doc/ワークセット.md)
-- [CRUD表](doc/CRUD表.md)
-- [シーケンス図](doc/シーケンス図.md)
+* [ユースケース図](doc/ユースケース図.md)
+* [行動シナリオ](doc/行動シナリオ.md)
+* [画面遷移図](doc/画面遷移図.md)
+* [ワークセット](doc/ワークセット.md)
+* [CRUD 表](doc/CRUD表.md)
+* [シーケンス図](doc/シーケンス図.md)
